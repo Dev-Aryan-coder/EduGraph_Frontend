@@ -1,4 +1,349 @@
-/* ExcelImportModal.css - Component Scoped Styles */
-.excelImportModal-container {
-  /* Scoped styles */
+/* =========================================================================
+   ExcelImportModal.css - Coordinator Batch Excel Import
+   ========================================================================= */
+
+.eim-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.eim-modal-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 640px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  overflow: hidden;
+  border: 1px solid #E2E8F0;
+  animation: modalScale 0.2s ease-out;
+}
+
+.eim-modal-head {
+  padding: 24px 28px 18px 28px;
+  border-bottom: 1px solid #F1F5F9;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.eim-head-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: #E6F4F1;
+  color: #1B7F72;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.eim-modal-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 4px;
+}
+
+.eim-modal-sub {
+  font-size: 0.85rem;
+  color: #64748B;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.eim-modal-close {
+  background: none;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.eim-modal-close:hover {
+  color: #0F172A;
+  background: #F1F5F9;
+}
+
+.eim-alert {
+  margin: 12px 28px 0 28px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+}
+
+.eim-alert.alert-error {
+  background: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FEE2E2;
+}
+
+.eim-alert.alert-success {
+  background: #F0FDF4;
+  color: #16A34A;
+  border: 1px solid #DCFCE7;
+}
+
+.eim-modal-body {
+  padding: 24px 28px;
+}
+
+.eim-upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.eim-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.eim-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.eim-select {
+  padding: 9px 12px;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: #0F172A;
+  outline: none;
+}
+
+.eim-file-dropzone {
+  border: 2px dashed #CBD5E1;
+  border-radius: 12px;
+  background: #F8FAFC;
+  padding: 30px 20px;
+  text-align: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.eim-file-dropzone:hover {
+  border-color: #1B7F72;
+  background: #F0FDFA;
+}
+
+.eim-file-hidden {
+  display: none;
+}
+
+.eim-dropzone-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.eim-dropzone-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: #E6F4F1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eim-filename {
+  display: block;
+  font-size: 0.95rem;
+  color: #0F172A;
+}
+
+.eim-filesize {
+  display: block;
+  font-size: 0.78rem;
+  color: #1B7F72;
+  margin-top: 2px;
+}
+
+.eim-filetypes {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748B;
+  margin-top: 4px;
+}
+
+.eim-sheet-guidelines {
+  background: #F1F5F9;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+.eim-sheet-guidelines strong {
+  color: #0F172A;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.eim-sheet-guidelines ul {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.eim-sheet-guidelines code {
+  background: #FFFFFF;
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: #0F172A;
+  font-weight: 600;
+}
+
+.eim-preview-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.eim-preview-stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 18px;
+  background: #F8FAFC;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+}
+
+.eim-p-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.eim-stat-num {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.eim-p-stat.text-red .eim-stat-num {
+  color: #DC2626;
+}
+
+.eim-stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.eim-preview-table-box {
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.eim-preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+.eim-preview-table th {
+  padding: 10px 14px;
+  background: #F8FAFC;
+  color: #475569;
+  font-weight: 600;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.eim-preview-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #F1F5F9;
+  color: #334155;
+}
+
+.eim-badge-ready {
+  color: #16A34A;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.eim-more-rows {
+  padding: 8px 14px;
+  background: #F8FAFC;
+  font-size: 0.75rem;
+  color: #64748B;
+  text-align: center;
+  border-top: 1px solid #F1F5F9;
+  font-weight: 500;
+}
+
+.eim-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.eim-btn-cancel {
+  padding: 9px 16px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.eim-btn-submit,
+.eim-btn-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  background: #1B7F72;
+  border: none;
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.eim-btn-submit:hover:not(:disabled),
+.eim-btn-confirm:hover:not(:disabled) {
+  background: #15665B;
+}
+
+.eim-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
 }

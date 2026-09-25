@@ -11,6 +11,7 @@ import SignUp from './pages/auth/SignUp'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import PrincipalDashboard from './pages/principal/PrincipalDashboard'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import CoordinatorDashboard from './pages/coordinator/CoordinatorDashboard'
 import authService from './services/authService'
 import './App.css'
 
@@ -24,7 +25,8 @@ const VALID_TABS = [
   'signup',
   'forgot-password',
   'dashboard',
-  'admin'
+  'admin',
+  'coordinator'
 ]
 
 function App() {
@@ -55,6 +57,7 @@ function App() {
   const isAuthPage = ['login', 'signup', 'forgot-password'].includes(activeTab)
   const isDashboardPage = activeTab === 'dashboard'
   const isAdminPage = activeTab === 'admin'
+  const isCoordinatorPage = activeTab === 'coordinator'
 
   // If on split-screen auth pages, hide public floating navbar and footer
   if (isAuthPage) {
@@ -70,10 +73,16 @@ function App() {
   // Check current user role to route dashboard appropriately
   const storedUser = authService.getStoredUser()
   const isUserAdmin = storedUser?.role && (storedUser.role.toUpperCase() === 'ADMIN' || storedUser.role.toUpperCase() === 'ROLE_ADMIN')
+  const isUserCoordinator = storedUser?.role && (storedUser.role.toUpperCase() === 'COORDINATOR' || storedUser.role.toUpperCase() === 'ROLE_COORDINATOR')
 
   // Render Super Admin Workspace
   if (isAdminPage || (isDashboardPage && isUserAdmin)) {
     return <AdminDashboard onNavigate={navigateToTab} />
+  }
+
+  // Render Coordinator Workspace
+  if (isCoordinatorPage || (isDashboardPage && isUserCoordinator)) {
+    return <CoordinatorDashboard onNavigate={navigateToTab} />
   }
 
   // If on Dashboard, render Principal Workspace with full-screen sidenav layout
