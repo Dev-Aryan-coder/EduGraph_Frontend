@@ -9,7 +9,7 @@ import ContactUs from './pages/public/ContactUs'
 import Login from './pages/auth/Login'
 import SignUp from './pages/auth/SignUp'
 import ForgotPassword from './pages/auth/ForgotPassword'
-import DashboardOverview from './pages/dashboard/DashboardOverview'
+import PrincipalDashboard from './pages/principal/PrincipalDashboard'
 import './App.css'
 
 const VALID_TABS = [
@@ -63,9 +63,9 @@ function App() {
     )
   }
 
-  // If on Dashboard, render full-screen workspace with its own topbar & sidenav
+  // If on Dashboard, render Principal Workspace with full-screen sidenav layout
   if (isDashboardPage) {
-    return <DashboardOverview onNavigate={navigateToTab} />
+    return <PrincipalDashboard onNavigate={navigateToTab} />
   }
 
   // Render the active public view
