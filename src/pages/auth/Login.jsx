@@ -58,13 +58,15 @@ export default function Login({ onNavigate }) {
       // Short delay for user feedback then redirect
       setTimeout(() => {
         const userRole = data.role ? data.role.toUpperCase() : ''
-        if (userRole === 'PRINCIPAL') {
-          handleNavigate('principal')
-        } else if (userRole === 'COORDINATOR') {
+        if (userRole === 'ADMIN' || userRole === 'ROLE_ADMIN') {
+          handleNavigate('admin')
+        } else if (userRole === 'PRINCIPAL' || userRole === 'ROLE_PRINCIPAL') {
+          handleNavigate('dashboard')
+        } else if (userRole === 'COORDINATOR' || userRole === 'ROLE_COORDINATOR') {
           handleNavigate('coordinator')
-        } else if (userRole === 'TEACHER') {
+        } else if (userRole === 'TEACHER' || userRole === 'ROLE_TEACHER') {
           handleNavigate('teacher')
-        } else if (userRole === 'STUDENT') {
+        } else if (userRole === 'STUDENT' || userRole === 'ROLE_STUDENT') {
           handleNavigate('student')
         } else {
           handleNavigate('home')

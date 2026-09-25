@@ -10,6 +10,8 @@ import Login from './pages/auth/Login'
 import SignUp from './pages/auth/SignUp'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import PrincipalDashboard from './pages/principal/PrincipalDashboard'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import authService from './services/authService'
 import './App.css'
 
 const VALID_TABS = [
@@ -21,7 +23,8 @@ const VALID_TABS = [
   'login',
   'signup',
   'forgot-password',
-  'dashboard'
+  'dashboard',
+  'admin'
 ]
 
 function App() {
@@ -51,6 +54,7 @@ function App() {
 
   const isAuthPage = ['login', 'signup', 'forgot-password'].includes(activeTab)
   const isDashboardPage = activeTab === 'dashboard'
+  const isAdminPage = activeTab === 'admin'
 
   // If on split-screen auth pages, hide public floating navbar and footer
   if (isAuthPage) {
@@ -61,6 +65,15 @@ function App() {
         {activeTab === 'forgot-password' && <ForgotPassword onNavigate={navigateToTab} />}
       </div>
     )
+  }
+
+  // Check current user role to route dashboard appropriately
+  const storedUser = authService.getStoredUser()
+  const isUserAdmin = storedUser?.role && (storedUser.role.toUpperCase() === 'ADMIN' || storedUser.role.toUpperCase() === 'ROLE_ADMIN')
+
+  // Render Super Admin Workspace
+  if (isAdminPage || (isDashboardPage && isUserAdmin)) {
+    return <AdminDashboard onNavigate={navigateToTab} />
   }
 
   // If on Dashboard, render Principal Workspace with full-screen sidenav layout

@@ -79,10 +79,12 @@ export default function AccountMenu({ onNavigate }) {
 
   const handleDashboardClick = () => {
     setIsDropdownOpen(false)
+    const role = currentUser?.role ? currentUser.role.toUpperCase() : ''
+    const targetTab = (role === 'ADMIN' || role === 'ROLE_ADMIN') ? 'admin' : 'dashboard'
     if (onNavigate) {
-      onNavigate('dashboard')
+      onNavigate(targetTab)
     } else {
-      window.location.hash = '#dashboard'
+      window.location.hash = `#${targetTab}`
     }
   }
 
