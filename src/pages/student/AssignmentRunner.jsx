@@ -100,6 +100,16 @@ export default function AssignmentRunner({
     }
   }, [assignmentId, submission?.status])
 
+  // Anti-Cheat: Deter in-page Copy/Cut/Paste/Right-Click
+  const handlePreventCopyPaste = (e) => {
+    if (!assignment?.allowCopyPaste) {
+      e.preventDefault()
+      setShowProctorWarning(true)
+      setTimeout(() => setShowProctorWarning(false), 4000)
+    }
+  }
+
+
   // 3. Save Draft
   const handleSaveDraft = async () => {
     setIsSaving(true)
@@ -389,9 +399,14 @@ export default function AssignmentRunner({
               placeholder="Type your explanation or methodology here..."
               value={writtenNotes}
               onChange={(e) => setWrittenNotes(e.target.value)}
+              onCopy={handlePreventCopyPaste}
+              onCut={handlePreventCopyPaste}
+              onPaste={handlePreventCopyPaste}
+              onContextMenu={handlePreventCopyPaste}
               disabled={isSubmitted}
               rows={16}
             />
+
           </div>
         </aside>
       </div>

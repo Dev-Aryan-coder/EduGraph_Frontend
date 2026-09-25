@@ -47,7 +47,8 @@ export default function InstitutionalCalendar({ onBack }) {
   }
 
   const role = (currentUser?.role || '').toUpperCase()
-  const canManage = ['ADMIN', 'ROLE_ADMIN', 'PRINCIPAL', 'ROLE_PRINCIPAL'].includes(role)
+  const canManage = ['ADMIN', 'ROLE_ADMIN', 'PRINCIPAL', 'ROLE_PRINCIPAL', 'COORDINATOR', 'ROLE_COORDINATOR'].includes(role)
+
 
   const handleCreateEvent = async (e) => {
     e.preventDefault()

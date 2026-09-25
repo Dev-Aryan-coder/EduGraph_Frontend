@@ -327,7 +327,17 @@ export default function WhiteboardStudio({
                           {conns.map(c => (
                             <div key={c.id} className="conn-chip">
                               <span className="conn-chip-label">{c.label}:</span>
-                              <span className="conn-chip-target">{c.targetNodeTitle || `Node #${c.targetNodeId}`}</span>
+                              <span
+                                className="conn-chip-target"
+                                onClick={() => {
+                                  const target = nodes.find(n => n.id === c.targetNodeId)
+                                  if (target) handleOpenEditModal(target)
+                                }}
+                                style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                                title="Click to view connected concept node"
+                              >
+                                {c.targetNodeTitle || `Node #${c.targetNodeId}`}
+                              </span>
                               <button
                                 className="conn-chip-remove"
                                 onClick={() => handleUnlink(node.id, c.id)}
@@ -338,6 +348,7 @@ export default function WhiteboardStudio({
                             </div>
                           ))}
                         </div>
+
                       )}
                     </div>
 
