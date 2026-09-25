@@ -35,6 +35,9 @@ function App() {
     return VALID_TABS.includes(hash) ? hash : 'home'
   })
 
+  // Reactive user session state
+  const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
+
   // Synchronize browser history / URL hash changes
   useEffect(() => {
     const onHashChange = () => {
@@ -46,6 +49,19 @@ function App() {
     }
     window.addEventListener('hashchange', onHashChange)
     return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
+  // Listen to auth changes and profile updates across windows/tabs
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setCurrentUser(authService.getStoredUser())
+    }
+    window.addEventListener('edugraph_auth_change', handleAuthChange)
+    window.addEventListener('storage', handleAuthChange)
+    return () => {
+      window.removeEventListener('edugraph_auth_change', handleAuthChange)
+      window.removeEventListener('storage', handleAuthChange)
+    }
   }, [])
 
   const navigateToTab = (tabId) => {
@@ -69,21 +85,6 @@ function App() {
       </div>
     )
   }
-
-  // Reactive user session state
-  const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
-
-  useEffect(() => {
-    const handleAuthChange = () => {
-      setCurrentUser(authService.getStoredUser())
-    }
-    window.addEventListener('edugraph_auth_change', handleAuthChange)
-    window.addEventListener('storage', handleAuthChange)
-    return () => {
-      window.removeEventListener('edugraph_auth_change', handleAuthChange)
-      window.removeEventListener('storage', handleAuthChange)
-    }
-  }, [])
 
   const role = (currentUser?.role || '').toUpperCase()
   const isUserAdmin = role === 'ADMIN' || role === 'ROLE_ADMIN'
