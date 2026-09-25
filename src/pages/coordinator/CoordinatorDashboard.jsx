@@ -402,7 +402,10 @@ export default function CoordinatorDashboard({ onNavigate }) {
                   </div>
                   <h4>Batch Import Students via Excel</h4>
                   <p>Upload a .xlsx or .csv roster to enroll students and dispatch credentials via SMTP.</p>
-                  <span className="qa-link">Open Import Tool ➔</span>
+                  <button type="button" className="qa-action-btn qa-btn-teal">
+                    <span>Open Import Tool</span>
+                    <span className="qa-arrow">➔</span>
+                  </button>
                 </div>
 
                 <div
@@ -417,7 +420,10 @@ export default function CoordinatorDashboard({ onNavigate }) {
                   </div>
                   <h4>Batch Import Faculty via Excel</h4>
                   <p>Upload an instructor spreadsheet to onboard multiple teachers with one click.</p>
-                  <span className="qa-link">Open Import Tool ➔</span>
+                  <button type="button" className="qa-action-btn qa-btn-blue">
+                    <span>Open Import Tool</span>
+                    <span className="qa-arrow">➔</span>
+                  </button>
                 </div>
 
                 <div
@@ -429,7 +435,10 @@ export default function CoordinatorDashboard({ onNavigate }) {
                   </div>
                   <h4>Manage Classrooms & Sections</h4>
                   <p>Create academic divisions, allocate teaching faculty, and inspect student counts.</p>
-                  <span className="qa-link">View Classrooms ➔</span>
+                  <button type="button" className="qa-action-btn qa-btn-amber">
+                    <span>View Classrooms</span>
+                    <span className="qa-arrow">➔</span>
+                  </button>
                 </div>
               </div>
 
