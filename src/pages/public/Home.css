@@ -1067,7 +1067,380 @@
 }
 
 /* ==========================================================================
-   6. 4-Column Key Metrics / Stats Row
+   6. What is the Problem & How We Solve It Section (Title on the Right)
+   ========================================================================== */
+.hero-problem-solution-section {
+  width: 100%;
+  margin: 0 0 36px 0;
+  text-align: left;
+}
+
+.ps-layout-grid {
+  display: grid;
+  grid-template-columns: 1.12fr 1fr;
+  gap: 50px;
+  align-items: center;
+  width: 100%;
+}
+
+/* Right Column: Title & Breakdown */
+.ps-text-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.ps-header-block {
+  margin-bottom: 12px;
+}
+
+.ps-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 3.2vw, 2.7rem);
+  font-weight: 700;
+  color: #10233F;
+  letter-spacing: -0.02em;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.ps-sketch-divider {
+  width: 72px;
+  height: 3.5px;
+  background: linear-gradient(90deg, #1B7F72, #C6822E);
+  border-radius: 9999px;
+  margin-bottom: 16px;
+}
+
+.ps-desc {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 1.05rem;
+  color: #4A5568;
+  line-height: 1.7;
+  margin-bottom: 22px;
+}
+
+.ps-pillars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.ps-pillar-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.pillar-num-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #10233F;
+  color: #FFFFFF;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 2px 2px 6px rgba(16, 35, 63, 0.2);
+  margin-top: 2px;
+}
+
+.pillar-content strong {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #10233F;
+  margin-bottom: 3px;
+}
+
+.pillar-content p {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.84rem;
+  color: #718096;
+  line-height: 1.48;
+  margin: 0;
+}
+
+.ps-action-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.ps-action-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: #E6F4F2;
+  color: #1B7F72;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px solid rgba(27, 127, 114, 0.25);
+  box-shadow: 1px 2px 4px rgba(27, 127, 114, 0.08);
+}
+
+/* Left Column: Visual Comparison Matrix Card */
+.ps-matrix-card {
+  background: #FFFFFF;
+  border: 2px solid #10233F;
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 
+    12px 16px 32px rgba(16, 35, 63, 0.12),
+    -4px -4px 12px rgba(255, 255, 255, 0.9);
+  transition: transform 0.25s ease;
+}
+
+.ps-matrix-card:hover {
+  transform: translateY(-3px);
+}
+
+.ps-matrix-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.ps-header-badge {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #10233F;
+  background: #EDF2F7;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+.ps-status-pill {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1B7F72;
+  background: #E6F4F2;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* Problem vs Solution Boxes */
+.ps-contrast-box {
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.ps-problem-box {
+  background: #FFF8F8;
+  border: 1.5px solid #FECACA;
+}
+
+.ps-solution-box {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+}
+
+.ps-box-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.ps-box-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.ps-problem-icon {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.ps-solution-icon {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+
+.ps-box-info {
+  flex: 1;
+}
+
+.ps-box-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #10233F;
+  margin: 0;
+}
+
+.ps-box-subtitle {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.74rem;
+  color: #718096;
+  display: block;
+}
+
+.ps-tag {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.ps-tag-problem {
+  background: #FED7D7;
+  color: #C53030;
+}
+
+.ps-tag-solution {
+  background: #BBF7D0;
+  color: #15803D;
+}
+
+.ps-points-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ps-points-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ps-bullet {
+  font-weight: 800;
+  font-size: 0.74rem;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ps-bullet-problem {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.ps-bullet-solution {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+
+.ps-points-list strong {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #10233F;
+  margin-bottom: 1px;
+}
+
+.ps-points-list p {
+  margin: 0;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.77rem;
+  color: #4A5568;
+  line-height: 1.4;
+}
+
+/* Center Bridge Indicator */
+.ps-bridge-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 10px 0;
+  color: #1B7F72;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ps-bridge-arrow {
+  font-size: 0.74rem;
+  color: #1B7F72;
+}
+
+.ps-bridge-label {
+  background: #E6F4F2;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  border: 1px solid rgba(27, 127, 114, 0.2);
+}
+
+/* Matrix Footer */
+.ps-matrix-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #E2E8F0;
+  text-align: center;
+}
+
+.ps-footer-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ps-stat-highlight {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #10233F;
+}
+
+.ps-stat-sub {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.7rem;
+  color: #718096;
+  margin-top: 1px;
+}
+
+.ps-footer-divider {
+  width: 1px;
+  height: 24px;
+  background: #CBD5E1;
+}
+
+/* ==========================================================================
+   7. 4-Column Key Metrics / Stats Row
    ========================================================================== */
 .hero-stats-grid {
   display: grid;
@@ -1109,7 +1482,7 @@
 }
 
 /* ==========================================================================
-   6. Responsive Layout Breakpoints
+   8. Responsive Layout Breakpoints
    ========================================================================== */
 @media (max-width: 1040px) {
   .hero-showcase-container {
@@ -1131,9 +1504,14 @@
   }
 
   .vision-layout-grid,
-  .goal-layout-grid {
+  .goal-layout-grid,
+  .ps-layout-grid {
     grid-template-columns: 1fr;
     gap: 36px;
+  }
+
+  .ps-text-col {
+    order: -1;
   }
 
   .hero-stats-grid {

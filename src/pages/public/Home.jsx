@@ -372,7 +372,160 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 5. 4-Column Key Metrics / Statistics Row */}
+          {/* Horizontal Dashed Divider */}
+          <div className="hero-dashed-divider" aria-hidden="true" />
+
+          {/* 5. What is the Problem & How We Solve It Section (Title on the Right) */}
+          <div className="hero-problem-solution-section" id="problem-solution">
+            <div className="ps-layout-grid">
+              
+              {/* Left Column: Visual Problem vs Solution Comparison Matrix Card */}
+              <div className="ps-visual-col">
+                <div className="ps-matrix-card">
+                  
+                  {/* Card Header */}
+                  <div className="ps-matrix-header">
+                    <div className="ps-badge-group">
+                      <span className="ps-header-badge">EVALUATION PARADIGM SHIFT</span>
+                    </div>
+                    <span className="ps-status-pill">● Comparative Analysis</span>
+                  </div>
+
+                  {/* Problem Block (Traditional System) */}
+                  <div className="ps-contrast-box ps-problem-box">
+                    <div className="ps-box-head">
+                      <span className="ps-box-icon ps-problem-icon">✕</span>
+                      <div className="ps-box-info">
+                        <h4 className="ps-box-title">The Core Problem</h4>
+                        <span className="ps-box-subtitle">Superficial Cramming & Unverified Submissions</span>
+                      </div>
+                      <span className="ps-tag ps-tag-problem">Traditional Flaw</span>
+                    </div>
+                    <ul className="ps-points-list">
+                      <li>
+                        <span className="ps-bullet ps-bullet-problem">!</span>
+                        <div>
+                          <strong>Fragile Rote Recall</strong>
+                          <p>Formulas and theories crammed the night before vanish from memory within days without relational anchors.</p>
+                        </div>
+                      </li>
+                      <li>
+                        <span className="ps-bullet ps-bullet-problem">!</span>
+                        <div>
+                          <strong>Unverified Copy-Pasting</strong>
+                          <p>Traditional PDF/text uploads allow unchecked external copying and AI generation to pass without genuine comprehension.</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Visual Bridge Indicator */}
+                  <div className="ps-bridge-indicator">
+                    <span className="ps-bridge-arrow">▼</span>
+                    <span className="ps-bridge-label">EduGraph Verified Solution Architecture</span>
+                    <span className="ps-bridge-arrow">▼</span>
+                  </div>
+
+                  {/* Solution Block (EduGraph System) */}
+                  <div className="ps-contrast-box ps-solution-box">
+                    <div className="ps-box-head">
+                      <span className="ps-box-icon ps-solution-icon">✓</span>
+                      <div className="ps-box-info">
+                        <h4 className="ps-box-title">How We Solve It</h4>
+                        <span className="ps-box-subtitle">Spatial Mind Graphs + Fraud-Proof Proctoring</span>
+                      </div>
+                      <span className="ps-tag ps-tag-solution">EduGraph Fix</span>
+                    </div>
+                    <ul className="ps-points-list">
+                      <li>
+                        <span className="ps-bullet ps-bullet-solution">✦</span>
+                        <div>
+                          <strong>Edudraw Spatial Node Graphing</strong>
+                          <p>Students build interactive visual topology boards, forming deep conceptual mental models that yield +3.8x retention.</p>
+                        </div>
+                      </li>
+                      <li>
+                        <span className="ps-bullet ps-bullet-solution">✦</span>
+                        <div>
+                          <strong>Live Proctoring & 20-MCQ Validation</strong>
+                          <p>Page visibility tracking flags tab switching, followed by instant validation quizzes ensuring 100% genuine mastery.</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Footer Metric Banner */}
+                  <div className="ps-matrix-footer">
+                    <div className="ps-footer-stat">
+                      <span className="ps-stat-highlight">0%</span>
+                      <span className="ps-stat-sub">Plagiarism Tolerance</span>
+                    </div>
+                    <div className="ps-footer-divider" />
+                    <div className="ps-footer-stat">
+                      <span className="ps-stat-highlight">+3.8x</span>
+                      <span className="ps-stat-sub">Enduring Retention</span>
+                    </div>
+                    <div className="ps-footer-divider" />
+                    <div className="ps-footer-stat">
+                      <span className="ps-stat-highlight">99.4%</span>
+                      <span className="ps-stat-sub">Proctored Authenticity</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Right Column: Section Title & Narrative Pillars */}
+              <div className="ps-text-col">
+                <div className="ps-header-block">
+                  <span className="section-eyebrow">Academic Crisis & Breakthrough</span>
+                  <h2 className="ps-title">What is the Problem & How We Solve It</h2>
+                  <div className="ps-sketch-divider" aria-hidden="true" />
+                </div>
+
+                <p className="ps-desc">
+                  Higher education faces an unprecedented crisis of retention and integrity. Traditional assignment workflows reward passive text recitation, leaving professors powerless against superficial understanding and unverified shortcuts.
+                </p>
+
+                <div className="ps-pillars-list">
+                  <div className="ps-pillar-item">
+                    <div className="pillar-num-badge">01</div>
+                    <div className="pillar-content">
+                      <strong>From Passive Memorization to Visual Construction</strong>
+                      <p>Students shift from passive readers to active knowledge architects—mapping formulas, proofs, and principles onto dynamic Edudraw whiteboards.</p>
+                    </div>
+                  </div>
+
+                  <div className="ps-pillar-item">
+                    <div className="pillar-num-badge">02</div>
+                    <div className="pillar-content">
+                      <strong>Restoring Institutional Integrity via Live Proctoring</strong>
+                      <p>Tab-switch monitoring halts unauthorized external aids in real time, while instant post-submission quizzes verify that students truly own their work.</p>
+                    </div>
+                  </div>
+
+                  <div className="ps-pillar-item">
+                    <div className="pillar-num-badge">03</div>
+                    <div className="pillar-content">
+                      <strong>Actionable Telemetry for Faculty & Leadership</strong>
+                      <p>Educators receive instant visual comprehension heatmaps, identifying class-wide bottlenecks and conceptual gaps long before final exams.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="ps-action-badges">
+                  <span className="ps-action-pill">✓ Anti-Cheat Monitored</span>
+                  <span className="ps-action-pill">✓ Edudraw Whiteboard Canvas</span>
+                  <span className="ps-action-pill">✓ Instant Grade Verification</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Horizontal Dashed Divider */}
+          <div className="hero-dashed-divider" aria-hidden="true" />
+
           <div className="hero-stats-grid">
             <div className="stat-card">
               <div className="stat-number">10K+</div>
