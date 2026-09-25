@@ -20,9 +20,14 @@ import {
   IconPhone,
   IconShield,
   IconBolt,
-  IconInfo
+  IconInfo,
+  IconBell,
+  IconCalendar,
+  IconBrain,
+  IconWrench
 } from '../../components/common/Icons'
 import './CoordinatorDashboard.css'
+
 
 export default function CoordinatorDashboard({ onNavigate }) {
   const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
@@ -345,6 +350,16 @@ export default function CoordinatorDashboard({ onNavigate }) {
     { id: 'teachers', label: 'Faculty Directory', icon: <IconInstitution size={18} /> },
   ]
 
+  // Shared Institutional Features
+  const sharedNavItems = [
+    { id: 'notices', label: 'Notice Board', icon: <IconBell size={18} /> },
+    { id: 'calendar', label: 'Academic Calendar', icon: <IconCalendar size={18} /> },
+    { id: 'news', label: 'News & Research', icon: <IconBrain size={18} /> },
+    { id: 'help-desk', label: 'Help Desk & Support', icon: <IconWrench size={18} /> },
+    { id: 'profile', label: 'Profile & Settings', icon: <IconUser size={18} /> },
+  ]
+
+
   // Filtered Students
   const filteredStudents = students.filter((s) => {
     const q = studentSearch.toLowerCase()
@@ -454,6 +469,29 @@ export default function CoordinatorDashboard({ onNavigate }) {
               )
             })}
           </nav>
+
+          <div className="sidebar-nav-title" style={{ marginTop: '22px' }}>CAMPUS & INSTITUTION</div>
+
+          <nav className="sidebar-nav-menu">
+            {sharedNavItems.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className="sidebar-nav-link"
+                onClick={() => {
+                  if (onNavigate) {
+                    onNavigate(item.id)
+                  } else {
+                    window.location.hash = `#${item.id}`
+                  }
+                }}
+              >
+                <span className="link-icon">{item.icon}</span>
+                <span className="link-text">{item.label}</span>
+              </button>
+            ))}
+          </nav>
+
 
           <div className="sidebar-bottom-card">
             <div className="coord-shield-icon">

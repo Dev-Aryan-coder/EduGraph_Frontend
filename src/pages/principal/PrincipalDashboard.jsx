@@ -19,9 +19,13 @@ import {
   IconX,
   IconMail,
   IconPhone,
-  IconInfo
+  IconInfo,
+  IconCalendar,
+  IconBrain,
+  IconWrench
 } from '../../components/common/Icons'
 import './PrincipalDashboard.css'
+
 
 export default function PrincipalDashboard({ onNavigate }) {
   const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
@@ -166,6 +170,15 @@ export default function PrincipalDashboard({ onNavigate }) {
     ...(isAdmin ? [{ id: 'audit', label: 'Institutional Audit', icon: <IconFileText size={18} /> }] : [])
   ]
 
+  // Shared Institutional Items
+  const sharedNavItems = [
+    { id: 'calendar', label: 'Academic Calendar', icon: <IconCalendar size={18} /> },
+    { id: 'news', label: 'News & Research Feed', icon: <IconBrain size={18} /> },
+    { id: 'help-desk', label: 'Help Desk & Support', icon: <IconWrench size={18} /> },
+    { id: 'profile', label: 'Profile & Settings', icon: <IconUser size={18} /> },
+  ]
+
+
   const collegeTitle = overviewData?.collegeName || currentUser?.collegeName || 'EduGraph Institution'
 
   // Exact real numbers from database
@@ -260,6 +273,29 @@ export default function PrincipalDashboard({ onNavigate }) {
               )
             })}
           </nav>
+
+          <div className="sidebar-nav-title" style={{ marginTop: '22px' }}>CAMPUS & INSTITUTION</div>
+
+          <nav className="sidebar-nav-menu">
+            {sharedNavItems.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className="sidebar-nav-link"
+                onClick={() => {
+                  if (onNavigate) {
+                    onNavigate(item.id)
+                  } else {
+                    window.location.hash = `#${item.id}`
+                  }
+                }}
+              >
+                <span className="link-icon">{item.icon}</span>
+                <span className="link-text">{item.label}</span>
+              </button>
+            ))}
+          </nav>
+
 
           <div className="sidebar-bottom-card">
             <div className="sec-shield-icon">

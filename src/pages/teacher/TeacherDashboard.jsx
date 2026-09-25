@@ -22,9 +22,13 @@ import {
   IconShield,
   IconBrain,
   IconBolt,
-  IconTrash
+  IconTrash,
+  IconBell,
+  IconCalendar,
+  IconWrench
 } from '../../components/common/Icons'
 import './TeacherDashboard.css'
+
 
 export default function TeacherDashboard({ onNavigate }) {
   const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
@@ -208,9 +212,17 @@ export default function TeacherDashboard({ onNavigate }) {
     { id: 'overview', label: 'Department Overview', icon: <IconLayoutDashboard size={18} /> },
     { id: 'assignments', label: 'Assignments Studio', icon: <IconFileText size={18} /> },
     { id: 'grading', label: 'Grading & Proctoring Roster', icon: <IconGraduation size={18} /> },
-    { id: 'feeds', label: 'Feeds & Research', icon: <IconBrain size={18} /> },
-    { id: 'tickets', label: 'Support & Tickets', icon: <IconShield size={18} /> },
   ]
+
+  // Shared Institutional Items
+  const sharedNavItems = [
+    { id: 'notices', label: 'Notice Board', icon: <IconBell size={18} />, type: 'route' },
+    { id: 'calendar', label: 'Academic Calendar', icon: <IconCalendar size={18} />, type: 'route' },
+    { id: 'feeds', label: 'News & Research Feed', icon: <IconBrain size={18} />, type: 'tab' },
+    { id: 'tickets', label: 'Help Desk & Support', icon: <IconWrench size={18} />, type: 'tab' },
+    { id: 'profile', label: 'Profile & Settings', icon: <IconUser size={18} />, type: 'route' },
+  ]
+
 
   // Filtered Assignments
   const filteredAssignments = assignments.filter((a) => {
@@ -306,6 +318,35 @@ export default function TeacherDashboard({ onNavigate }) {
               </button>
             ))}
           </nav>
+
+          <div className="sidenav-section-title" style={{ marginTop: '20px' }}>Campus & Institution</div>
+          <nav className="sidenav-nav">
+            {sharedNavItems.map((item) => {
+              const isTabActive = item.type === 'tab' && activeTab === item.id && !viewingAssignmentId && !isCreatingAssignment
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`sidenav-tab-btn ${isTabActive ? 'active' : ''}`}
+                  onClick={() => {
+                    if (item.type === 'tab') {
+                      setViewingAssignmentId(null)
+                      setIsCreatingAssignment(false)
+                      setActiveTab(item.id)
+                    } else if (onNavigate) {
+                      onNavigate(item.id)
+                    } else {
+                      window.location.hash = `#${item.id}`
+                    }
+                  }}
+                >
+                  <span className="nav-icon">{item.icon}</span>
+                  <span className="nav-label">{item.label}</span>
+                </button>
+              )
+            })}
+          </nav>
+
 
           <div className="sidenav-footer">
             <div className="sidenav-stat-card">

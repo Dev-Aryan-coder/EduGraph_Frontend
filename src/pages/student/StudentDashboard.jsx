@@ -242,7 +242,12 @@ export default function StudentDashboard({ onNavigate }) {
           </div>
         </div>
 
-        <div className="student-nav-user">
+        <div
+          className="student-nav-user"
+          onClick={() => onNavigate ? onNavigate('profile') : (window.location.hash = '#profile')}
+          style={{ cursor: 'pointer' }}
+          title="Click to view and edit profile"
+        >
           <div className="student-user-avatar">
             <IconUser size={18} />
           </div>
@@ -254,10 +259,18 @@ export default function StudentDashboard({ onNavigate }) {
               Roll #{currentUser?.rollNumber || currentUser?.id || '—'}
             </span>
           </div>
-          <button className="student-btn-logout" onClick={handleLogout} title="Log Out">
+          <button
+            className="student-btn-logout"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleLogout()
+            }}
+            title="Log Out"
+          >
             <IconLogOut size={16} />
           </button>
         </div>
+
       </header>
 
       {/* Hero Welcome Banner */}
@@ -353,7 +366,44 @@ export default function StudentDashboard({ onNavigate }) {
           <IconWrench size={16} />
           <span>Help Desk ({tickets.length})</span>
         </button>
+
+        <button
+          className="student-tab-btn"
+          onClick={() => {
+            if (onNavigate) onNavigate('calendar')
+            else window.location.hash = '#calendar'
+          }}
+          title="Open Academic Calendar"
+        >
+          <IconCalendar size={16} />
+          <span>Calendar</span>
+        </button>
+
+        <button
+          className="student-tab-btn"
+          onClick={() => {
+            if (onNavigate) onNavigate('news')
+            else window.location.hash = '#news'
+          }}
+          title="Open News & Research Feed"
+        >
+          <IconBrain size={16} />
+          <span>News & Research</span>
+        </button>
+
+        <button
+          className="student-tab-btn"
+          onClick={() => {
+            if (onNavigate) onNavigate('profile')
+            else window.location.hash = '#profile'
+          }}
+          title="Manage Student Profile & Settings"
+        >
+          <IconUser size={16} />
+          <span>Profile</span>
+        </button>
       </div>
+
 
       {/* Tab Contents */}
       <main className="student-main-content">
