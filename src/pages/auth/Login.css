@@ -1,4 +1,636 @@
-/* Login.css - Component Scoped Styles */
-.login-container {
-  /* Scoped styles */
+/* ==========================================================================
+   EduGraph — Split-Screen Authentication Styles (Login, SignUp, ForgotPassword)
+   ========================================================================== */
+
+.auth-split-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: #F8FAFC;
+  font-family: 'Space Grotesk', sans-serif;
+  color: #10233F;
+}
+
+/* ==========================================================================
+   LEFT COLUMN: Form & User Interactions (~45% - 50%)
+   ========================================================================== */
+.auth-left-col {
+  flex: 1;
+  max-width: 620px;
+  min-width: 360px;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 56px;
+  box-shadow: 10px 0 40px rgba(16, 35, 63, 0.04);
+  position: relative;
+  z-index: 10;
+}
+
+.auth-form-inner {
+  width: 100%;
+  max-width: 460px;
+}
+
+/* Top Navigation Bar in Form Column */
+.auth-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 36px;
+}
+
+.back-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #64748B;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.back-home-btn:hover {
+  color: #1B7F72;
+  background: #F1F5F9;
+  transform: translateX(-2px);
+}
+
+.auth-brand-logo {
+  height: 38px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.auth-brand-logo:hover {
+  transform: scale(1.03);
+}
+
+/* Header Text */
+.auth-header-block {
+  margin-bottom: 28px;
+}
+
+.auth-main-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.85rem, 2.5vw, 2.3rem);
+  font-weight: 800;
+  color: #10233F;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0 0 10px 0;
+}
+
+.auth-sub-title {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.95rem;
+  color: #64748B;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Alerts */
+.auth-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.88rem;
+  margin-bottom: 22px;
+  line-height: 1.45;
+}
+
+.alert-error {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #B91C1C;
+}
+
+.alert-error .alert-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #EF4444;
+  flex-shrink: 0;
+}
+
+.alert-success {
+  background: #F0FDF4;
+  border: 1px solid #86EFAC;
+  color: #15803D;
+}
+
+/* Form Groups & Inputs */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.auth-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #10233F;
+  letter-spacing: 0.02em;
+}
+
+.label-with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.forgot-password-link {
+  background: none;
+  border: none;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1B7F72;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.forgot-password-link:hover {
+  color: #146358;
+  text-decoration: underline;
+}
+
+.auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon-left {
+  position: absolute;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.auth-text-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 42px 12px 42px;
+  border-radius: 10px;
+  border: 1.5px solid #CBD5E1;
+  background: #F8FAFC;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.95rem;
+  color: #10233F;
+  transition: all 0.2s ease;
+}
+
+.auth-text-input:focus {
+  outline: none;
+  background: #FFFFFF;
+  border-color: #1B7F72;
+  box-shadow: 0 0 0 3px rgba(27, 127, 114, 0.15);
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  color: #64748B;
+  transition: color 0.2s ease;
+}
+
+.toggle-password-btn:hover {
+  color: #10233F;
+}
+
+/* Options Row (Remember Me) */
+.auth-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -4px;
+}
+
+.remember-me-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.82rem;
+  color: #64748B;
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember-me-checkbox input[type="checkbox"] {
+  accent-color: #1B7F72;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Submit Action Button */
+.auth-submit-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: #1B7F72;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(27, 127, 114, 0.35);
+  transition: all 0.25s ease;
+  margin-top: 6px;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  background: #15695E;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(27, 127, 114, 0.45);
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-arrow {
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.auth-submit-btn:hover:not(:disabled) .btn-arrow {
+  transform: translateX(4px);
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Switcher to Sign Up */
+.auth-switch-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid #E2E8F0;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.88rem;
+  color: #64748B;
+  flex-wrap: wrap;
+}
+
+.switch-action-btn {
+  background: none;
+  border: none;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #10233F;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.switch-action-btn:hover {
+  color: #1B7F72;
+  text-decoration: underline;
+}
+
+/* Role Trust Note */
+.auth-trust-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 22px;
+  padding: 10px 14px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.76rem;
+  color: #64748B;
+  line-height: 1.45;
+}
+
+.trust-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1B7F72;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+/* ==========================================================================
+   RIGHT COLUMN: Visual Showcase & Brand Artwork (~50% - 55%)
+   ========================================================================== */
+.auth-right-col {
+  flex: 1.2;
+  background: linear-gradient(135deg, #10233F 0%, #0A1728 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+  color: #FFFFFF;
+}
+
+.auth-visual-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 580px;
+}
+
+/* Luminous Glow Orbs */
+.visual-glow-teal {
+  position: absolute;
+  top: -120px;
+  right: -80px;
+  width: 440px;
+  height: 440px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(27, 127, 114, 0.35) 0%, transparent 70%);
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+.visual-glow-amber {
+  position: absolute;
+  bottom: -100px;
+  left: -80px;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(198, 130, 46, 0.25) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+/* Visual Hero Heading */
+.visual-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  padding: 5px 14px;
+  border-radius: 9999px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #E2E8F0;
+  margin-bottom: 20px;
+}
+
+.visual-hero-heading {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 3.2vw, 2.7rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.18;
+  margin: 0 0 14px 0;
+  color: #FFFFFF;
+}
+
+.visual-hero-sub {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.98rem;
+  color: #CBD5E1;
+  line-height: 1.6;
+  margin: 0 0 32px 0;
+  max-width: 500px;
+}
+
+/* Interactive Whiteboard Canvas Mockup */
+.visual-node-mockup {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  padding: 22px;
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.35);
+  margin-bottom: 34px;
+}
+
+.mockup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+.mockup-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.m-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.dot-red { background: #EF4444; }
+.dot-amber { background: #F59E0B; }
+.dot-green { background: #10B981; }
+
+.mockup-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #E2E8F0;
+}
+
+.mockup-status {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #34D399;
+  background: rgba(16, 185, 129, 0.15);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.mockup-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.m-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.node-primary {
+  background: #1B7F72;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(27, 127, 114, 0.4);
+}
+
+.node-secondary {
+  background: #FFFFFF;
+  color: #10233F;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.m-connector {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #C6822E;
+  letter-spacing: 0.04em;
+}
+
+.mockup-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.chip-green {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6EE7B7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.chip-teal {
+  background: rgba(27, 127, 114, 0.2);
+  color: #5EEAD4;
+  border: 1px solid rgba(27, 127, 114, 0.4);
+}
+
+/* Institutional Metrics Bar */
+.visual-stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+.v-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.v-stat-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.v-stat-label {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.72rem;
+  color: #94A3B8;
+  margin-top: 2px;
+}
+
+.v-stat-sep {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.visual-bottom-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 32px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.74rem;
+  color: #64748B;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ========================================================================== */
+@media (max-width: 960px) {
+  .auth-split-wrapper {
+    flex-direction: column;
+  }
+
+  .auth-left-col {
+    max-width: 100%;
+    min-width: 100%;
+    padding: 36px 24px;
+  }
+
+  .auth-right-col {
+    display: none; /* Hide visual artwork on small mobile screens */
+  }
 }

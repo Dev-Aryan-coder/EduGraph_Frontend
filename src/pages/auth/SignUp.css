@@ -1,0 +1,112 @@
+/* ==========================================================================
+   EduGraph — Institutional Sign-Up Page Styles
+   ========================================================================== */
+
+.signup-left-col {
+  max-width: 680px;
+  padding: 40px 52px;
+}
+
+.signup-form-inner {
+  max-width: 520px;
+}
+
+.signup-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #E6F4F2;
+  color: #1B7F72;
+  border: 1px solid rgba(27, 127, 114, 0.25);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.form-sub-heading {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1B7F72;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed #CBD5E1;
+  margin-top: 4px;
+  margin-bottom: -6px;
+}
+
+.auth-dual-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.text-input-padless {
+  padding-left: 14px !important;
+}
+
+/* Hierarchy Diagram on Right Column */
+.mockup-hierarchy-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.hier-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.badge-navy {
+  background: #10233F;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.badge-teal {
+  background: #1B7F72;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(27, 127, 114, 0.35);
+}
+
+.badge-amber {
+  background: #C6822E;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(198, 130, 46, 0.35);
+}
+
+.hier-arrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  color: #CBD5E1;
+  font-weight: 600;
+}
+
+@media (max-width: 960px) {
+  .signup-left-col {
+    padding: 32px 20px;
+  }
+
+  .auth-dual-row {
+    grid-template-columns: 1fr;
+  }
+}
