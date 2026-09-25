@@ -124,7 +124,7 @@ export default function CoordinatorModal({ isOpen, onClose, onCoordinatorAdded }
               <input
                 type="text"
                 className="coord-input"
-                placeholder="e.g. Prof. Alok Verma"
+                placeholder="e.g. Alok Verma"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
