@@ -12,6 +12,7 @@ import ForgotPassword from './pages/auth/ForgotPassword'
 import PrincipalDashboard from './pages/principal/PrincipalDashboard'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import CoordinatorDashboard from './pages/coordinator/CoordinatorDashboard'
+import TeacherDashboard from './pages/teacher/TeacherDashboard'
 import authService from './services/authService'
 import './App.css'
 
@@ -26,7 +27,8 @@ const VALID_TABS = [
   'forgot-password',
   'dashboard',
   'admin',
-  'coordinator'
+  'coordinator',
+  'teacher'
 ]
 
 function App() {
@@ -74,6 +76,7 @@ function App() {
   const isDashboardPage = activeTab === 'dashboard'
   const isAdminPage = activeTab === 'admin'
   const isCoordinatorPage = activeTab === 'coordinator'
+  const isTeacherPage = activeTab === 'teacher'
 
   // If on split-screen auth pages, hide public floating navbar and footer
   if (isAuthPage) {
@@ -90,6 +93,7 @@ function App() {
   const isUserAdmin = role === 'ADMIN' || role === 'ROLE_ADMIN'
   const isUserCoordinator = role === 'COORDINATOR' || role === 'ROLE_COORDINATOR'
   const isUserPrincipal = role === 'PRINCIPAL' || role === 'ROLE_PRINCIPAL'
+  const isUserTeacher = role === 'TEACHER' || role === 'ROLE_TEACHER'
 
   // Render Super Admin Workspace
   if (isAdminPage || (isDashboardPage && isUserAdmin)) {
@@ -104,6 +108,11 @@ function App() {
   // Render Principal Workspace
   if (isDashboardPage && isUserPrincipal) {
     return <PrincipalDashboard onNavigate={navigateToTab} />
+  }
+
+  // Render Faculty Instructor Workspace
+  if (isTeacherPage || (isDashboardPage && isUserTeacher)) {
+    return <TeacherDashboard onNavigate={navigateToTab} />
   }
 
   // If on Dashboard without specific role or unauthenticated

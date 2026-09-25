@@ -1,4 +1,252 @@
-/* ExtendDeadlineModal.css - Component Scoped Styles */
-.extendDeadlineModal-container {
-  /* Scoped styles */
+.edm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.edm-card {
+  background: #FFFFFF;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.edm-header {
+  padding: 20px 24px;
+  background: #F8FAFC;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.edm-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.edm-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(27, 127, 114, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edm-header-title h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+}
+
+.edm-header-title p {
+  font-size: 0.78rem;
+  color: #64748B;
+  margin: 2px 0 0 0;
+}
+
+.edm-close-btn {
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.edm-close-btn:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+.edm-alert {
+  margin: 16px 24px 0 24px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.edm-alert-error {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #DC2626;
+}
+
+.edm-form {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.edm-meta-box {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.edm-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+}
+
+.edm-meta-label {
+  color: #64748B;
+}
+
+.edm-meta-val {
+  color: #0F172A;
+}
+
+.edm-highlight {
+  color: #1B7F72;
+  font-weight: 800;
+}
+
+.edm-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edm-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.edm-presets-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.edm-preset-btn {
+  flex: 1;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.edm-preset-btn:hover {
+  border-color: #1B7F72;
+  color: #1B7F72;
+}
+
+.edm-preset-btn.active {
+  background: rgba(27, 127, 114, 0.1);
+  border-color: #1B7F72;
+  color: #1B7F72;
+}
+
+.edm-input,
+.edm-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: #0F172A;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.edm-input:focus,
+.edm-textarea:focus {
+  border-color: #1B7F72;
+  box-shadow: 0 0 0 2px rgba(27, 127, 114, 0.15);
+}
+
+.edm-hint {
+  font-size: 0.72rem;
+  color: #64748B;
+}
+
+.edm-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.edm-btn-cancel {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #64748B;
+  cursor: pointer;
+}
+
+.edm-btn-cancel:hover {
+  background: #F1F5F9;
+}
+
+.edm-btn-submit {
+  background: #1B7F72;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(27, 127, 114, 0.25);
+  transition: all 0.15s ease;
+}
+
+.edm-btn-submit:hover:not(:disabled) {
+  background: #15665B;
+  transform: translateY(-1px);
+}
+
+.edm-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
