@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import teacherService from '../../services/teacherService'
+import EduWhiteboard from '../../components/whiteboard/EduWhiteboard'
 import {
   IconGraduation,
   IconCheck,
@@ -31,6 +32,18 @@ export default function EvaluationModal({
   const tabSwitches = submission.tabSwitchCount || 0
   const mcqScore = submission.mcqScore !== null && submission.mcqScore !== undefined ? submission.mcqScore : 0
   const currentTotal = (Number(drawingScore) || 0) + mcqScore
+
+  let parsedExcalidraw = null
+  let studentNotes = submission.content || submission.whiteboardData || ''
+  if (submission.excalidrawDrawingData) {
+    try {
+      const data = JSON.parse(submission.excalidrawDrawingData)
+      parsedExcalidraw = data
+      if (data.notes) studentNotes = data.notes
+    } catch (e) {
+      if (!studentNotes) studentNotes = submission.excalidrawDrawingData
+    }
+  }
 
   const handleGrade = async (reject = false) => {
     setErrorMessage('')
@@ -71,7 +84,7 @@ export default function EvaluationModal({
 
   return (
     <div className="eval-overlay" onClick={onClose}>
-      <div className="eval-card" onClick={(e) => e.stopPropagation()}>
+      <div className="eval-card eval-card-large" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="eval-header">
           <div className="eval-header-info">
@@ -147,18 +160,35 @@ export default function EvaluationModal({
             <div className="eval-content-box">
               <div className="eval-content-head">
                 <IconFileText size={15} color="#475569" />
-                <span>Student Canvas Submission & Hand-Typed Response</span>
+                <span>Student Excalidraw Whiteboard Submission</span>
               </div>
               <div className="eval-content-viewport">
-                {submission.content || submission.whiteboardData ? (
+                {parsedExcalidraw && (parsedExcalidraw.elements?.length > 0 || Array.isArray(parsedExcalidraw)) ? (
+                  <div className="eval-excalidraw-container" style={{ height: 420, width: '100%', position: 'relative' }}>
+                    <EduWhiteboard
+                      initialData={parsedExcalidraw}
+                      viewModeEnabled={true}
+                      name={`eval-${submission.id}`}
+                    />
+                  </div>
+                ) : studentNotes ? (
                   <div className="eval-raw-content">
-                    <pre>{submission.content || submission.whiteboardData}</pre>
+                    <pre>{studentNotes}</pre>
                   </div>
                 ) : (
                   <div className="eval-placeholder-content">
                     <IconBrain size={32} color="#94A3B8" />
                     <p>Student submitted graph structures and visual whiteboard diagram.</p>
                     <span className="sub-hint">Drawing metadata recorded on student canvas.</span>
+                  </div>
+                )}
+
+                {parsedExcalidraw && studentNotes && (
+                  <div className="eval-notes-addon" style={{ marginTop: '14px', padding: '12px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                    <strong style={{ fontSize: '0.78rem', color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                      Accompanying Written Explanation:
+                    </strong>
+                    <pre style={{ margin: 0, fontSize: '0.82rem', color: '#1E293B', whiteSpace: 'pre-wrap' }}>{studentNotes}</pre>
                   </div>
                 )}
               </div>

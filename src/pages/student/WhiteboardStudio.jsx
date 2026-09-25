@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import studentService from '../../services/studentService'
 import NodeConnectionModal from './NodeConnectionModal'
 import ShareNodeModal from './ShareNodeModal'
+import EduWhiteboard from '../../components/whiteboard/EduWhiteboard'
 import {
   IconArrowLeft,
   IconPlus,
@@ -12,7 +13,8 @@ import {
   IconBrain,
   IconNodes,
   IconCheck,
-  IconX
+  IconX,
+  IconDownload
 } from '../../components/common/Icons'
 import './WhiteboardStudio.css'
 
@@ -21,10 +23,16 @@ export default function WhiteboardStudio({
   panelName,
   onBack
 }) {
+  const [activeTab, setActiveTab] = useState('excalidraw') // 'excalidraw' | 'nodes'
   const [nodes, setNodes] = useState([])
   const [connectionsMap, setConnectionsMap] = useState({}) // { [nodeId]: Connection[] }
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
+  const [toastMessage, setToastMessage] = useState('')
+
+  // Excalidraw Whiteboard State
+  const [excalidrawAPI, setExcalidrawAPI] = useState(null)
+  const [panelDrawingData, setPanelDrawingData] = useState(null)
 
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -39,7 +47,42 @@ export default function WhiteboardStudio({
 
   useEffect(() => {
     loadPanelNodes()
+    loadPanelDrawing()
   }, [panelId])
+
+  const loadPanelDrawing = () => {
+    try {
+      const stored = localStorage.getItem(`edugraph_panel_excalidraw_${panelId}`)
+      if (stored) {
+        setPanelDrawingData(JSON.parse(stored))
+      }
+    } catch (e) {
+      console.warn('Could not load panel drawing data from localStorage:', e)
+    }
+  }
+
+  const handleSaveExcalidraw = () => {
+    if (!excalidrawAPI) return
+    try {
+      const elements = excalidrawAPI.getSceneElements()
+      const appState = excalidrawAPI.getAppState()
+      const files = excalidrawAPI.getFiles()
+      const payload = {
+        elements,
+        appState: {
+          viewBackgroundColor: appState?.viewBackgroundColor || '#ffffff',
+          gridSize: appState?.gridSize || null,
+        },
+        files,
+        savedAt: new Date().toISOString()
+      }
+      localStorage.setItem(`edugraph_panel_excalidraw_${panelId}`, JSON.stringify(payload))
+      setToastMessage('Excalidraw whiteboard saved successfully!')
+      setTimeout(() => setToastMessage(''), 3000)
+    } catch (e) {
+      setErrorMessage('Failed to save whiteboard drawing.')
+    }
+  }
 
   const loadPanelNodes = async () => {
     setIsLoading(true)
@@ -103,38 +146,38 @@ export default function WhiteboardStudio({
           description: nodeDescription.trim(),
           content: nodeContent.trim(),
           positionX: Math.floor(Math.random() * 400),
-          positionY: Math.floor(Math.random() * 300)
+          positionY: Math.floor(Math.random() * 400)
         })
       }
       setIsCreateModalOpen(false)
       loadPanelNodes()
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to save topic node.')
+      setErrorMessage(err.response?.data?.message || 'Failed to save node.')
     }
   }
 
   const handleDeleteNode = async (nodeId) => {
-    if (!window.confirm('Are you sure you want to delete this topic node?')) return
+    if (!window.confirm('Are you sure you want to delete this concept node?')) return
     try {
       await studentService.deleteNode(nodeId)
       loadPanelNodes()
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete node.')
+      setErrorMessage(err.response?.data?.message || 'Failed to delete node.')
     }
   }
 
-  const handleUnlink = async (sourceNodeId, connId) => {
+  const handleUnlink = async (sourceNodeId, connectionId) => {
     try {
-      await studentService.unlinkNodes(sourceNodeId, connId)
+      await studentService.deleteConnection(connectionId)
       loadPanelNodes()
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to unlink connection.')
+      setErrorMessage(err.response?.data?.message || 'Failed to remove connection.')
     }
   }
 
   return (
     <div className="wb-studio-container">
-      {/* Studio Header */}
+      {/* Top Application Bar */}
       <header className="wb-studio-header">
         <div className="wb-header-left">
           <button className="wb-back-btn" onClick={onBack}>
@@ -146,15 +189,47 @@ export default function WhiteboardStudio({
           </div>
         </div>
 
+        {/* View Switcher: Excalidraw vs Concept Nodes */}
+        <div className="wb-mode-switcher">
+          <button
+            type="button"
+            className={`mode-switch-btn ${activeTab === 'excalidraw' ? 'active' : ''}`}
+            onClick={() => setActiveTab('excalidraw')}
+          >
+            <IconBrain size={16} />
+            <span>Excalidraw Studio</span>
+          </button>
+          <button
+            type="button"
+            className={`mode-switch-btn ${activeTab === 'nodes' ? 'active' : ''}`}
+            onClick={() => setActiveTab('nodes')}
+          >
+            <IconNodes size={16} />
+            <span>Concept Nodes ({nodes.length})</span>
+          </button>
+        </div>
+
+        {/* Action Buttons */}
         <div className="wb-header-right">
+          {activeTab === 'excalidraw' ? (
+            <button
+              type="button"
+              className="wb-action-btn btn-save-board"
+              onClick={handleSaveExcalidraw}
+            >
+              <IconCheck size={16} /> Save Whiteboard
+            </button>
+          ) : (
+            <button className="wb-action-btn btn-add" onClick={handleOpenCreateModal}>
+              <IconPlus size={16} /> Add Topic Node
+            </button>
+          )}
+
           <button
             className="wb-action-btn btn-share"
             onClick={() => setSharingItem({ id: panelId, subjectName: panelName, type: 'panel' })}
           >
             <IconShare size={15} /> Share Panel
-          </button>
-          <button className="wb-action-btn btn-add" onClick={handleOpenCreateModal}>
-            <IconPlus size={16} /> Add Topic Node
           </button>
         </div>
       </header>
@@ -165,110 +240,129 @@ export default function WhiteboardStudio({
         </div>
       )}
 
-      {/* Main Graph / Nodes Area */}
-      <main className="wb-canvas-area">
-        {isLoading ? (
-          <div className="wb-loading">
-            <div className="quiz-spinner" />
-            <p>Loading Knowledge Graph Nodes...</p>
-          </div>
-        ) : nodes.length === 0 ? (
-          <div className="wb-empty-state">
-            <div className="empty-icon-wrap">
-              <IconNodes size={48} color="#0D9488" />
+      {toastMessage && (
+        <div className="wb-alert-success">
+          <IconCheck size={16} color="#16A34A" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Main Studio Viewport */}
+      {activeTab === 'excalidraw' ? (
+        <div className="wb-excalidraw-container">
+          <EduWhiteboard
+            initialData={panelDrawingData}
+            onApiLoaded={setExcalidrawAPI}
+            name={`panel-${panelId}-${panelName || 'notes'}`}
+            height="100%"
+            width="100%"
+          />
+        </div>
+      ) : (
+        <main className="wb-canvas-area">
+          {isLoading ? (
+            <div className="wb-loading">
+              <div className="quiz-spinner" />
+              <p>Loading Knowledge Graph Nodes...</p>
             </div>
-            <h3>No Concept Nodes in this Subject Yet</h3>
-            <p>
-              Break down this subject into interconnected concept nodes, sketches, and revision notes.
-            </p>
-            <button className="wb-btn-primary" onClick={handleOpenCreateModal}>
-              <IconPlus size={16} /> Create First Topic Node
-            </button>
-          </div>
-        ) : (
-          <div className="wb-nodes-grid">
-            {nodes.map(node => {
-              const conns = connectionsMap[node.id] || []
-              return (
-                <div key={node.id} className="wb-node-card">
-                  <div className="node-card-head">
-                    <div className="node-title-wrap">
-                      <span className="node-bullet" />
-                      <h4>{node.title}</h4>
+          ) : nodes.length === 0 ? (
+            <div className="wb-empty-state">
+              <div className="empty-icon-wrap">
+                <IconNodes size={48} color="#0D9488" />
+              </div>
+              <h3>No Concept Nodes in this Subject Yet</h3>
+              <p>
+                Break down this subject into interconnected concept nodes, sketches, and revision notes.
+              </p>
+              <button className="wb-btn-primary" onClick={handleOpenCreateModal}>
+                <IconPlus size={16} /> Create First Topic Node
+              </button>
+            </div>
+          ) : (
+            <div className="wb-nodes-grid">
+              {nodes.map(node => {
+                const conns = connectionsMap[node.id] || []
+                return (
+                  <div key={node.id} className="wb-node-card">
+                    <div className="node-card-head">
+                      <div className="node-title-wrap">
+                        <span className="node-bullet" />
+                        <h4>{node.title}</h4>
+                      </div>
+                      <div className="node-quick-actions">
+                        <button
+                          className="btn-icon"
+                          title="Edit Node"
+                          onClick={() => handleOpenEditModal(node)}
+                        >
+                          <IconPencil size={14} />
+                        </button>
+                        <button
+                          className="btn-icon btn-delete"
+                          title="Delete Node"
+                          onClick={() => handleDeleteNode(node.id)}
+                        >
+                          <IconTrash size={14} />
+                        </button>
+                      </div>
                     </div>
-                    <div className="node-quick-actions">
-                      <button
-                        className="btn-icon"
-                        title="Edit Node"
-                        onClick={() => handleOpenEditModal(node)}
-                      >
-                        <IconPencil size={14} />
-                      </button>
-                      <button
-                        className="btn-icon btn-delete"
-                        title="Delete Node"
-                        onClick={() => handleDeleteNode(node.id)}
-                      >
-                        <IconTrash size={14} />
-                      </button>
-                    </div>
-                  </div>
 
-                  {node.description && (
-                    <p className="node-desc">{node.description}</p>
-                  )}
+                    {node.description && (
+                      <p className="node-desc">{node.description}</p>
+                    )}
 
-                  {node.content && (
-                    <div className="node-notes-snippet">
-                      <p>{node.content}</p>
-                    </div>
-                  )}
-
-                  {/* Connected Links Strip */}
-                  <div className="node-conns-section">
-                    <span className="conns-label">Linked Concepts ({conns.length}):</span>
-                    {conns.length === 0 ? (
-                      <span className="no-conns">No connections yet</span>
-                    ) : (
-                      <div className="conns-pills-list">
-                        {conns.map(c => (
-                          <div key={c.id} className="conn-chip">
-                            <span className="conn-chip-label">{c.label}:</span>
-                            <span className="conn-chip-target">{c.targetNodeTitle || `Node #${c.targetNodeId}`}</span>
-                            <button
-                              className="conn-chip-remove"
-                              onClick={() => handleUnlink(node.id, c.id)}
-                              title="Unlink"
-                            >
-                              <IconX size={12} />
-                            </button>
-                          </div>
-                        ))}
+                    {node.content && (
+                      <div className="node-notes-snippet">
+                        <p>{node.content}</p>
                       </div>
                     )}
-                  </div>
 
-                  {/* Bottom Action Footer */}
-                  <div className="node-card-footer">
-                    <button
-                      className="node-footer-btn"
-                      onClick={() => setConnectingSourceNode(node)}
-                    >
-                      <IconLink size={13} /> Link
-                    </button>
-                    <button
-                      className="node-footer-btn"
-                      onClick={() => setSharingItem({ id: node.id, title: node.title, type: 'node' })}
-                    >
-                      <IconShare size={13} /> Share
-                    </button>
+                    {/* Connected Links Strip */}
+                    <div className="node-conns-section">
+                      <span className="conns-label">Linked Concepts ({conns.length}):</span>
+                      {conns.length === 0 ? (
+                        <span className="no-conns">No connections yet</span>
+                      ) : (
+                        <div className="conns-pills-list">
+                          {conns.map(c => (
+                            <div key={c.id} className="conn-chip">
+                              <span className="conn-chip-label">{c.label}:</span>
+                              <span className="conn-chip-target">{c.targetNodeTitle || `Node #${c.targetNodeId}`}</span>
+                              <button
+                                className="conn-chip-remove"
+                                onClick={() => handleUnlink(node.id, c.id)}
+                                title="Unlink"
+                              >
+                                <IconX size={12} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Bottom Action Footer */}
+                    <div className="node-card-footer">
+                      <button
+                        className="node-footer-btn"
+                        onClick={() => setConnectingSourceNode(node)}
+                      >
+                        <IconLink size={13} /> Link
+                      </button>
+                      <button
+                        className="node-footer-btn"
+                        onClick={() => setSharingItem({ id: node.id, title: node.title, type: 'node' })}
+                      >
+                        <IconShare size={13} /> Share
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </main>
+                )
+              })}
+            </div>
+          )}
+        </main>
+      )}
 
       {/* Create / Edit Node Modal */}
       {isCreateModalOpen && (
@@ -280,42 +374,42 @@ export default function WhiteboardStudio({
                 <IconX size={18} />
               </button>
             </div>
-            <form onSubmit={handleSaveNode} className="wb-node-form">
-              <div className="form-group">
-                <label>Concept / Topic Title *</label>
-                <input
-                  type="text"
-                  className="wb-input"
-                  placeholder="e.g. Binary Search Trees"
-                  value={nodeTitle}
-                  onChange={(e) => setNodeTitle(e.target.value)}
-                  required
-                />
+
+            <form onSubmit={handleSaveNode}>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>Node Title *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Asynchronous I/O & Event Loops"
+                    value={nodeTitle}
+                    onChange={(e) => setNodeTitle(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Brief Concept Description</label>
+                  <input
+                    type="text"
+                    placeholder="Short summary of this concept or module"
+                    value={nodeDescription}
+                    onChange={(e) => setNodeDescription(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Detailed Study Content / Notes</label>
+                  <textarea
+                    rows={4}
+                    placeholder="Type detailed notes, key equations, or implementation details..."
+                    value={nodeContent}
+                    onChange={(e) => setNodeContent(e.target.value)}
+                  />
+                </div>
               </div>
 
-              <div className="form-group">
-                <label>Short Description / Subtitle</label>
-                <input
-                  type="text"
-                  className="wb-input"
-                  placeholder="e.g. Self-balancing tree structures and complexity"
-                  value={nodeDescription}
-                  onChange={(e) => setNodeDescription(e.target.value)}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Revision Notes & Formulas</label>
-                <textarea
-                  className="wb-textarea"
-                  placeholder="Write formulas, algorithms, or visual notes..."
-                  value={nodeContent}
-                  onChange={(e) => setNodeContent(e.target.value)}
-                  rows={6}
-                />
-              </div>
-
-              <div className="modal-actions">
+              <div className="modal-footer">
                 <button
                   type="button"
                   className="btn-cancel"
@@ -323,8 +417,8 @@ export default function WhiteboardStudio({
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn-submit">
-                  <IconCheck size={16} /> {editingNode ? 'Save Changes' : 'Create Node'}
+                <button type="submit" className="btn-save">
+                  {editingNode ? 'Save Changes' : 'Create Node'}
                 </button>
               </div>
             </form>
@@ -332,22 +426,25 @@ export default function WhiteboardStudio({
         </div>
       )}
 
-      {/* Link Nodes Modal */}
-      <NodeConnectionModal
-        sourceNode={connectingSourceNode}
-        availableNodes={nodes}
-        isOpen={Boolean(connectingSourceNode)}
-        onClose={() => setConnectingSourceNode(null)}
-        onConnected={loadPanelNodes}
-      />
+      {/* Connect Nodes Modal */}
+      {connectingSourceNode && (
+        <NodeConnectionModal
+          sourceNode={connectingSourceNode}
+          allNodes={nodes}
+          isOpen={true}
+          onClose={() => setConnectingSourceNode(null)}
+          onConnectionCreated={loadPanelNodes}
+        />
+      )}
 
       {/* Share Modal */}
-      <ShareNodeModal
-        item={sharingItem}
-        isOpen={Boolean(sharingItem)}
-        onClose={() => setSharingItem(null)}
-        onShared={loadPanelNodes}
-      />
+      {sharingItem && (
+        <ShareNodeModal
+          isOpen={true}
+          item={sharingItem}
+          onClose={() => setSharingItem(null)}
+        />
+      )}
     </div>
   )
 }

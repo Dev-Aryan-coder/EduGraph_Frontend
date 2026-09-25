@@ -21,6 +21,11 @@ export function WhiteboardProvider({ children }) {
   const [undoStack, setUndoStack] = useState([])
   const [redoStack, setRedoStack] = useState([])
 
+  // Native Excalidraw Integration State
+  const [excalidrawAPI, setExcalidrawAPI] = useState(null)
+  const [excalidrawScene, setExcalidrawScene] = useState(null)
+
+
   /**
    * Capture a new canvas snapshot into undo history
    */
@@ -226,6 +231,12 @@ export function WhiteboardProvider({ children }) {
     exportAsJSON,
     importFromJSON,
 
+    // Excalidraw Integration
+    excalidrawAPI,
+    setExcalidrawAPI,
+    excalidrawScene,
+    setExcalidrawScene,
+
     // Graph Operations
     addNode,
     updateNode,
@@ -234,6 +245,7 @@ export function WhiteboardProvider({ children }) {
     removeConnection,
     resetStudio
   }
+
 
   return (
     <WhiteboardContext.Provider value={value}>

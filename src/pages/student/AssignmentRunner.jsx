@@ -2,15 +2,12 @@ import React, { useState, useEffect, useRef } from 'react'
 import confetti from 'canvas-confetti'
 import studentService from '../../services/studentService'
 import MCQQuizRunner from './MCQQuizRunner'
+import EduWhiteboard from '../../components/whiteboard/EduWhiteboard'
 import {
   IconArrowLeft,
-  IconClock,
   IconShield,
   IconBrain,
   IconCheck,
-  IconPencil,
-  IconTrash,
-  IconDownload,
   IconFileText,
   IconAlertTriangle,
   IconAward
@@ -37,16 +34,10 @@ export default function AssignmentRunner({
   // Sub-view: Active Whiteboard vs 20-MCQ Quiz
   const [activeView, setActiveView] = useState('whiteboard') // 'whiteboard' | 'quiz'
 
-  // Whiteboard Canvas State
-  const canvasRef = useRef(null)
-  const [isDrawing, setIsDrawing] = useState(false)
-  const [currentTool, setCurrentTool] = useState('pen') // 'pen' | 'eraser' | 'line' | 'rect' | 'circle'
-  const [strokeColor, setStrokeColor] = useState('#0D9488')
-  const [strokeWidth, setStrokeWidth] = useState(3)
-  const [history, setHistory] = useState([])
+  // Excalidraw Whiteboard State
+  const [excalidrawAPI, setExcalidrawAPI] = useState(null)
+  const [initialDrawingData, setInitialDrawingData] = useState(null)
   const [writtenNotes, setWrittenNotes] = useState('')
-  const startPosRef = useRef({ x: 0, y: 0 })
-  const snapshotRef = useRef(null)
 
   // 1. Initial Data Load
   useEffect(() => {
@@ -69,9 +60,7 @@ export default function AssignmentRunner({
           try {
             const parsed = JSON.parse(subData.excalidrawDrawingData)
             if (parsed.notes) setWrittenNotes(parsed.notes)
-            if (parsed.imageData) {
-              restoreCanvasImage(parsed.imageData)
-            }
+            setInitialDrawingData(parsed)
           } catch (e) {
             // Raw string or notes fallback
             setWrittenNotes(subData.excalidrawDrawingData)
@@ -111,166 +100,33 @@ export default function AssignmentRunner({
     }
   }, [assignmentId, submission?.status])
 
-  // 3. Canvas Initial Setup
-  useEffect(() => {
-    if (canvasRef.current && !isLoading) {
-      const canvas = canvasRef.current
-      const rect = canvas.getBoundingClientRect()
-      // Setup high DPI canvas
-      const dpr = window.devicePixelRatio || 1
-      canvas.width = (rect.width || 800) * dpr
-      canvas.height = (rect.height || 550) * dpr
-      const ctx = canvas.getContext('2d')
-      ctx.scale(dpr, dpr)
-      ctx.lineCap = 'round'
-      ctx.lineJoin = 'round'
-
-      // Default white background
-      ctx.fillStyle = '#ffffff'
-      ctx.fillRect(0, 0, rect.width || 800, rect.height || 550)
-      saveHistoryState()
-    }
-  }, [isLoading, activeView])
-
-  const restoreCanvasImage = (dataUrl) => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    const img = new Image()
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0)
-      saveHistoryState()
-    }
-    img.src = dataUrl
-  }
-
-  const saveHistoryState = () => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    const rect = canvas.getBoundingClientRect()
-    const dpr = window.devicePixelRatio || 1
-    const imgData = ctx.getImageData(0, 0, (rect.width || 800) * dpr, (rect.height || 550) * dpr)
-    setHistory(prev => [...prev.slice(-15), imgData])
-  }
-
-  const getCanvasCoords = (e) => {
-    const canvas = canvasRef.current
-    const rect = canvas.getBoundingClientRect()
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    }
-  }
-
-  const startDrawing = (e) => {
-    if (submission?.status === 'GRADED' || submission?.status === 'SUBMITTED') return
-    const { x, y } = getCanvasCoords(e)
-    setIsDrawing(true)
-    startPosRef.current = { x, y }
-
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-    const rect = canvas.getBoundingClientRect()
-    const dpr = window.devicePixelRatio || 1
-    snapshotRef.current = ctx.getImageData(0, 0, (rect.width || 800) * dpr, (rect.height || 550) * dpr)
-
-    if (currentTool === 'pen' || currentTool === 'eraser') {
-      ctx.beginPath()
-      ctx.moveTo(x, y)
-    }
-  }
-
-  const draw = (e) => {
-    if (!isDrawing) return
-    const { x, y } = getCanvasCoords(e)
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-
-    ctx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : strokeColor
-    ctx.lineWidth = currentTool === 'eraser' ? strokeWidth * 3 : strokeWidth
-
-    if (currentTool === 'pen' || currentTool === 'eraser') {
-      ctx.lineTo(x, y)
-      ctx.stroke()
-    } else {
-      // Shape tools: restore previous frame
-      if (snapshotRef.current) {
-        ctx.putImageData(snapshotRef.current, 0, 0)
-      }
-      ctx.beginPath()
-      const startX = startPosRef.current.x
-      const startY = startPosRef.current.y
-
-      if (currentTool === 'line') {
-        ctx.moveTo(startX, startY)
-        ctx.lineTo(x, y)
-        ctx.stroke()
-      } else if (currentTool === 'rect') {
-        ctx.strokeRect(startX, startY, x - startX, y - startY)
-      } else if (currentTool === 'circle') {
-        const radius = Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2))
-        ctx.arc(startX, startY, radius, 0, 2 * Math.PI)
-        ctx.stroke()
-      }
-    }
-  }
-
-  const stopDrawing = () => {
-    if (!isDrawing) return
-    setIsDrawing(false)
-    saveHistoryState()
-  }
-
-  const handleUndo = () => {
-    if (history.length <= 1) return
-    const newHist = [...history]
-    newHist.pop() // remove current
-    const prevState = newHist[newHist.length - 1]
-    setHistory(newHist)
-    const canvas = canvasRef.current
-    if (canvas && prevState) {
-      const ctx = canvas.getContext('2d')
-      ctx.putImageData(prevState, 0, 0)
-    }
-  }
-
-  const handleClearCanvas = () => {
-    if (submission?.status === 'GRADED' || submission?.status === 'SUBMITTED') return
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    const rect = canvas.getBoundingClientRect()
-    ctx.fillStyle = '#ffffff'
-    ctx.fillRect(0, 0, rect.width || 800, rect.height || 550)
-    saveHistoryState()
-  }
-
-  const handleDownloadPNG = () => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const link = document.createElement('a')
-    link.download = `${assignment?.title || 'solution'}-whiteboard.png`
-    link.href = canvas.toDataURL('image/png')
-    link.click()
-  }
-
-  // 4. Save Draft
+  // 3. Save Draft
   const handleSaveDraft = async () => {
     setIsSaving(true)
     setErrorMessage('')
     setSuccessMessage('')
     try {
-      const canvas = canvasRef.current
-      const imageData = canvas ? canvas.toDataURL('image/png') : ''
-      const payload = {
-        imageData,
-        notes: writtenNotes,
-        lastSaved: new Date().toISOString()
+      let payload = {}
+      if (excalidrawAPI) {
+        const elements = excalidrawAPI.getSceneElements()
+        const appState = excalidrawAPI.getAppState()
+        const files = excalidrawAPI.getFiles()
+        payload = {
+          elements,
+          appState: {
+            viewBackgroundColor: appState?.viewBackgroundColor || '#ffffff',
+            gridSize: appState?.gridSize || null,
+          },
+          files,
+          notes: writtenNotes,
+          lastSaved: new Date().toISOString()
+        }
+      } else {
+        payload = { notes: writtenNotes, lastSaved: new Date().toISOString() }
       }
       const updated = await studentService.saveDrawingDraft(assignmentId, JSON.stringify(payload))
       setSubmission(updated)
-      setSuccessMessage('Draft whiteboard solution saved successfully!')
+      setSuccessMessage('Excalidraw whiteboard draft saved successfully!')
       setTimeout(() => setSuccessMessage(''), 3000)
     } catch (err) {
       setErrorMessage(err.response?.data?.message || 'Failed to save draft.')
@@ -279,22 +135,33 @@ export default function AssignmentRunner({
     }
   }
 
-  // 5. Finalize Submission
+  // 4. Finalize Submission
   const handleFinalize = async () => {
     const confirmSubmit = window.confirm(
-      'Are you ready to submit your whiteboard drawing? You will proceed directly to the mandatory 20-MCQ Verification Assessment.'
+      'Are you ready to submit your Excalidraw whiteboard drawing? You will proceed directly to the mandatory 20-MCQ Verification Assessment.'
     )
     if (!confirmSubmit) return
 
     setIsFinalizing(true)
     setErrorMessage('')
     try {
-      const canvas = canvasRef.current
-      const imageData = canvas ? canvas.toDataURL('image/png') : ''
-      const payload = {
-        imageData,
-        notes: writtenNotes,
-        finalizedAt: new Date().toISOString()
+      let payload = {}
+      if (excalidrawAPI) {
+        const elements = excalidrawAPI.getSceneElements()
+        const appState = excalidrawAPI.getAppState()
+        const files = excalidrawAPI.getFiles()
+        payload = {
+          elements,
+          appState: {
+            viewBackgroundColor: appState?.viewBackgroundColor || '#ffffff',
+            gridSize: appState?.gridSize || null,
+          },
+          files,
+          notes: writtenNotes,
+          finalizedAt: new Date().toISOString()
+        }
+      } else {
+        payload = { notes: writtenNotes, finalizedAt: new Date().toISOString() }
       }
       const updated = await studentService.finalizeSubmission(assignmentId, JSON.stringify(payload))
       setSubmission(updated)
@@ -317,7 +184,7 @@ export default function AssignmentRunner({
     return (
       <div className="assign-runner-loading">
         <div className="quiz-spinner" />
-        <p>Opening Interactive Assignment Studio...</p>
+        <p>Opening Interactive Excalidraw Assignment Studio...</p>
       </div>
     )
   }
@@ -423,7 +290,7 @@ export default function AssignmentRunner({
         </div>
       )}
 
-      {/* Main Workspace: Left Problem Description, Center Whiteboard, Right Notes */}
+      {/* Main Workspace: Left Problem Description, Center Excalidraw Whiteboard, Right Notes */}
       <div className="runner-body">
         {/* Left Column: Problem Brief */}
         <aside className="runner-brief-panel">
@@ -444,121 +311,23 @@ export default function AssignmentRunner({
                 <span className="label">Evaluation Matrix:</span>
                 <span className="val">20 MCQs (20 pts) + Whiteboard (10 pts)</span>
               </div>
+              <div className="brief-meta-row">
+                <span className="label">Whiteboard Engine:</span>
+                <span className="val" style={{ color: '#0D9488', fontWeight: 600 }}>Excalidraw Native Suite</span>
+              </div>
             </div>
           </div>
         </aside>
 
-        {/* Center Column: Whiteboard Studio */}
+        {/* Center Column: Full-Featured Excalidraw Whiteboard Studio */}
         <main className="runner-canvas-panel">
-          {/* Whiteboard Controls Toolbar */}
-          <div className="whiteboard-toolbar">
-            <div className="tool-group">
-              {[
-                { id: 'pen', label: 'Pen', icon: IconPencil },
-                { id: 'eraser', label: 'Eraser', icon: IconTrash },
-              ].map(t => {
-                const IconComponent = t.icon
-                return (
-                  <button
-                    key={t.id}
-                    type="button"
-                    className={`tool-btn ${currentTool === t.id ? 'active' : ''}`}
-                    onClick={() => setCurrentTool(t.id)}
-                    title={t.label}
-                    disabled={isSubmitted}
-                  >
-                    <IconComponent size={16} />
-                  </button>
-                )
-              })}
-
-              {/* Geometric Shapes */}
-              {['line', 'rect', 'circle'].map(shape => (
-                <button
-                  key={shape}
-                  type="button"
-                  className={`tool-btn shape-btn ${currentTool === shape ? 'active' : ''}`}
-                  onClick={() => setCurrentTool(shape)}
-                  title={`Draw ${shape}`}
-                  disabled={isSubmitted}
-                >
-                  {shape === 'line' && '╱'}
-                  {shape === 'rect' && '▭'}
-                  {shape === 'circle' && '◯'}
-                </button>
-              ))}
-            </div>
-
-            {/* Color Palette */}
-            <div className="color-palette">
-              {['#0D9488', '#2563EB', '#7C3AED', '#DC2626', '#EA580C', '#1E293B'].map(c => (
-                <button
-                  key={c}
-                  type="button"
-                  className={`color-swatch ${strokeColor === c ? 'selected' : ''}`}
-                  style={{ background: c }}
-                  onClick={() => {
-                    setStrokeColor(c)
-                    if (currentTool === 'eraser') setCurrentTool('pen')
-                  }}
-                  disabled={isSubmitted}
-                />
-              ))}
-            </div>
-
-            {/* Stroke Width Slider */}
-            <div className="stroke-slider-wrap">
-              <span className="slider-label">{strokeWidth}px</span>
-              <input
-                type="range"
-                min="1"
-                max="18"
-                value={strokeWidth}
-                onChange={(e) => setStrokeWidth(Number(e.target.value))}
-                disabled={isSubmitted}
-              />
-            </div>
-
-            {/* Canvas Actions */}
-            <div className="canvas-actions">
-              <button
-                type="button"
-                className="action-btn"
-                onClick={handleUndo}
-                disabled={history.length <= 1 || isSubmitted}
-                title="Undo last stroke"
-              >
-                Undo
-              </button>
-              <button
-                type="button"
-                className="action-btn"
-                onClick={handleClearCanvas}
-                disabled={isSubmitted}
-                title="Clear whiteboard canvas"
-              >
-                Clear
-              </button>
-              <button
-                type="button"
-                className="action-btn"
-                onClick={handleDownloadPNG}
-                title="Download canvas as PNG"
-              >
-                <IconDownload size={14} /> PNG
-              </button>
-            </div>
-          </div>
-
-          {/* Canvas Viewport */}
+          {/* Excalidraw Canvas Viewport */}
           <div className="canvas-wrapper">
-            <canvas
-              ref={canvasRef}
-              className={`whiteboard-canvas ${isSubmitted ? 'readonly' : ''}`}
-              onMouseDown={startDrawing}
-              onMouseMove={draw}
-              onMouseUp={stopDrawing}
-              onMouseLeave={stopDrawing}
+            <EduWhiteboard
+              initialData={initialDrawingData}
+              viewModeEnabled={isSubmitted}
+              onApiLoaded={setExcalidrawAPI}
+              name={`${assignment?.title || 'solution'}-whiteboard`}
             />
           </div>
 
@@ -580,7 +349,7 @@ export default function AssignmentRunner({
                     onClick={handleSaveDraft}
                     disabled={isSaving || isFinalizing}
                   >
-                    {isSaving ? 'Saving Draft...' : 'Save Canvas Draft'}
+                    {isSaving ? 'Saving Draft...' : 'Save Excalidraw Draft'}
                   </button>
                   <button
                     type="button"
