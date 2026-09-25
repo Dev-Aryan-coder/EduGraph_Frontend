@@ -27,18 +27,15 @@ import {
   IconCalendar,
   IconBell,
   IconWrench,
-  IconX
+  IconX,
+  IconArrowLeft,
+  IconInstitution
 } from '../../components/common/Icons'
 import './StudentDashboard.css'
 
 export default function StudentDashboard({ onNavigate }) {
   const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
   const [activeTab, setActiveTab] = useState('assignments') // 'assignments' | 'panels' | 'shared' | 'notices' | 'tickets'
-
-  // Sub-view Routing inside Student Workspace
-  const [activeAssignmentId, setActiveAssignmentId] = useState(null)
-  const [activeQuizAssignment, setActiveQuizAssignment] = useState(null)
-  const [activePanel, setActivePanel] = useState(null) // { id, subjectName }
 
   // Real Database State
   const [assignments, setAssignments] = useState([])
@@ -48,22 +45,23 @@ export default function StudentDashboard({ onNavigate }) {
   const [tickets, setTickets] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // Filtering & Search
+  // Filters & Search
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL') // 'ALL' | 'PENDING' | 'SUBMITTED' | 'GRADED'
 
-  // Modals
+  // Modals & Sub-Views
+  const [activeAssignmentId, setActiveAssignmentId] = useState(null)
+  const [activeQuizAssignment, setActiveQuizAssignment] = useState(null)
+  const [activePanel, setActivePanel] = useState(null)
   const [isNewPanelModalOpen, setIsNewPanelModalOpen] = useState(false)
   const [newSubjectName, setNewSubjectName] = useState('')
   const [sharingItem, setSharingItem] = useState(null)
-  const [inspectGradeSubmission, setInspectGradeSubmission] = useState(null)
-
-  // Ticket creation
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false)
   const [ticketSubject, setTicketSubject] = useState('')
   const [ticketDescription, setTicketDescription] = useState('')
   const [ticketType, setTicketType] = useState('DATA_CORRECTION')
   const [ticketTargetRole, setTicketTargetRole] = useState('COORDINATOR')
+  const [inspectGradeSubmission, setInspectGradeSubmission] = useState(null)
 
   useEffect(() => {
     loadAllStudentData()
@@ -72,33 +70,21 @@ export default function StudentDashboard({ onNavigate }) {
   const loadAllStudentData = async () => {
     setIsLoading(true)
     try {
-      const [assigns, panelList, sharedList, noticeList, ticketList] = await Promise.all([
+      const [assigns, userPanels, shared, noticesFeed, myTickets] = await Promise.all([
         studentService.getMyAssignments(),
         studentService.getMyPanels(),
         studentService.getSharedWithMe(),
-        sharedService.getMyNotices(),
+        studentService.getNotices(),
         sharedService.getMyTickets()
       ])
 
-      // Enhance assignments with submission statuses
-      const enhancedAssignments = await Promise.all(
-        (assigns || []).map(async (a) => {
-          try {
-            const sub = await studentService.getMySubmission(a.id)
-            return { ...a, submission: sub }
-          } catch {
-            return { ...a, submission: null }
-          }
-        })
-      )
-
-      setAssignments(enhancedAssignments)
-      setPanels(panelList || [])
-      setSharedItems(sharedList || [])
-      setNotices(noticeList || [])
-      setTickets(ticketList || [])
+      setAssignments(assigns || [])
+      setPanels(userPanels || [])
+      setSharedItems(shared || [])
+      setNotices(noticesFeed || [])
+      setTickets(myTickets || [])
     } catch (err) {
-      console.error('Error loading student dashboard data:', err)
+      console.error('Failed to load student dashboard data:', err)
     } finally {
       setIsLoading(false)
     }
@@ -107,6 +93,7 @@ export default function StudentDashboard({ onNavigate }) {
   const handleLogout = () => {
     authService.logout()
     if (onNavigate) onNavigate('login')
+    else window.location.hash = '#login'
   }
 
   const handleCreatePanel = async (e) => {
@@ -114,8 +101,8 @@ export default function StudentDashboard({ onNavigate }) {
     if (!newSubjectName.trim()) return
     try {
       await studentService.createPanel(newSubjectName.trim())
-      setNewSubjectName('')
       setIsNewPanelModalOpen(false)
+      setNewSubjectName('')
       const updated = await studentService.getMyPanels()
       setPanels(updated)
     } catch (err) {
@@ -221,491 +208,534 @@ export default function StudentDashboard({ onNavigate }) {
     return true
   })
 
+  const collegeName = currentUser?.collegeName || 'EduGraph Institution'
+
   return (
-    <div className="student-dashboard-root">
-      {/* Top Navigation */}
-      <header className="student-top-nav">
-        <div className="student-nav-brand">
-          <img src={logoSvg} alt="EduGraph Logo" className="student-brand-logo" />
-          <div className="student-brand-text">
-            <span className="student-logo-text">EduGraph</span>
-            <span className="student-portal-tag">STUDENT PORTAL</span>
+    <div className="student-workspace">
+      {/* Top Header Bar */}
+      <header className="student-topbar">
+        <div className="topbar-left">
+          <img
+            src={logoSvg}
+            alt="EduGraph Logo"
+            className="student-brand-logo"
+            onClick={() => onNavigate ? onNavigate('home') : (window.location.hash = '#home')}
+          />
+          <span className="topbar-crumb-sep">/</span>
+          <div className="topbar-student-badge">
+            <IconGraduation size={16} color="#1B7F72" />
+            <span className="student-dept-title">{collegeName}</span>
+            <span className="student-role-pill">STUDENT LEARNING WORKSPACE</span>
           </div>
         </div>
 
-        <div className="student-nav-center">
-          <div className="student-context-badge">
-            <IconGraduation size={16} color="#0D9488" />
-            <span>
-              {currentUser?.department || 'Department'} • {currentUser?.classroomName || 'Classroom'}
-            </span>
-          </div>
-        </div>
-
-        <div
-          className="student-nav-user"
-          onClick={() => onNavigate ? onNavigate('profile') : (window.location.hash = '#profile')}
-          style={{ cursor: 'pointer' }}
-          title="Click to view and edit profile"
-        >
-          <div className="student-user-avatar">
-            <IconUser size={18} />
-          </div>
-          <div className="student-user-info">
-            <span className="student-user-name">
-              {currentUser?.fullName || currentUser?.name || 'Student'}
-            </span>
-            <span className="student-user-meta">
-              Roll #{currentUser?.rollNumber || currentUser?.id || '—'}
-            </span>
-          </div>
+        <div className="topbar-right">
           <button
-            className="student-btn-logout"
-            onClick={(e) => {
-              e.stopPropagation()
-              handleLogout()
-            }}
-            title="Log Out"
+            type="button"
+            className="topbar-link-btn"
+            onClick={() => onNavigate ? onNavigate('home') : (window.location.hash = '#home')}
+          >
+            <IconArrowLeft size={15} />
+            <span>Public Site</span>
+          </button>
+
+          <div
+            className="topbar-user-badge"
+            onClick={() => onNavigate ? onNavigate('profile') : (window.location.hash = '#profile')}
+            style={{ cursor: 'pointer' }}
+            title="Open Profile & Settings"
+          >
+            <div className="student-avatar-circle">
+              {currentUser?.profileImageUrl ? (
+                <img src={currentUser.profileImageUrl} alt="Student Avatar" className="avatar-img" />
+              ) : (
+                <span>{(currentUser?.fullName || 'S').charAt(0).toUpperCase()}</span>
+              )}
+            </div>
+            <div className="user-info-text">
+              <span className="user-full-name">{currentUser?.fullName || 'Student'}</span>
+              <span className="student-roll-tag">
+                Roll #{currentUser?.rollNumber || currentUser?.id || '—'}
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="topbar-icon-logout"
+            onClick={handleLogout}
+            title="Sign Out"
           >
             <IconLogOut size={16} />
           </button>
         </div>
-
       </header>
 
-      {/* Hero Welcome Banner */}
-      <div className="student-hero-banner">
-        <div className="student-hero-content">
-          <h2>Welcome back, {currentUser?.fullName?.split(' ')[0] || 'Scholar'}!</h2>
-          <p>
-            Access your active classroom assignments, sketch concept graph nodes, and verify your knowledge with anti-cheat assessments.
-          </p>
-        </div>
+      {/* Main Layout Container */}
+      <div className="student-body-container">
+        {/* Sidenavbar */}
+        <aside className="student-sidebar">
+          <div className="sidebar-student-card">
+            <span className="student-head-label">LEARNING NODE</span>
+            <h3 className="student-console-name">
+              {currentUser?.classroomName || currentUser?.department || 'Department Classroom'}
+            </h3>
+            <span className="student-live-status">● Live Academic Session</span>
+          </div>
 
-        <div className="student-hero-kpi-grid">
-          <div className="kpi-card">
-            <div className="kpi-icon-box kpi-teal">
-              <IconBook size={20} />
+          <div className="sidebar-nav-title">STUDY & COURSEWORK</div>
+          <nav className="sidebar-nav-menu">
+            <button
+              type="button"
+              className={`sidebar-nav-link ${activeTab === 'assignments' ? 'active' : ''}`}
+              onClick={() => setActiveTab('assignments')}
+            >
+              <span className="link-icon"><IconBook size={18} /></span>
+              <span className="link-text">My Coursework & Tasks</span>
+              <span className="link-badge">{totalAssignments}</span>
+              {activeTab === 'assignments' && <span className="active-glow-pill teal-pill" />}
+            </button>
+
+            <button
+              type="button"
+              className={`sidebar-nav-link ${activeTab === 'panels' ? 'active' : ''}`}
+              onClick={() => setActiveTab('panels')}
+            >
+              <span className="link-icon"><IconNodes size={18} /></span>
+              <span className="link-text">Subject Whiteboards</span>
+              <span className="link-badge">{totalPanels}</span>
+              {activeTab === 'panels' && <span className="active-glow-pill teal-pill" />}
+            </button>
+
+            <button
+              type="button"
+              className={`sidebar-nav-link ${activeTab === 'shared' ? 'active' : ''}`}
+              onClick={() => setActiveTab('shared')}
+            >
+              <span className="link-icon"><IconShare size={18} /></span>
+              <span className="link-text">Shared With Me</span>
+              <span className="link-badge">{sharedItems.length}</span>
+              {activeTab === 'shared' && <span className="active-glow-pill teal-pill" />}
+            </button>
+          </nav>
+
+          <div className="sidebar-nav-title" style={{ marginTop: '20px' }}>CAMPUS & INSTITUTION</div>
+          <nav className="sidebar-nav-menu">
+            <button
+              type="button"
+              className={`sidebar-nav-link ${activeTab === 'notices' ? 'active' : ''}`}
+              onClick={() => setActiveTab('notices')}
+            >
+              <span className="link-icon"><IconBell size={18} /></span>
+              <span className="link-text">Campus Notices</span>
+              {notices.length > 0 && <span className="link-badge">{notices.length}</span>}
+              {activeTab === 'notices' && <span className="active-glow-pill teal-pill" />}
+            </button>
+
+            <button
+              type="button"
+              className={`sidebar-nav-link ${activeTab === 'tickets' ? 'active' : ''}`}
+              onClick={() => setActiveTab('tickets')}
+            >
+              <span className="link-icon"><IconWrench size={18} /></span>
+              <span className="link-text">Help Desk & Support</span>
+              {tickets.length > 0 && <span className="link-badge">{tickets.length}</span>}
+              {activeTab === 'tickets' && <span className="active-glow-pill teal-pill" />}
+            </button>
+
+            <button
+              type="button"
+              className="sidebar-nav-link"
+              onClick={() => onNavigate ? onNavigate('calendar') : (window.location.hash = '#calendar')}
+            >
+              <span className="link-icon"><IconCalendar size={18} /></span>
+              <span className="link-text">Academic Calendar</span>
+            </button>
+
+            <button
+              type="button"
+              className="sidebar-nav-link"
+              onClick={() => onNavigate ? onNavigate('news') : (window.location.hash = '#news')}
+            >
+              <span className="link-icon"><IconBrain size={18} /></span>
+              <span className="link-text">News & Research</span>
+            </button>
+
+            <button
+              type="button"
+              className="sidebar-nav-link"
+              onClick={() => onNavigate ? onNavigate('profile') : (window.location.hash = '#profile')}
+            >
+              <span className="link-icon"><IconUser size={18} /></span>
+              <span className="link-text">Profile & Settings</span>
+            </button>
+          </nav>
+
+          <div className="sidebar-bottom-card">
+            <div className="student-shield-icon">
+              <IconShield size={16} color="#1B7F72" />
             </div>
-            <div className="kpi-meta">
-              <span className="kpi-val">{totalAssignments}</span>
-              <span className="kpi-lbl">Total Tasks</span>
+            <div className="student-card-text">
+              <strong>Tamper-Proof Proctoring Active</strong>
+              <span>Zero-Trust focus auditing on exam canvas</span>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content Area */}
+        <main className="student-content-area">
+          {/* Hero Welcome Banner */}
+          <div className="student-hero-banner">
+            <div className="student-hero-content">
+              <h2>Welcome back, {currentUser?.fullName?.split(' ')[0] || 'Scholar'}!</h2>
+              <p>
+                Access your active classroom assignments, sketch concept graph nodes, and verify your knowledge with anti-cheat assessments.
+              </p>
+            </div>
+
+            <div className="student-hero-kpi-grid">
+              <div className="kpi-card">
+                <div className="kpi-icon-box kpi-teal">
+                  <IconBook size={20} />
+                </div>
+                <div className="kpi-meta">
+                  <span className="kpi-val">{totalAssignments}</span>
+                  <span className="kpi-lbl">Total Tasks</span>
+                </div>
+              </div>
+
+              <div className="kpi-card">
+                <div className="kpi-icon-box kpi-blue">
+                  <IconCheck size={20} />
+                </div>
+                <div className="kpi-meta">
+                  <span className="kpi-val">{submittedCount}</span>
+                  <span className="kpi-lbl">Submissions</span>
+                </div>
+              </div>
+
+              <div className="kpi-card">
+                <div className="kpi-icon-box kpi-green">
+                  <IconAward size={20} />
+                </div>
+                <div className="kpi-meta">
+                  <span className="kpi-val">{gradedCount}</span>
+                  <span className="kpi-lbl">Evaluated</span>
+                </div>
+              </div>
+
+              <div className="kpi-card">
+                <div className="kpi-icon-box kpi-purple">
+                  <IconNodes size={20} />
+                </div>
+                <div className="kpi-meta">
+                  <span className="kpi-val">{totalPanels}</span>
+                  <span className="kpi-lbl">Whiteboards</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="kpi-card">
-            <div className="kpi-icon-box kpi-blue">
-              <IconCheck size={20} />
-            </div>
-            <div className="kpi-meta">
-              <span className="kpi-val">{submittedCount}</span>
-              <span className="kpi-lbl">Submissions</span>
-            </div>
-          </div>
+          {/* TAB 1: ASSIGNMENTS */}
+          {activeTab === 'assignments' && (
+            <div className="student-assignments-view">
+              {/* Toolbar: Search & Status Filters */}
+              <div className="assign-filter-toolbar">
+                <div className="assign-search-box">
+                  <IconSearch size={16} />
+                  <input
+                    type="text"
+                    placeholder="Search assignments by title or subject..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
 
-          <div className="kpi-card">
-            <div className="kpi-icon-box kpi-green">
-              <IconAward size={20} />
-            </div>
-            <div className="kpi-meta">
-              <span className="kpi-val">{gradedCount}</span>
-              <span className="kpi-lbl">Evaluated</span>
-            </div>
-          </div>
-
-          <div className="kpi-card">
-            <div className="kpi-icon-box kpi-purple">
-              <IconNodes size={20} />
-            </div>
-            <div className="kpi-meta">
-              <span className="kpi-val">{totalPanels}</span>
-              <span className="kpi-lbl">Whiteboards</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Tabs Navigation */}
-      <div className="student-tabs-bar">
-        <button
-          className={`student-tab-btn ${activeTab === 'assignments' ? 'active' : ''}`}
-          onClick={() => setActiveTab('assignments')}
-        >
-          <IconBook size={16} />
-          <span>My Assignments ({totalAssignments})</span>
-        </button>
-
-        <button
-          className={`student-tab-btn ${activeTab === 'panels' ? 'active' : ''}`}
-          onClick={() => setActiveTab('panels')}
-        >
-          <IconNodes size={16} />
-          <span>Subject Whiteboards ({totalPanels})</span>
-        </button>
-
-        <button
-          className={`student-tab-btn ${activeTab === 'shared' ? 'active' : ''}`}
-          onClick={() => setActiveTab('shared')}
-        >
-          <IconShare size={16} />
-          <span>Shared With Me ({sharedItems.length})</span>
-        </button>
-
-        <button
-          className={`student-tab-btn ${activeTab === 'notices' ? 'active' : ''}`}
-          onClick={() => setActiveTab('notices')}
-        >
-          <IconBell size={16} />
-          <span>Campus Notices ({notices.length})</span>
-        </button>
-
-        <button
-          className={`student-tab-btn ${activeTab === 'tickets' ? 'active' : ''}`}
-          onClick={() => setActiveTab('tickets')}
-        >
-          <IconWrench size={16} />
-          <span>Help Desk ({tickets.length})</span>
-        </button>
-
-        <button
-          className="student-tab-btn"
-          onClick={() => {
-            if (onNavigate) onNavigate('calendar')
-            else window.location.hash = '#calendar'
-          }}
-          title="Open Academic Calendar"
-        >
-          <IconCalendar size={16} />
-          <span>Calendar</span>
-        </button>
-
-        <button
-          className="student-tab-btn"
-          onClick={() => {
-            if (onNavigate) onNavigate('news')
-            else window.location.hash = '#news'
-          }}
-          title="Open News & Research Feed"
-        >
-          <IconBrain size={16} />
-          <span>News & Research</span>
-        </button>
-
-        <button
-          className="student-tab-btn"
-          onClick={() => {
-            if (onNavigate) onNavigate('profile')
-            else window.location.hash = '#profile'
-          }}
-          title="Manage Student Profile & Settings"
-        >
-          <IconUser size={16} />
-          <span>Profile</span>
-        </button>
-      </div>
-
-
-      {/* Tab Contents */}
-      <main className="student-main-content">
-        {/* TAB 1: ASSIGNMENTS */}
-        {activeTab === 'assignments' && (
-          <div className="student-assignments-view">
-            {/* Toolbar: Search & Status Filters */}
-            <div className="assign-filter-toolbar">
-              <div className="assign-search-box">
-                <IconSearch size={16} />
-                <input
-                  type="text"
-                  placeholder="Search assignments by title or subject..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+                <div className="assign-status-pills">
+                  {['ALL', 'PENDING', 'SUBMITTED', 'GRADED'].map(st => (
+                    <button
+                      key={st}
+                      className={`status-filter-pill ${statusFilter === st ? 'active' : ''}`}
+                      onClick={() => setStatusFilter(st)}
+                    >
+                      {st === 'ALL' ? 'All Tasks' : st}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <div className="assign-status-pills">
-                {['ALL', 'PENDING', 'SUBMITTED', 'GRADED'].map(st => (
-                  <button
-                    key={st}
-                    className={`status-filter-pill ${statusFilter === st ? 'active' : ''}`}
-                    onClick={() => setStatusFilter(st)}
-                  >
-                    {st === 'ALL' ? 'All Tasks' : st}
-                  </button>
-                ))}
-              </div>
-            </div>
+              {/* Assignments Grid */}
+              {isLoading ? (
+                <div className="student-loading">
+                  <div className="quiz-spinner" />
+                  <p>Loading assignments from your department classroom...</p>
+                </div>
+              ) : filteredAssignments.length === 0 ? (
+                <div className="student-empty-card">
+                  <IconBook size={44} color="#94A3B8" />
+                  <h3>No Assignments Found</h3>
+                  <p>There are no assignments matching your current filter criteria.</p>
+                </div>
+              ) : (
+                <div className="student-assignments-grid">
+                  {filteredAssignments.map(a => {
+                    const subStatus = a.submission?.status || 'PENDING'
+                    const isGraded = subStatus === 'GRADED'
+                    const isSubmitted = subStatus === 'SUBMITTED' || isGraded
 
-            {/* Assignments List */}
-            {isLoading ? (
-              <div className="student-loading">
-                <div className="quiz-spinner" />
-                <p>Loading assignments from your department classroom...</p>
-              </div>
-            ) : filteredAssignments.length === 0 ? (
-              <div className="student-empty-card">
-                <IconBook size={44} color="#94A3B8" />
-                <h3>No Assignments Found</h3>
-                <p>There are no assignments matching your current filter criteria.</p>
-              </div>
-            ) : (
-              <div className="student-assignments-grid">
-                {filteredAssignments.map(a => {
-                  const subStatus = a.submission?.status || 'PENDING'
-                  const isGraded = subStatus === 'GRADED'
-                  const isSubmitted = subStatus === 'SUBMITTED' || isGraded
-
-                  return (
-                    <div key={a.id} className="student-assignment-card">
-                      <div className="assign-card-head">
-                        <span className="assign-subject-badge">{a.subject || 'Core Subject'}</span>
-                        <span className={`assign-status-badge badge-${subStatus.toLowerCase()}`}>
-                          {subStatus}
-                        </span>
-                      </div>
-
-                      <h3 className="assign-card-title">{a.title}</h3>
-                      <p className="assign-card-desc">
-                        {a.description ? `${a.description.slice(0, 110)}...` : 'Complete whiteboard diagram and 20-MCQ verification assessment.'}
-                      </p>
-
-                      <div className="assign-card-meta">
-                        <div className="meta-item">
-                          <IconClock size={14} color="#94A3B8" />
-                          <span>Deadline: {a.deadline ? new Date(a.deadline).toLocaleDateString() : 'Open'}</span>
+                    return (
+                      <div key={a.id} className="student-assignment-card">
+                        <div className="assign-card-head">
+                          <span className="assign-subject-badge">{a.subject || 'Core Subject'}</span>
+                          <span className={`assign-status-badge badge-${subStatus.toLowerCase()}`}>
+                            {subStatus}
+                          </span>
                         </div>
-                        <div className="meta-item">
-                          <IconBrain size={14} color="#0D9488" />
-                          <span>20 Verification MCQs (20 pts)</span>
+
+                        <h3 className="assign-card-title">{a.title}</h3>
+                        <p className="assign-card-desc">
+                          {a.description ? `${a.description.slice(0, 110)}...` : 'Complete whiteboard diagram and 20-MCQ verification assessment.'}
+                        </p>
+
+                        <div className="assign-card-meta">
+                          <div className="meta-item">
+                            <IconClock size={14} color="#94A3B8" />
+                            <span>Deadline: {a.deadline ? new Date(a.deadline).toLocaleDateString() : 'Open'}</span>
+                          </div>
+                          <div className="meta-item">
+                            <IconBrain size={14} color="#0D9488" />
+                            <span>20 Verification MCQs (20 pts)</span>
+                          </div>
+                        </div>
+
+                        {/* Grade Banner if evaluated */}
+                        {isGraded && (
+                          <div className="assign-graded-pill" onClick={() => setInspectGradeSubmission(a.submission)}>
+                            <IconAward size={16} color="#10B981" />
+                            <span>Final Grade: <strong>{(Number(a.submission.mcqScore || 0) + Number(a.submission.drawingScore || 0)).toFixed(1)} / 30</strong></span>
+                            <span className="view-feedback-link">View Feedback →</span>
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="assign-card-actions">
+                          <button
+                            className="btn-open-workspace"
+                            onClick={() => setActiveAssignmentId(a.id)}
+                          >
+                            <IconFileText size={15} />
+                            <span>{isSubmitted ? 'View Whiteboard Submission' : 'Open Whiteboard Canvas'}</span>
+                          </button>
+                          <button
+                            className="btn-open-mcq"
+                            onClick={() => setActiveQuizAssignment(a)}
+                          >
+                            <IconBrain size={15} />
+                            <span>{a.submission?.mcqScore !== null && a.submission?.mcqScore !== undefined ? 'View Quiz Result' : 'Take 20 MCQs'}</span>
+                          </button>
                         </div>
                       </div>
-
-                      {/* Grade Banner if evaluated */}
-                      {isGraded && (
-                        <div className="assign-graded-pill" onClick={() => setInspectGradeSubmission(a.submission)}>
-                          <IconAward size={16} color="#10B981" />
-                          <span>Final Grade: <strong>{(Number(a.submission.mcqScore || 0) + Number(a.submission.drawingScore || 0)).toFixed(1)} / 30</strong></span>
-                          <span className="view-feedback-link">View Feedback →</span>
-                        </div>
-                      )}
-
-                      {/* Actions */}
-                      <div className="assign-card-actions">
-                        <button
-                          className="btn-open-workspace"
-                          onClick={() => setActiveAssignmentId(a.id)}
-                        >
-                          <IconFileText size={15} />
-                          <span>{isSubmitted ? 'View Whiteboard Submission' : 'Open Whiteboard Canvas'}</span>
-                        </button>
-                        <button
-                          className="btn-open-mcq"
-                          onClick={() => setActiveQuizAssignment(a)}
-                        >
-                          <IconBrain size={15} />
-                          <span>{a.submission?.mcqScore !== null && a.submission?.mcqScore !== undefined ? 'View Quiz Result' : 'Take 20 MCQs'}</span>
-                        </button>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* TAB 2: SUBJECT WHITEBOARDS */}
-        {activeTab === 'panels' && (
-          <div className="student-panels-view">
-            <div className="panels-view-header">
-              <div>
-                <h3>Subject Concept Graphs & Whiteboards</h3>
-                <p>Create visual knowledge graphs and revision sketchboards for your courses</p>
-              </div>
-              <button
-                className="btn-create-panel"
-                onClick={() => setIsNewPanelModalOpen(true)}
-              >
-                <IconPlus size={16} /> New Subject Panel
-              </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
+          )}
 
-            {panels.length === 0 ? (
-              <div className="student-empty-card">
-                <IconNodes size={44} color="#0D9488" />
-                <h3>No Subject Panels Created</h3>
-                <p>Create your first subject panel to begin linking topic nodes and drafting study graphs.</p>
+          {/* TAB 2: SUBJECT WHITEBOARDS */}
+          {activeTab === 'panels' && (
+            <div className="student-panels-view">
+              <div className="panels-view-header">
+                <div>
+                  <h3>Subject Concept Graphs & Whiteboards</h3>
+                  <p>Create visual knowledge graphs and revision sketchboards for your courses</p>
+                </div>
                 <button
                   className="btn-create-panel"
                   onClick={() => setIsNewPanelModalOpen(true)}
                 >
-                  <IconPlus size={16} /> Create Subject Panel
+                  <IconPlus size={16} /> New Subject Panel
                 </button>
               </div>
-            ) : (
-              <div className="student-panels-grid">
-                {panels.map(p => (
-                  <div key={p.id} className="student-panel-card">
-                    <div className="panel-card-head">
-                      <div className="panel-icon-wrap">
-                        <IconBook size={20} color="#0D9488" />
+
+              {panels.length === 0 ? (
+                <div className="student-empty-card">
+                  <IconNodes size={44} color="#0D9488" />
+                  <h3>No Subject Panels Created</h3>
+                  <p>Create your first subject panel to begin linking topic nodes and drafting study graphs.</p>
+                  <button
+                    className="btn-create-panel"
+                    onClick={() => setIsNewPanelModalOpen(true)}
+                  >
+                    <IconPlus size={16} /> Create Subject Panel
+                  </button>
+                </div>
+              ) : (
+                <div className="student-panels-grid">
+                  {panels.map(p => (
+                    <div key={p.id} className="student-panel-card">
+                      <div className="panel-card-head">
+                        <div className="panel-icon-wrap">
+                          <IconBook size={20} color="#0D9488" />
+                        </div>
+                        <div className="panel-head-actions">
+                          <button
+                            className="btn-icon"
+                            title="Share Panel"
+                            onClick={() => setSharingItem({ id: p.id, subjectName: p.subjectName, type: 'panel' })}
+                          >
+                            <IconShare size={15} />
+                          </button>
+                          <button
+                            className="btn-icon btn-delete"
+                            title="Delete Panel"
+                            onClick={() => handleDeletePanel(p.id)}
+                          >
+                            <IconTrash size={15} />
+                          </button>
+                        </div>
                       </div>
-                      <div className="panel-head-actions">
-                        <button
-                          className="btn-icon"
-                          title="Share Panel"
-                          onClick={() => setSharingItem({ id: p.id, subjectName: p.subjectName, type: 'panel' })}
-                        >
-                          <IconShare size={15} />
-                        </button>
-                        <button
-                          className="btn-icon btn-delete"
-                          title="Delete Panel"
-                          onClick={() => handleDeletePanel(p.id)}
-                        >
-                          <IconTrash size={15} />
-                        </button>
-                      </div>
+
+                      <h4 className="panel-subject-title">{p.subjectName}</h4>
+                      <p className="panel-meta-desc">
+                        Interactive whiteboard concept map with linked prerequisite topics.
+                      </p>
+
+                      <button
+                        className="btn-enter-studio"
+                        onClick={() => setActivePanel(p)}
+                      >
+                        <IconNodes size={16} /> Open Graph Studio
+                      </button>
                     </div>
-
-                    <h4 className="panel-subject-title">{p.subjectName}</h4>
-                    <p className="panel-meta-desc">
-                      Interactive whiteboard concept map with linked prerequisite topics.
-                    </p>
-
-                    <button
-                      className="btn-enter-studio"
-                      onClick={() => setActivePanel(p)}
-                    >
-                      <IconNodes size={16} /> Open Graph Studio
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* TAB 3: SHARED WITH ME */}
-        {activeTab === 'shared' && (
-          <div className="student-shared-view">
-            <div className="panels-view-header">
-              <div>
-                <h3>Peer-Shared Concept Nodes & Panels</h3>
-                <p>Study materials and whiteboard diagrams shared with you by classmates (view-only)</p>
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
+          )}
 
-            {sharedItems.length === 0 ? (
-              <div className="student-empty-card">
-                <IconShare size={44} color="#94A3B8" />
-                <h3>No Shared Items Yet</h3>
-                <p>When classmates share topic nodes or subject panels with your email, they will appear here.</p>
+          {/* TAB 3: SHARED WITH ME */}
+          {activeTab === 'shared' && (
+            <div className="student-shared-view">
+              <div className="panels-view-header">
+                <div>
+                  <h3>Peer-Shared Concept Nodes & Panels</h3>
+                  <p>Study materials and whiteboard diagrams shared with you by classmates (view-only)</p>
+                </div>
               </div>
-            ) : (
-              <div className="student-shared-grid">
-                {sharedItems.map(item => (
-                  <div key={item.id} className="student-shared-card">
-                    <div className="shared-badge">VIEW-ONLY ACCESS</div>
-                    <h4>{item.nodeTitle || item.panelSubjectName || 'Shared Concept'}</h4>
-                    <p className="shared-sender">
-                      Shared by: <strong>{item.sharedByEmail || 'Classmate'}</strong>
-                    </p>
-                    {item.nodeContent && (
-                      <div className="shared-notes-box">
-                        <p>{item.nodeContent}</p>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
 
-        {/* TAB 4: CAMPUS NOTICES */}
-        {activeTab === 'notices' && (
-          <div className="student-notices-view">
-            <div className="panels-view-header">
-              <div>
-                <h3>College Announcements & Notices</h3>
-                <p>Broadcasts from Principal, Academic Coordinators, and Faculty</p>
-              </div>
+              {sharedItems.length === 0 ? (
+                <div className="student-empty-card">
+                  <IconShare size={44} color="#94A3B8" />
+                  <h3>No Shared Items Yet</h3>
+                  <p>When classmates share topic nodes or subject panels with your email, they will appear here.</p>
+                </div>
+              ) : (
+                <div className="student-shared-grid">
+                  {sharedItems.map(item => (
+                    <div key={item.id} className="student-shared-card">
+                      <div className="shared-badge">VIEW-ONLY ACCESS</div>
+                      <h4>{item.nodeTitle || item.panelSubjectName || 'Shared Concept'}</h4>
+                      <p className="shared-sender">
+                        Shared by: <strong>{item.sharedByEmail || 'Classmate'}</strong>
+                      </p>
+                      {item.nodeContent && (
+                        <div className="shared-notes-box">
+                          <p>{item.nodeContent}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+          )}
 
-            {notices.length === 0 ? (
-              <div className="student-empty-card">
-                <IconBell size={44} color="#94A3B8" />
-                <h3>No Active Notices</h3>
-                <p>No college announcements have been posted for your department.</p>
+          {/* TAB 4: CAMPUS NOTICES */}
+          {activeTab === 'notices' && (
+            <div className="student-notices-view">
+              <div className="panels-view-header">
+                <div>
+                  <h3>College Announcements & Notices</h3>
+                  <p>Broadcasts from Principal, Academic Coordinators, and Faculty</p>
+                </div>
               </div>
-            ) : (
-              <div className="student-notices-list">
-                {notices.map(n => (
-                  <div key={n.id} className="student-notice-item">
-                    <div className="notice-icon-box">
-                      <IconBell size={18} color="#0D9488" />
-                    </div>
-                    <div className="notice-content">
-                      <div className="notice-meta-top">
-                        <span className="notice-badge">{n.priority || 'ANNOUNCEMENT'}</span>
-                        <span className="notice-date">{n.createdAt ? new Date(n.createdAt).toLocaleDateString() : 'Recent'}</span>
+
+              {notices.length === 0 ? (
+                <div className="student-empty-card">
+                  <IconBell size={44} color="#94A3B8" />
+                  <h3>No Active Notices</h3>
+                  <p>No college announcements have been posted for your department.</p>
+                </div>
+              ) : (
+                <div className="student-notices-list">
+                  {notices.map(n => (
+                    <div key={n.id} className="student-notice-item">
+                      <div className="notice-icon-box">
+                        <IconBell size={18} color="#0D9488" />
                       </div>
-                      <h4 className="notice-title">{n.title}</h4>
-                      <p className="notice-text">{n.content}</p>
+                      <div className="notice-content">
+                        <div className="notice-meta-top">
+                          <span className="notice-badge">{n.priority || 'ANNOUNCEMENT'}</span>
+                          <span className="notice-date">{n.createdAt ? new Date(n.createdAt).toLocaleDateString() : 'Recent'}</span>
+                        </div>
+                        <h4 className="notice-title">{n.title}</h4>
+                        <p className="notice-text">{n.content}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* TAB 5: HELP DESK / SUPPORT TICKETS */}
-        {activeTab === 'tickets' && (
-          <div className="student-tickets-view">
-            <div className="panels-view-header">
-              <div>
-                <h3>Student Help Desk</h3>
-                <p>Submit data-correction or permission-override requests to Coordinators and Super Admin</p>
-              </div>
-              <button
-                className="btn-create-panel"
-                onClick={() => setIsTicketModalOpen(true)}
-              >
-                <IconPlus size={16} /> Submit New Ticket
-              </button>
+                  ))}
+                </div>
+              )}
             </div>
+          )}
 
-            {tickets.length === 0 ? (
-              <div className="student-empty-card">
-                <IconWrench size={44} color="#94A3B8" />
-                <h3>No Support Tickets</h3>
-                <p>Have an issue with classroom allocation or system access? File a ticket here.</p>
+          {/* TAB 5: HELP DESK / SUPPORT TICKETS */}
+          {activeTab === 'tickets' && (
+            <div className="student-tickets-view">
+              <div className="panels-view-header">
+                <div>
+                  <h3>Student Help Desk</h3>
+                  <p>Submit data-correction or permission-override requests to Coordinators and Super Admin</p>
+                </div>
+                <button
+                  className="btn-create-panel"
+                  onClick={() => setIsTicketModalOpen(true)}
+                >
+                  <IconPlus size={16} /> Submit New Ticket
+                </button>
               </div>
-            ) : (
-              <div className="student-tickets-list">
-                {tickets.map(t => (
-                  <div key={t.id} className="student-ticket-card">
-                    <div className="ticket-card-header">
-                      <span className={`ticket-status-pill pill-${t.status?.toLowerCase() || 'open'}`}>
-                        {t.status || 'OPEN'}
-                      </span>
-                      <span className="ticket-target">Assigned to: {t.targetRole}</span>
-                    </div>
-                    <h4 className="ticket-subject">{t.subject}</h4>
-                    <p className="ticket-desc">{t.description}</p>
-                    {t.resolutionNotes && (
-                      <div className="ticket-resolution-box">
-                        <strong>Resolution Note:</strong> {t.resolutionNotes}
+
+              {tickets.length === 0 ? (
+                <div className="student-empty-card">
+                  <IconWrench size={44} color="#94A3B8" />
+                  <h3>No Support Tickets</h3>
+                  <p>Have an issue with classroom allocation or system access? File a ticket here.</p>
+                </div>
+              ) : (
+                <div className="student-tickets-list">
+                  {tickets.map(t => (
+                    <div key={t.id} className="student-ticket-card">
+                      <div className="ticket-card-header">
+                        <span className={`ticket-status-pill pill-${t.status?.toLowerCase() || 'open'}`}>
+                          {t.status || 'OPEN'}
+                        </span>
+                        <span className="ticket-target">Assigned to: {t.targetRole}</span>
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </main>
+                      <h4 className="ticket-subject">{t.subject}</h4>
+                      <p className="ticket-desc">{t.description}</p>
+                      {t.resolutionNotes && (
+                        <div className="ticket-resolution-box">
+                          <strong>Resolution Note:</strong> {t.resolutionNotes}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </main>
+      </div>
 
       {/* Create Subject Panel Modal */}
       {isNewPanelModalOpen && (
