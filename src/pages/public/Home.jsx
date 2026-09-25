@@ -177,15 +177,12 @@ export default function Home() {
                   <div className="vision-sketch-divider" aria-hidden="true" />
                 </div>
                 <p className="vision-desc">
-                  EduGraph bridges the gap between conceptual visual thinking and uncompromising academic
-                  integrity. By empowering students to map out knowledge on interactive Edudraw canvases
-                  and backing every assignment with real-time proctored validation, we provide universities,
-                  professors, and students with a trusted platform for deep, enduring comprehension.
+                  Bridging spatial visual thinking with uncompromising academic integrity—transforming flat memorization into active, verified conceptual mastery.
                 </p>
                 <div className="vision-feature-pills">
-                  <span className="v-pill">✦ Spatial Mind Mapping</span>
-                  <span className="v-pill">✦ Fraud-Proof Assessments</span>
-                  <span className="v-pill">✦ Active Concept Retention</span>
+                  <span className="v-pill">✦ Spatial Mind Graphs</span>
+                  <span className="v-pill">✦ Live Anti-Cheat Shield</span>
+                  <a href="#about" className="v-pill v-pill-link">Read Full Mission →</a>
                 </div>
               </div>
 
@@ -255,24 +252,28 @@ export default function Home() {
                 <span className="section-eyebrow">Strategic Milestones</span>
                 <h2 className="goal-title">Our Goal</h2>
                 <p className="goal-desc">
-                  Empowering institutions, educators, and learners with verified visual knowledge graphs—fostering genuine conceptual mastery, effortless credential workflows, and uncompromising academic integrity worldwide.
+                  Empowering campuses with verified visual knowledge graphs—fostering deep conceptual comprehension and automated institutional trust.
                 </p>
 
                 <div className="goal-milestones-list">
                   <div className="goal-milestone-item">
                     <span className="milestone-check">✓</span>
                     <div>
-                      <strong>Elevate Global Retention</strong>
-                      <p>Replace passive memorization with visual node graphs proven to improve 6-month recall by 3.8x.</p>
+                      <strong>+3.8x Higher Retention</strong>
+                      <p>Spatial node graphs replace fragile cramming with structural memory.</p>
                     </div>
                   </div>
                   <div className="goal-milestone-item">
                     <span className="milestone-check">✓</span>
                     <div>
-                      <strong>Automated Institutional Trust</strong>
-                      <p>Seamless zero-friction onboarding for 250+ campuses with zero credential mismanagement.</p>
+                      <strong>Automated Institutional Scale</strong>
+                      <p>Seamless onboarding for 250+ campuses with zero credential mismanagement.</p>
                     </div>
                   </div>
+                </div>
+
+                <div className="goal-action-pills">
+                  <a href="#services" className="v-pill v-pill-link">Explore Campus Services →</a>
                 </div>
               </div>
 
@@ -376,25 +377,25 @@ export default function Home() {
               <div className="stat-card">
                 <div className="stat-number">10K+</div>
                 <div className="stat-label">Active Student Minds</div>
-                <p className="stat-subtext">Mapping concepts daily across disciplines and engineering subjects.</p>
+                <p className="stat-subtext">Mapping concepts daily across disciplines.</p>
               </div>
 
               <div className="stat-card">
                 <div className="stat-number">250+</div>
                 <div className="stat-label">Institutional Colleges</div>
-                <p className="stat-subtext">Empowered by automated onboarding and credential cascade workflows.</p>
+                <p className="stat-subtext">Empowered by automated onboarding.</p>
               </div>
 
               <div className="stat-card">
                 <div className="stat-number">3K+</div>
                 <div className="stat-label">Whiteboard Topic Graphs</div>
-                <p className="stat-subtext">Connecting core theories, equations, proofs, and laboratory records.</p>
+                <p className="stat-subtext">Connecting proofs, equations, and lab theory.</p>
               </div>
 
               <div className="stat-card">
                 <div className="stat-number">+99.4%</div>
                 <div className="stat-label">Verified Integrity Rate</div>
-                <p className="stat-subtext">Ensured through live Page Visibility proctoring and post-submission quizzes.</p>
+                <p className="stat-subtext">Ensured through live proctoring & quiz checks.</p>
               </div>
             </div>
 
@@ -413,10 +414,8 @@ export default function Home() {
                   
                   {/* Card Header */}
                   <div className="ps-matrix-header">
-                    <div className="ps-badge-group">
-                      <span className="ps-header-badge">EVALUATION PARADIGM SHIFT</span>
-                    </div>
-                    <span className="ps-status-pill">● Comparative Analysis</span>
+                    <span className="ps-header-badge">EVALUATION PARADIGM SHIFT</span>
+                    <span className="ps-status-pill">● Verified Shift</span>
                   </div>
 
                   {/* Problem Block (Traditional System) */}
@@ -427,30 +426,13 @@ export default function Home() {
                         <h4 className="ps-box-title">The Core Problem</h4>
                         <span className="ps-box-subtitle">Superficial Cramming & Unverified Submissions</span>
                       </div>
-                      <span className="ps-tag ps-tag-problem">Traditional Flaw</span>
                     </div>
-                    <ul className="ps-points-list">
-                      <li>
-                        <span className="ps-bullet ps-bullet-problem">!</span>
-                        <div>
-                          <strong>Fragile Rote Recall</strong>
-                          <p>Formulas and theories crammed the night before vanish from memory within days without relational anchors.</p>
-                        </div>
-                      </li>
-                      <li>
-                        <span className="ps-bullet ps-bullet-problem">!</span>
-                        <div>
-                          <strong>Unverified Copy-Pasting</strong>
-                          <p>Traditional PDF/text uploads allow unchecked external copying and AI generation to pass without genuine comprehension.</p>
-                        </div>
-                      </li>
-                    </ul>
                   </div>
 
                   {/* Visual Bridge Indicator */}
                   <div className="ps-bridge-indicator">
                     <span className="ps-bridge-arrow">▼</span>
-                    <span className="ps-bridge-label">EduGraph Verified Solution Architecture</span>
+                    <span className="ps-bridge-label">EduGraph Architecture</span>
                     <span className="ps-bridge-arrow">▼</span>
                   </div>
 
@@ -462,41 +444,24 @@ export default function Home() {
                         <h4 className="ps-box-title">How We Solve It</h4>
                         <span className="ps-box-subtitle">Spatial Mind Graphs + Fraud-Proof Proctoring</span>
                       </div>
-                      <span className="ps-tag ps-tag-solution">EduGraph Fix</span>
                     </div>
-                    <ul className="ps-points-list">
-                      <li>
-                        <span className="ps-bullet ps-bullet-solution">✦</span>
-                        <div>
-                          <strong>Edudraw Spatial Node Graphing</strong>
-                          <p>Students build interactive visual topology boards, forming deep conceptual mental models that yield +3.8x retention.</p>
-                        </div>
-                      </li>
-                      <li>
-                        <span className="ps-bullet ps-bullet-solution">✦</span>
-                        <div>
-                          <strong>Live Proctoring & 20-MCQ Validation</strong>
-                          <p>Page visibility tracking flags tab switching, followed by instant validation quizzes ensuring 100% genuine mastery.</p>
-                        </div>
-                      </li>
-                    </ul>
                   </div>
 
                   {/* Footer Metric Banner */}
                   <div className="ps-matrix-footer">
                     <div className="ps-footer-stat">
                       <span className="ps-stat-highlight">0%</span>
-                      <span className="ps-stat-sub">Plagiarism Tolerance</span>
+                      <span className="ps-stat-sub">Plagiarism</span>
                     </div>
                     <div className="ps-footer-divider" />
                     <div className="ps-footer-stat">
                       <span className="ps-stat-highlight">+3.8x</span>
-                      <span className="ps-stat-sub">Enduring Retention</span>
+                      <span className="ps-stat-sub">Retention</span>
                     </div>
                     <div className="ps-footer-divider" />
                     <div className="ps-footer-stat">
                       <span className="ps-stat-highlight">99.4%</span>
-                      <span className="ps-stat-sub">Proctored Authenticity</span>
+                      <span className="ps-stat-sub">Integrity</span>
                     </div>
                   </div>
 
@@ -512,39 +477,38 @@ export default function Home() {
                 </div>
 
                 <p className="ps-desc">
-                  Higher education faces an unprecedented crisis of retention and integrity. Traditional assignment workflows reward passive text recitation, leaving professors powerless against superficial understanding and unverified shortcuts.
+                  Replacing passive rote recall with interactive whiteboard graphs and continuous anti-cheat verification.
                 </p>
 
                 <div className="ps-pillars-list">
                   <div className="ps-pillar-item">
                     <div className="pillar-num-badge">01</div>
                     <div className="pillar-content">
-                      <strong>From Passive Memorization to Visual Construction</strong>
-                      <p>Students shift from passive readers to active knowledge architects—mapping formulas, proofs, and principles onto dynamic Edudraw whiteboards.</p>
+                      <strong>Visual Knowledge Construction</strong>
+                      <p>Transform formulas and principles into dynamic whiteboard node networks.</p>
                     </div>
                   </div>
 
                   <div className="ps-pillar-item">
                     <div className="pillar-num-badge">02</div>
                     <div className="pillar-content">
-                      <strong>Restoring Institutional Integrity via Live Proctoring</strong>
-                      <p>Tab-switch monitoring halts unauthorized external aids in real time, while instant post-submission quizzes verify that students truly own their work.</p>
+                      <strong>Proctored Academic Integrity</strong>
+                      <p>Page visibility monitoring and immediate 20-MCQ comprehension validation.</p>
                     </div>
                   </div>
 
                   <div className="ps-pillar-item">
                     <div className="pillar-num-badge">03</div>
                     <div className="pillar-content">
-                      <strong>Actionable Telemetry for Faculty & Leadership</strong>
-                      <p>Educators receive instant visual comprehension heatmaps, identifying class-wide bottlenecks and conceptual gaps long before final exams.</p>
+                      <strong>Real-Time Classroom Telemetry</strong>
+                      <p>Instant visual mastery indicators and concept retention analytics for faculty.</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="ps-action-badges">
-                  <span className="ps-action-pill">✓ Anti-Cheat Monitored</span>
-                  <span className="ps-action-pill">✓ Edudraw Whiteboard Canvas</span>
-                  <span className="ps-action-pill">✓ Instant Grade Verification</span>
+                  <a href="#features" className="v-pill v-pill-link">Explore Detailed Features →</a>
+                  <a href="#contact" className="v-pill v-pill-link">Request Campus Demo →</a>
                 </div>
               </div>
 

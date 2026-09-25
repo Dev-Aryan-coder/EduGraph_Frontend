@@ -1,4 +1,182 @@
-/* Footer.css - Component Scoped Styles */
-.footer-container {
-  /* Scoped styles */
+/* ==========================================================================
+   Footer.css - Minimalist Brand Footer Styles
+   ========================================================================== */
+
+.edugraph-footer {
+  width: 100%;
+  background: #FFFFFF;
+  border-top: 1px solid #E2E8F0;
+  padding: 80px 0 36px 0;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 10;
+}
+
+.footer-inner-container {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* Top 4-Column Layout */
+.footer-top-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 1fr;
+  gap: 60px;
+  padding-bottom: 60px;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+/* Brand Column */
+.footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.footer-logo-link {
+  display: inline-block;
+  margin-bottom: 16px;
+  text-decoration: none;
+}
+
+.footer-brand-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.footer-brand-tagline {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.9rem;
+  color: #64748B;
+  line-height: 1.6;
+  max-width: 360px;
+  margin: 0 0 20px 0;
+}
+
+.footer-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.footer-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16A34A;
+  box-shadow: 0 0 6px rgba(22, 163, 74, 0.6);
+}
+
+/* Link Columns */
+.footer-links-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-col-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #10233F;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 18px 0;
+}
+
+.footer-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links-list li a {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.88rem;
+  color: #64748B;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.footer-links-list li a:hover {
+  color: #1B7F72 !important;
+  transform: translateX(3px);
+}
+
+/* Bottom Copyright Bar */
+.footer-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-copyright {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.82rem;
+  color: #94A3B8;
+}
+
+.footer-legal-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-legal-links a {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.82rem;
+  color: #94A3B8;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-legal-links a:hover {
+  color: #1B7F72 !important;
+}
+
+.footer-legal-sep {
+  color: #CBD5E1;
+  font-size: 0.75rem;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 960px) {
+  .footer-top-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  .edugraph-footer {
+    padding: 60px 0 32px 0;
+  }
+
+  .footer-top-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .footer-bottom-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
 }
