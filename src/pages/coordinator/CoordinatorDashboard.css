@@ -1240,3 +1240,38 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Embedded Shared Views */
+.coordinator-embedded-view {
+  width: 100%;
+  animation: coordFadeIn 0.15s ease-out;
+}
+
+.coordinator-embedded-view .calendar-root,
+.coordinator-embedded-view .feed-root,
+.coordinator-embedded-view .profile-settings-root,
+.coordinator-embedded-view .notice-board-root,
+.coordinator-embedded-view .helpdesk-root {
+  min-height: auto;
+  background: transparent;
+}
+
+.coordinator-embedded-view .calendar-header,
+.coordinator-embedded-view .feed-header,
+.coordinator-embedded-view .profile-header,
+.coordinator-embedded-view .notice-board-header,
+.coordinator-embedded-view .helpdesk-header {
+  border-radius: 14px;
+  border: 1px solid #E2E8F0;
+  margin-bottom: 20px;
+}
+
+.coordinator-embedded-view .calendar-content-container,
+.coordinator-embedded-view .feed-content-container,
+.coordinator-embedded-view .profile-content-container,
+.coordinator-embedded-view .notice-content-container,
+.coordinator-embedded-view .helpdesk-content-container {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+}

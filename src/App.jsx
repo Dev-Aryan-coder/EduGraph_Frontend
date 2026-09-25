@@ -102,7 +102,60 @@ function App() {
     )
   }
 
-  // Shared feature full-page views
+  const role = (currentUser?.role || '').toUpperCase()
+  const isUserAdmin = role === 'ADMIN' || role === 'ROLE_ADMIN'
+  const isUserCoordinator = role === 'COORDINATOR' || role === 'ROLE_COORDINATOR'
+  const isUserPrincipal = role === 'PRINCIPAL' || role === 'ROLE_PRINCIPAL'
+  const isUserTeacher = role === 'TEACHER' || role === 'ROLE_TEACHER'
+  const isUserStudent = role === 'STUDENT' || role === 'ROLE_STUDENT'
+
+  const isSharedTab = ['profile', 'notices', 'calendar', 'news', 'help-desk'].includes(activeTab)
+
+  // If user is authenticated, open shared features directly inside their role dashboard in front of the sidenavbar
+  if (isSharedTab && currentUser) {
+    if (isUserStudent) {
+      return (
+        <StudentDashboard
+          onNavigate={navigateToTab}
+          initialTab={activeTab === 'help-desk' ? 'tickets' : activeTab}
+        />
+      )
+    }
+    if (isUserCoordinator) {
+      return (
+        <CoordinatorDashboard
+          onNavigate={navigateToTab}
+          initialTab={activeTab}
+        />
+      )
+    }
+    if (isUserTeacher) {
+      return (
+        <TeacherDashboard
+          onNavigate={navigateToTab}
+          initialTab={activeTab}
+        />
+      )
+    }
+    if (isUserPrincipal) {
+      return (
+        <PrincipalDashboard
+          onNavigate={navigateToTab}
+          initialTab={activeTab}
+        />
+      )
+    }
+    if (isUserAdmin) {
+      return (
+        <AdminDashboard
+          onNavigate={navigateToTab}
+          initialTab={activeTab}
+        />
+      )
+    }
+  }
+
+  // Shared feature full-page views (fallback when not in dashboard context or unauthenticated)
   if (activeTab === 'profile') {
     return <ProfileSettings onBack={() => navigateToTab('dashboard')} />
   }
@@ -118,13 +171,6 @@ function App() {
   if (activeTab === 'help-desk') {
     return <HelpDesk onBack={() => navigateToTab('dashboard')} />
   }
-
-  const role = (currentUser?.role || '').toUpperCase()
-  const isUserAdmin = role === 'ADMIN' || role === 'ROLE_ADMIN'
-  const isUserCoordinator = role === 'COORDINATOR' || role === 'ROLE_COORDINATOR'
-  const isUserPrincipal = role === 'PRINCIPAL' || role === 'ROLE_PRINCIPAL'
-  const isUserTeacher = role === 'TEACHER' || role === 'ROLE_TEACHER'
-  const isUserStudent = role === 'STUDENT' || role === 'ROLE_STUDENT'
 
   // Render Super Admin Workspace
   if (isAdminPage || (isDashboardPage && isUserAdmin)) {

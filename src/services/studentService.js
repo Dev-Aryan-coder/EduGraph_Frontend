@@ -302,6 +302,25 @@ export const studentService = {
   async revokeShare(nodeId, shareId) {
     const response = await api.delete(`/nodes/${nodeId}/share/${shareId}`)
     return response.data?.data || response.data
+  },
+
+  // ================= NOTICES FEED =================
+  async getNotices() {
+    try {
+      const response = await api.get('/notices/my-feed')
+      return response.data?.data || response.data || []
+    } catch {
+      return []
+    }
+  },
+
+  async getMyNotices() {
+    try {
+      const response = await api.get('/notices/my-feed')
+      return response.data?.data || response.data || []
+    } catch {
+      return []
+    }
   }
 }
 

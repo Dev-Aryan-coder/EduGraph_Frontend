@@ -27,11 +27,21 @@ import {
   IconWrench
 } from '../../components/common/Icons'
 import './CoordinatorDashboard.css'
+import InstitutionalCalendar from '../shared/InstitutionalCalendar'
+import NewsResearchFeed from '../shared/NewsResearchFeed'
+import ProfileSettings from '../shared/ProfileSettings'
+import NoticeBoard from '../shared/NoticeBoard'
+import HelpDesk from '../shared/HelpDesk'
 
-
-export default function CoordinatorDashboard({ onNavigate }) {
+export default function CoordinatorDashboard({ onNavigate, initialTab = 'overview' }) {
   const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState(initialTab || 'overview')
+
+  useEffect(() => {
+    if (initialTab && ['overview', 'students', 'teachers', 'classrooms', 'notices', 'calendar', 'news', 'help-desk', 'profile'].includes(initialTab)) {
+      setActiveTab(initialTab)
+    }
+  }, [initialTab])
 
   // Real Database State
   const [overview, setOverview] = useState(null)
@@ -415,7 +425,12 @@ export default function CoordinatorDashboard({ onNavigate }) {
             <span>Public Site</span>
           </button>
 
-          <div className="topbar-user-badge">
+          <div
+            className="topbar-user-badge"
+            onClick={() => setActiveTab('profile')}
+            style={{ cursor: 'pointer' }}
+            title="Open Profile & Settings"
+          >
             <div className="coord-avatar-circle">
               {currentUser?.profileImageUrl ? (
                 <img src={currentUser.profileImageUrl} alt="Coordinator Avatar" className="avatar-img" />
@@ -473,23 +488,21 @@ export default function CoordinatorDashboard({ onNavigate }) {
           <div className="sidebar-nav-title" style={{ marginTop: '22px' }}>CAMPUS & INSTITUTION</div>
 
           <nav className="sidebar-nav-menu">
-            {sharedNavItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className="sidebar-nav-link"
-                onClick={() => {
-                  if (onNavigate) {
-                    onNavigate(item.id)
-                  } else {
-                    window.location.hash = `#${item.id}`
-                  }
-                }}
-              >
-                <span className="link-icon">{item.icon}</span>
-                <span className="link-text">{item.label}</span>
-              </button>
-            ))}
+            {sharedNavItems.map((item) => {
+              const isActive = activeTab === item.id
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`sidebar-nav-link ${isActive ? 'active' : ''}`}
+                  onClick={() => setActiveTab(item.id)}
+                >
+                  <span className="link-icon">{item.icon}</span>
+                  <span className="link-text">{item.label}</span>
+                  {isActive && <span className="active-glow-pill teal-pill" />}
+                </button>
+              )
+            })}
           </nav>
 
 
@@ -991,6 +1004,41 @@ export default function CoordinatorDashboard({ onNavigate }) {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* 5. CAMPUS NOTICES TAB */}
+          {activeTab === 'notices' && (
+            <div className="coordinator-embedded-view">
+              <NoticeBoard onBack={() => setActiveTab('overview')} />
+            </div>
+          )}
+
+          {/* 6. ACADEMIC CALENDAR TAB */}
+          {activeTab === 'calendar' && (
+            <div className="coordinator-embedded-view">
+              <InstitutionalCalendar onBack={() => setActiveTab('overview')} />
+            </div>
+          )}
+
+          {/* 7. NEWS & RESEARCH TAB */}
+          {activeTab === 'news' && (
+            <div className="coordinator-embedded-view">
+              <NewsResearchFeed onBack={() => setActiveTab('overview')} />
+            </div>
+          )}
+
+          {/* 8. HELP DESK & SUPPORT TAB */}
+          {activeTab === 'help-desk' && (
+            <div className="coordinator-embedded-view">
+              <HelpDesk onBack={() => setActiveTab('overview')} />
+            </div>
+          )}
+
+          {/* 9. PROFILE & SETTINGS TAB */}
+          {activeTab === 'profile' && (
+            <div className="coordinator-embedded-view">
+              <ProfileSettings onBack={() => setActiveTab('overview')} />
             </div>
           )}
 

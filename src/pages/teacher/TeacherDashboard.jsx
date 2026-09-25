@@ -5,6 +5,10 @@ import AssignmentCreator from './AssignmentCreator'
 import AssignmentDetail from './AssignmentDetail'
 import EvaluationModal from './EvaluationModal'
 import ExtendDeadlineModal from './ExtendDeadlineModal'
+import InstitutionalCalendar from '../shared/InstitutionalCalendar'
+import NewsResearchFeed from '../shared/NewsResearchFeed'
+import ProfileSettings from '../shared/ProfileSettings'
+import NoticeBoard from '../shared/NoticeBoard'
 import logoSvg from '../../assets/edugraph-logo.svg'
 import {
   IconLayoutDashboard,
@@ -30,9 +34,15 @@ import {
 import './TeacherDashboard.css'
 
 
-export default function TeacherDashboard({ onNavigate }) {
+export default function TeacherDashboard({ onNavigate, initialTab }) {
   const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
-  const [activeTab, setActiveTab] = useState('overview') // 'overview' | 'assignments' | 'grading' | 'feeds' | 'tickets'
+  const [activeTab, setActiveTab] = useState(initialTab || 'overview') // 'overview' | 'assignments' | 'grading' | 'feeds' | 'tickets' | 'calendar' | 'news' | 'profile' | 'notices'
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab)
+    }
+  }, [initialTab])
 
   // Real Database State
   const [classrooms, setClassrooms] = useState([])
@@ -216,11 +226,11 @@ export default function TeacherDashboard({ onNavigate }) {
 
   // Shared Institutional Items
   const sharedNavItems = [
-    { id: 'notices', label: 'Notice Board', icon: <IconBell size={18} />, type: 'route' },
-    { id: 'calendar', label: 'Academic Calendar', icon: <IconCalendar size={18} />, type: 'route' },
+    { id: 'notices', label: 'Notice Board', icon: <IconBell size={18} />, type: 'tab' },
+    { id: 'calendar', label: 'Academic Calendar', icon: <IconCalendar size={18} />, type: 'tab' },
     { id: 'feeds', label: 'News & Research Feed', icon: <IconBrain size={18} />, type: 'tab' },
     { id: 'tickets', label: 'Help Desk & Support', icon: <IconWrench size={18} />, type: 'tab' },
-    { id: 'profile', label: 'Profile & Settings', icon: <IconUser size={18} />, type: 'route' },
+    { id: 'profile', label: 'Profile & Settings', icon: <IconUser size={18} />, type: 'tab' },
   ]
 
 
@@ -271,7 +281,12 @@ export default function TeacherDashboard({ onNavigate }) {
         </div>
 
         <div className="topbar-right">
-          <div className="teacher-user-meta">
+          <div
+            className="teacher-user-meta"
+            onClick={() => setActiveTab('profile')}
+            style={{ cursor: 'pointer' }}
+            title="Open Profile & Settings"
+          >
             <div className="teacher-avatar">
               {(currentUser?.fullName || 'T')[0].toUpperCase()}
             </div>
@@ -322,22 +337,16 @@ export default function TeacherDashboard({ onNavigate }) {
           <div className="sidenav-section-title" style={{ marginTop: '20px' }}>Campus & Institution</div>
           <nav className="sidenav-nav">
             {sharedNavItems.map((item) => {
-              const isTabActive = item.type === 'tab' && activeTab === item.id && !viewingAssignmentId && !isCreatingAssignment
+              const isTabActive = (activeTab === item.id || (item.id === 'feeds' && activeTab === 'news')) && !viewingAssignmentId && !isCreatingAssignment
               return (
                 <button
                   key={item.id}
                   type="button"
                   className={`sidenav-tab-btn ${isTabActive ? 'active' : ''}`}
                   onClick={() => {
-                    if (item.type === 'tab') {
-                      setViewingAssignmentId(null)
-                      setIsCreatingAssignment(false)
-                      setActiveTab(item.id)
-                    } else if (onNavigate) {
-                      onNavigate(item.id)
-                    } else {
-                      window.location.hash = `#${item.id}`
-                    }
+                    setViewingAssignmentId(null)
+                    setIsCreatingAssignment(false)
+                    setActiveTab(item.id)
                   }}
                 >
                   <span className="nav-icon">{item.icon}</span>
@@ -1038,6 +1047,34 @@ export default function TeacherDashboard({ onNavigate }) {
                       </div>
                     )}
                   </div>
+                </div>
+              )}
+
+              {/* TAB: ACADEMIC CALENDAR */}
+              {activeTab === 'calendar' && (
+                <div className="teacher-embedded-view">
+                  <InstitutionalCalendar onBack={() => setActiveTab('overview')} />
+                </div>
+              )}
+
+              {/* TAB: NEWS & RESEARCH */}
+              {(activeTab === 'news' || activeTab === 'feeds') && (
+                <div className="teacher-embedded-view">
+                  <NewsResearchFeed onBack={() => setActiveTab('overview')} />
+                </div>
+              )}
+
+              {/* TAB: PROFILE & SETTINGS */}
+              {activeTab === 'profile' && (
+                <div className="teacher-embedded-view">
+                  <ProfileSettings onBack={() => setActiveTab('overview')} />
+                </div>
+              )}
+
+              {/* TAB: NOTICE BOARD */}
+              {activeTab === 'notices' && (
+                <div className="teacher-embedded-view">
+                  <NoticeBoard onBack={() => setActiveTab('overview')} />
                 </div>
               )}
             </>

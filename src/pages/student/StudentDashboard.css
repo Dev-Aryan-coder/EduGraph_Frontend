@@ -1430,3 +1430,39 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   EMBEDDED VIEWS (Calendar, News & Research, Profile in main content area)
+   ========================================================================== */
+.student-embedded-view {
+  width: 100%;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.student-embedded-view .calendar-root,
+.student-embedded-view .feed-root,
+.student-embedded-view .profile-settings-root {
+  min-height: auto;
+  background: transparent;
+}
+
+.student-embedded-view .calendar-header,
+.student-embedded-view .feed-header,
+.student-embedded-view .profile-header {
+  border-radius: 14px;
+  border: 1px solid #E2E8F0;
+  margin-bottom: 20px;
+}
+
+.student-embedded-view .calendar-content-container,
+.student-embedded-view .feed-content-container,
+.student-embedded-view .profile-content-container {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

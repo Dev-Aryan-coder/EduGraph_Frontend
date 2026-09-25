@@ -614,3 +614,39 @@
     padding: 24px 16px;
   }
 }
+
+/* ==========================================================================
+   ADMIN EMBEDDED VIEWS (Calendar, News & Research, Profile)
+   ========================================================================== */
+.admin-embedded-view {
+  width: 100%;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.admin-embedded-view .calendar-root,
+.admin-embedded-view .feed-root,
+.admin-embedded-view .profile-settings-root {
+  min-height: auto;
+  background: transparent;
+}
+
+.admin-embedded-view .calendar-header,
+.admin-embedded-view .feed-header,
+.admin-embedded-view .profile-header {
+  border-radius: 14px;
+  border: 1px solid #E2E8F0;
+  margin-bottom: 20px;
+}
+
+.admin-embedded-view .calendar-content-container,
+.admin-embedded-view .feed-content-container,
+.admin-embedded-view .profile-content-container {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

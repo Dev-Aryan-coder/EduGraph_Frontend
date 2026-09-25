@@ -1100,3 +1100,45 @@
     padding: 24px 16px;
   }
 }
+
+/* ==========================================================================
+   PRINCIPAL EMBEDDED VIEWS (Calendar, News & Research, Profile, Help Desk)
+   ========================================================================== */
+.principal-embedded-view {
+  width: 100%;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.principal-embedded-view .calendar-root,
+.principal-embedded-view .feed-root,
+.principal-embedded-view .profile-settings-root,
+.principal-embedded-view .helpdesk-root,
+.principal-embedded-view .noticeboard-root {
+  min-height: auto;
+  background: transparent;
+}
+
+.principal-embedded-view .calendar-header,
+.principal-embedded-view .feed-header,
+.principal-embedded-view .profile-header,
+.principal-embedded-view .helpdesk-header,
+.principal-embedded-view .noticeboard-header {
+  border-radius: 14px;
+  border: 1px solid #E2E8F0;
+  margin-bottom: 20px;
+}
+
+.principal-embedded-view .calendar-content-container,
+.principal-embedded-view .feed-content-container,
+.principal-embedded-view .profile-content-container,
+.principal-embedded-view .helpdesk-content-container,
+.principal-embedded-view .noticeboard-content-container {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

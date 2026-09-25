@@ -4,6 +4,9 @@ import adminService from '../../services/adminService'
 import CollegeManager from './CollegeManager'
 import PlatformTickets from './PlatformTickets'
 import GlobalNotices from './GlobalNotices'
+import InstitutionalCalendar from '../shared/InstitutionalCalendar'
+import NewsResearchFeed from '../shared/NewsResearchFeed'
+import ProfileSettings from '../shared/ProfileSettings'
 import logoSvg from '../../assets/edugraph-logo.svg'
 import {
   IconLayoutDashboard,
@@ -30,9 +33,15 @@ import {
 import './AdminDashboard.css'
 
 
-export default function AdminDashboard({ onNavigate }) {
+export default function AdminDashboard({ onNavigate, initialTab }) {
   const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState(initialTab || 'overview')
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab)
+    }
+  }, [initialTab])
 
   // Real Database State
   const [stats, setStats] = useState(null)
@@ -162,7 +171,12 @@ export default function AdminDashboard({ onNavigate }) {
             <span>Public Site</span>
           </button>
 
-          <div className="topbar-user-badge">
+          <div
+            className="topbar-user-badge"
+            onClick={() => setActiveTab('profile')}
+            style={{ cursor: 'pointer' }}
+            title="Open Profile & Settings"
+          >
             <div className="admin-avatar-circle">
               {currentUser?.profileImageUrl ? (
                 <img src={currentUser.profileImageUrl} alt="Admin Avatar" className="avatar-img" />
@@ -223,23 +237,21 @@ export default function AdminDashboard({ onNavigate }) {
           <div className="sidebar-nav-title" style={{ marginTop: '22px' }}>CAMPUS & INSTITUTION</div>
 
           <nav className="sidebar-nav-menu">
-            {sharedNavItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className="sidebar-nav-link"
-                onClick={() => {
-                  if (onNavigate) {
-                    onNavigate(item.id)
-                  } else {
-                    window.location.hash = `#${item.id}`
-                  }
-                }}
-              >
-                <span className="link-icon">{item.icon}</span>
-                <span className="link-text">{item.label}</span>
-              </button>
-            ))}
+            {sharedNavItems.map((item) => {
+              const isActive = activeTab === item.id
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`sidebar-nav-link ${isActive ? 'active' : ''}`}
+                  onClick={() => setActiveTab(item.id)}
+                >
+                  <span className="link-icon">{item.icon}</span>
+                  <span className="link-text">{item.label}</span>
+                  {isActive && <span className="active-glow-pill red-pill" />}
+                </button>
+              )
+            })}
           </nav>
 
 
@@ -588,6 +600,27 @@ export default function AdminDashboard({ onNavigate }) {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* TAB: ACADEMIC CALENDAR */}
+          {activeTab === 'calendar' && (
+            <div className="admin-embedded-view">
+              <InstitutionalCalendar onBack={() => setActiveTab('overview')} />
+            </div>
+          )}
+
+          {/* TAB: NEWS & RESEARCH */}
+          {activeTab === 'news' && (
+            <div className="admin-embedded-view">
+              <NewsResearchFeed onBack={() => setActiveTab('overview')} />
+            </div>
+          )}
+
+          {/* TAB: PROFILE & SETTINGS */}
+          {activeTab === 'profile' && (
+            <div className="admin-embedded-view">
+              <ProfileSettings onBack={() => setActiveTab('overview')} />
             </div>
           )}
 

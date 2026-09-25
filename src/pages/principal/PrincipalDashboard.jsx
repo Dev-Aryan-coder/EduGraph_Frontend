@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react'
 import authService from '../../services/authService'
 import principalService from '../../services/principalService'
 import CoordinatorModal from './CoordinatorModal'
+import InstitutionalCalendar from '../shared/InstitutionalCalendar'
+import NewsResearchFeed from '../shared/NewsResearchFeed'
+import ProfileSettings from '../shared/ProfileSettings'
+import NoticeBoard from '../shared/NoticeBoard'
+import HelpDesk from '../shared/HelpDesk'
 import logoSvg from '../../assets/edugraph-logo.svg'
 import {
   IconLayoutDashboard,
@@ -27,9 +32,15 @@ import {
 import './PrincipalDashboard.css'
 
 
-export default function PrincipalDashboard({ onNavigate }) {
+export default function PrincipalDashboard({ onNavigate, initialTab }) {
   const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState(initialTab || 'overview')
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab)
+    }
+  }, [initialTab])
 
   // Real Database State (Loaded strictly via REST APIs)
   const [overviewData, setOverviewData] = useState(null)
@@ -216,7 +227,12 @@ export default function PrincipalDashboard({ onNavigate }) {
             <span>Public Site</span>
           </button>
 
-          <div className="topbar-user-badge">
+          <div
+            className="topbar-user-badge"
+            onClick={() => setActiveTab('profile')}
+            style={{ cursor: 'pointer' }}
+            title="Open Profile & Settings"
+          >
             <div className="user-avatar-circle">
               {currentUser?.profileImageUrl ? (
                 <img src={currentUser.profileImageUrl} alt="Principal Avatar" className="avatar-img" />
@@ -277,23 +293,21 @@ export default function PrincipalDashboard({ onNavigate }) {
           <div className="sidebar-nav-title" style={{ marginTop: '22px' }}>CAMPUS & INSTITUTION</div>
 
           <nav className="sidebar-nav-menu">
-            {sharedNavItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className="sidebar-nav-link"
-                onClick={() => {
-                  if (onNavigate) {
-                    onNavigate(item.id)
-                  } else {
-                    window.location.hash = `#${item.id}`
-                  }
-                }}
-              >
-                <span className="link-icon">{item.icon}</span>
-                <span className="link-text">{item.label}</span>
-              </button>
-            ))}
+            {sharedNavItems.map((item) => {
+              const isActive = activeTab === item.id
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`sidebar-nav-link ${isActive ? 'active' : ''}`}
+                  onClick={() => setActiveTab(item.id)}
+                >
+                  <span className="link-icon">{item.icon}</span>
+                  <span className="link-text">{item.label}</span>
+                  {isActive && <span className="active-glow-pill" />}
+                </button>
+              )
+            })}
           </nav>
 
 
@@ -876,6 +890,34 @@ export default function PrincipalDashboard({ onNavigate }) {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* TAB: ACADEMIC CALENDAR */}
+          {activeTab === 'calendar' && (
+            <div className="principal-embedded-view">
+              <InstitutionalCalendar onBack={() => setActiveTab('overview')} />
+            </div>
+          )}
+
+          {/* TAB: NEWS & RESEARCH */}
+          {activeTab === 'news' && (
+            <div className="principal-embedded-view">
+              <NewsResearchFeed onBack={() => setActiveTab('overview')} />
+            </div>
+          )}
+
+          {/* TAB: HELP DESK / TICKETS */}
+          {activeTab === 'help-desk' && (
+            <div className="principal-embedded-view">
+              <HelpDesk onBack={() => setActiveTab('overview')} />
+            </div>
+          )}
+
+          {/* TAB: PROFILE & SETTINGS */}
+          {activeTab === 'profile' && (
+            <div className="principal-embedded-view">
+              <ProfileSettings onBack={() => setActiveTab('overview')} />
             </div>
           )}
 

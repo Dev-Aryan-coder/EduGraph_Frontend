@@ -7,6 +7,9 @@ import MCQQuizRunner from './MCQQuizRunner'
 import WhiteboardStudio from './WhiteboardStudio'
 import ShareNodeModal from './ShareNodeModal'
 import logoSvg from '../../assets/edugraph-logo.svg'
+import InstitutionalCalendar from '../shared/InstitutionalCalendar'
+import NewsResearchFeed from '../shared/NewsResearchFeed'
+import ProfileSettings from '../shared/ProfileSettings'
 import {
   IconGraduation,
   IconBrain,
@@ -33,9 +36,15 @@ import {
 } from '../../components/common/Icons'
 import './StudentDashboard.css'
 
-export default function StudentDashboard({ onNavigate }) {
+export default function StudentDashboard({ onNavigate, initialTab = 'assignments' }) {
   const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
-  const [activeTab, setActiveTab] = useState('assignments') // 'assignments' | 'panels' | 'shared' | 'notices' | 'tickets'
+  const [activeTab, setActiveTab] = useState(initialTab || 'assignments') // 'assignments' | 'panels' | 'shared' | 'notices' | 'tickets' | 'calendar' | 'news' | 'profile'
+
+  useEffect(() => {
+    if (initialTab && ['assignments', 'panels', 'shared', 'notices', 'tickets', 'calendar', 'news', 'profile'].includes(initialTab)) {
+      setActiveTab(initialTab)
+    }
+  }, [initialTab])
 
   // Real Database State
   const [assignments, setAssignments] = useState([])
@@ -74,7 +83,7 @@ export default function StudentDashboard({ onNavigate }) {
         studentService.getMyAssignments(),
         studentService.getMyPanels(),
         studentService.getSharedWithMe(),
-        studentService.getNotices(),
+        sharedService.getMyNotices(),
         sharedService.getMyTickets()
       ])
 
@@ -241,7 +250,7 @@ export default function StudentDashboard({ onNavigate }) {
 
           <div
             className="topbar-user-badge"
-            onClick={() => onNavigate ? onNavigate('profile') : (window.location.hash = '#profile')}
+            onClick={() => setActiveTab('profile')}
             style={{ cursor: 'pointer' }}
             title="Open Profile & Settings"
           >
@@ -345,29 +354,32 @@ export default function StudentDashboard({ onNavigate }) {
 
             <button
               type="button"
-              className="sidebar-nav-link"
-              onClick={() => onNavigate ? onNavigate('calendar') : (window.location.hash = '#calendar')}
+              className={`sidebar-nav-link ${activeTab === 'calendar' ? 'active' : ''}`}
+              onClick={() => setActiveTab('calendar')}
             >
               <span className="link-icon"><IconCalendar size={18} /></span>
               <span className="link-text">Academic Calendar</span>
+              {activeTab === 'calendar' && <span className="active-glow-pill teal-pill" />}
             </button>
 
             <button
               type="button"
-              className="sidebar-nav-link"
-              onClick={() => onNavigate ? onNavigate('news') : (window.location.hash = '#news')}
+              className={`sidebar-nav-link ${activeTab === 'news' ? 'active' : ''}`}
+              onClick={() => setActiveTab('news')}
             >
               <span className="link-icon"><IconBrain size={18} /></span>
               <span className="link-text">News & Research</span>
+              {activeTab === 'news' && <span className="active-glow-pill teal-pill" />}
             </button>
 
             <button
               type="button"
-              className="sidebar-nav-link"
-              onClick={() => onNavigate ? onNavigate('profile') : (window.location.hash = '#profile')}
+              className={`sidebar-nav-link ${activeTab === 'profile' ? 'active' : ''}`}
+              onClick={() => setActiveTab('profile')}
             >
               <span className="link-icon"><IconUser size={18} /></span>
               <span className="link-text">Profile & Settings</span>
+              {activeTab === 'profile' && <span className="active-glow-pill teal-pill" />}
             </button>
           </nav>
 
@@ -732,6 +744,27 @@ export default function StudentDashboard({ onNavigate }) {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* TAB 6: ACADEMIC CALENDAR */}
+          {activeTab === 'calendar' && (
+            <div className="student-embedded-view">
+              <InstitutionalCalendar onBack={() => setActiveTab('assignments')} />
+            </div>
+          )}
+
+          {/* TAB 7: NEWS & RESEARCH */}
+          {activeTab === 'news' && (
+            <div className="student-embedded-view">
+              <NewsResearchFeed onBack={() => setActiveTab('assignments')} />
+            </div>
+          )}
+
+          {/* TAB 8: PROFILE & SETTINGS */}
+          {activeTab === 'profile' && (
+            <div className="student-embedded-view">
+              <ProfileSettings onBack={() => setActiveTab('assignments')} />
             </div>
           )}
         </main>

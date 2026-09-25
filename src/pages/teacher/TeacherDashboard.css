@@ -1033,3 +1033,42 @@
     padding: 20px 16px;
   }
 }
+
+/* ==========================================================================
+   TEACHER EMBEDDED VIEWS (Calendar, News & Research, Profile, Notices)
+   ========================================================================== */
+.teacher-embedded-view {
+  width: 100%;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.teacher-embedded-view .calendar-root,
+.teacher-embedded-view .feed-root,
+.teacher-embedded-view .profile-settings-root,
+.teacher-embedded-view .noticeboard-root {
+  min-height: auto;
+  background: transparent;
+}
+
+.teacher-embedded-view .calendar-header,
+.teacher-embedded-view .feed-header,
+.teacher-embedded-view .profile-header,
+.teacher-embedded-view .noticeboard-header {
+  border-radius: 14px;
+  border: 1px solid #E2E8F0;
+  margin-bottom: 20px;
+}
+
+.teacher-embedded-view .calendar-content-container,
+.teacher-embedded-view .feed-content-container,
+.teacher-embedded-view .profile-content-container,
+.teacher-embedded-view .noticeboard-content-container {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
