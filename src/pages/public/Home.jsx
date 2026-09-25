@@ -1,7 +1,15 @@
 import React from 'react'
 import './Home.css'
 
-export default function Home() {
+export default function Home({ onNavigate }) {
+  const navigateTo = (tab) => {
+    if (onNavigate) {
+      onNavigate(tab)
+    } else {
+      window.location.hash = `#${tab}`
+    }
+  }
+
   return (
     <div className="home-container">
       {/* =========================================================================
@@ -165,24 +173,30 @@ export default function Home() {
 
           </div>
 
-          {/* 3. Vision Statement Section */}
+          {/* 3. About Us & Vision Statement Section */}
           <div className="hero-vision-section" id="about">
             <div className="vision-layout-grid">
               
               {/* Left Column: Vision Narrative */}
               <div className="vision-text-col">
                 <div className="vision-header">
-                  <span className="section-eyebrow">Institutional Philosophy</span>
-                  <h2 className="vision-title">Our Vision</h2>
+                  <span className="section-eyebrow">WHO WE ARE & OUR MISSION</span>
+                  <h2 className="vision-title">About Us & Our Vision</h2>
                   <div className="vision-sketch-divider" aria-hidden="true" />
                 </div>
                 <p className="vision-desc">
-                  Bridging spatial visual thinking with uncompromising academic integrity—transforming flat memorization into active, verified conceptual mastery.
+                  Bridging spatial visual thinking with uncompromising academic integrity—transforming flat memorization into active, verified conceptual mastery across 250+ partner universities.
                 </p>
                 <div className="vision-feature-pills">
                   <span className="v-pill">✦ Spatial Mind Graphs</span>
                   <span className="v-pill">✦ Live Anti-Cheat Shield</span>
-                  <a href="#about" className="v-pill v-pill-link">Read Full Mission →</a>
+                  <button 
+                    type="button"
+                    className="v-pill v-pill-link"
+                    onClick={() => navigateTo('about')}
+                  >
+                    Explore Full About Us Story →
+                  </button>
                 </div>
               </div>
 

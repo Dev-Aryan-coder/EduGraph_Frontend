@@ -2,9 +2,7 @@ import React, { useState } from 'react'
 import logoSvg from '../../assets/edugraph-logo.svg'
 import './Navbar.css'
 
-export default function Navbar() {
-  const [activeTab, setActiveTab] = useState('home')
-
+export default function Navbar({ activeTab = 'home', setActiveTab }) {
   const navItems = [
     { id: 'home', label: 'Home', href: '#home' },
     { id: 'about', label: 'About Us', href: '#about' },
@@ -13,13 +11,24 @@ export default function Navbar() {
     { id: 'contact', label: 'Contact Us', href: '#contact' },
   ]
 
+  const handleNavClick = (id) => {
+    if (setActiveTab) {
+      setActiveTab(id)
+    } else {
+      window.location.hash = `#${id}`
+    }
+  }
+
   return (
     <header className="navbar-header-wrapper">
       {/* 1. Brand Logo at the FAR LEFT of the browser screen */}
       <a 
         href="#home" 
         className="screen-left-logo-link"
-        onClick={() => setActiveTab('home')}
+        onClick={(e) => {
+          e.preventDefault()
+          handleNavClick('home')
+        }}
         aria-label="EduGraph Home"
       >
         <img 
@@ -41,7 +50,7 @@ export default function Navbar() {
                 className={`nav-link ${isActive ? 'active' : ''}`}
                 onClick={(e) => {
                   e.preventDefault()
-                  setActiveTab(item.id)
+                  handleNavClick(item.id)
                 }}
               >
                 <span className="nav-label">{item.label}</span>
@@ -57,14 +66,20 @@ export default function Navbar() {
         <a 
           href="#login" 
           className="auth-btn login-btn"
-          onClick={() => setActiveTab('login')}
+          onClick={(e) => {
+            e.preventDefault()
+            handleNavClick('login')
+          }}
         >
           Login
         </a>
         <a 
           href="#signup" 
           className="auth-btn signup-btn"
-          onClick={() => setActiveTab('signup')}
+          onClick={(e) => {
+            e.preventDefault()
+            handleNavClick('signup')
+          }}
         >
           Sign Up
         </a>

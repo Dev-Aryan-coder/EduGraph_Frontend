@@ -2,7 +2,16 @@ import React from 'react'
 import logoSvg from '../../assets/edugraph-logo.svg'
 import './Footer.css'
 
-export default function Footer() {
+export default function Footer({ onNavigate }) {
+  const handleNav = (e, tab) => {
+    e.preventDefault()
+    if (onNavigate) {
+      onNavigate(tab)
+    } else {
+      window.location.hash = `#${tab}`
+    }
+  }
+
   return (
     <footer className="edugraph-footer" id="footer">
       <div className="footer-inner-container">
@@ -12,7 +21,12 @@ export default function Footer() {
           
           {/* Brand Column with Transparent Vector Logo */}
           <div className="footer-brand-col">
-            <a href="#home" className="footer-logo-link" aria-label="EduGraph Home">
+            <a 
+              href="#home" 
+              className="footer-logo-link" 
+              aria-label="EduGraph Home"
+              onClick={(e) => handleNav(e, 'home')}
+            >
               <img src={logoSvg} alt="EduGraph Logo" className="footer-brand-logo" />
             </a>
             <p className="footer-brand-tagline">
@@ -28,11 +42,11 @@ export default function Footer() {
           <div className="footer-links-col">
             <h4 className="footer-col-title">Navigation</h4>
             <ul className="footer-links-list">
-              <li><a href="#home">Home</a></li>
-              <li><a href="#about">About Us</a></li>
-              <li><a href="#features">Features</a></li>
-              <li><a href="#services">Services</a></li>
-              <li><a href="#contact">Contact Us</a></li>
+              <li><a href="#home" onClick={(e) => handleNav(e, 'home')}>Home</a></li>
+              <li><a href="#about" onClick={(e) => handleNav(e, 'about')}>About Us</a></li>
+              <li><a href="#features" onClick={(e) => handleNav(e, 'features')}>Features</a></li>
+              <li><a href="#services" onClick={(e) => handleNav(e, 'services')}>Services</a></li>
+              <li><a href="#contact" onClick={(e) => handleNav(e, 'contact')}>Contact Us</a></li>
             </ul>
           </div>
 
