@@ -2,61 +2,61 @@ import React, { useState, useEffect } from 'react'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import Home from './pages/public/Home'
+import AboutUs from './pages/public/AboutUs'
+import Features from './pages/public/Features'
+import Services from './pages/public/Services'
+import ContactUs from './pages/public/ContactUs'
 import './App.css'
 
 function App() {
-  const [activeTab, setActiveTab] = useState('home')
+  const [activeTab, setActiveTab] = useState(() => {
+    const hash = window.location.hash.replace('#', '')
+    return ['home', 'about', 'features', 'services', 'contact'].includes(hash) ? hash : 'home'
+  })
 
-  const scrollToSection = (tabId) => {
-    setActiveTab(tabId)
-    if (tabId === 'home') {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    } else {
-      const element = document.getElementById(tabId)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' })
+  // Synchronize browser history / URL hash changes
+  useEffect(() => {
+    const onHashChange = () => {
+      const hash = window.location.hash.replace('#', '')
+      if (['home', 'about', 'features', 'services', 'contact'].includes(hash)) {
+        setActiveTab(hash)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
       }
+    }
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
+  const navigateToTab = (tabId) => {
+    setActiveTab(tabId)
+    window.location.hash = `#${tabId}`
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  // Render the active navbar page view
+  const renderCurrentPage = () => {
+    switch (activeTab) {
+      case 'about':
+        return <AboutUs onNavigate={navigateToTab} />
+      case 'features':
+        return <Features onNavigate={navigateToTab} />
+      case 'services':
+        return <Services onNavigate={navigateToTab} />
+      case 'contact':
+        return <ContactUs onNavigate={navigateToTab} />
+      case 'home':
+      default:
+        return <Home onNavigate={navigateToTab} />
     }
   }
 
-  // Handle initial hash on page load (e.g. #about)
-  useEffect(() => {
-    const hash = window.location.hash.replace('#', '')
-    if (hash) {
-      setTimeout(() => {
-        scrollToSection(hash)
-      }, 150)
-    }
-  }, [])
-
-  // Highlight active navbar tab dynamically as the user scrolls
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['contact', 'how-it-works', 'features', 'services', 'about', 'home']
-      const scrollPos = window.scrollY + 220
-
-      for (const sectionId of sections) {
-        const el = document.getElementById(sectionId)
-        if (el && el.offsetTop <= scrollPos) {
-          let navId = sectionId
-          if (sectionId === 'how-it-works') navId = 'features'
-          setActiveTab(navId)
-          break
-        }
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
   return (
     <div className="app-container">
-      <Navbar activeTab={activeTab} setActiveTab={scrollToSection} />
+      <Navbar activeTab={activeTab} setActiveTab={navigateToTab} />
       <main>
-        <Home onNavigate={scrollToSection} />
+        {renderCurrentPage()}
       </main>
-      <Footer onNavigate={scrollToSection} />
+      <Footer onNavigate={navigateToTab} />
     </div>
   )
 }
