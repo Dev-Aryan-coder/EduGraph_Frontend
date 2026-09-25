@@ -17,7 +17,8 @@ import './AssignmentRunner.css'
 export default function AssignmentRunner({
   assignmentId,
   onBack,
-  onSubmissionComplete
+  onSubmissionComplete,
+  onAccidentalExit
 }) {
   const [assignment, setAssignment] = useState(null)
   const [submission, setSubmission] = useState(null)
@@ -26,6 +27,7 @@ export default function AssignmentRunner({
   const [isFinalizing, setIsFinalizing] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [showExitModal, setShowExitModal] = useState(false)
 
   // Proctoring State
   const [tabSwitches, setTabSwitches] = useState(0)
@@ -210,6 +212,7 @@ export default function AssignmentRunner({
           loadAssignmentAndSubmission()
           setActiveView('whiteboard')
         }}
+        onAccidentalExit={onAccidentalExit}
       />
     )
   }
@@ -217,12 +220,29 @@ export default function AssignmentRunner({
   const isSubmitted = submission?.status === 'SUBMITTED' || submission?.status === 'GRADED'
   const isGraded = submission?.status === 'GRADED'
 
+  const handleBackRequest = () => {
+    if (isSubmitted) {
+      onBack()
+    } else {
+      setShowExitModal(true)
+    }
+  }
+
+  const handleConfirmExitAndLock = () => {
+    setShowExitModal(false)
+    if (onAccidentalExit) {
+      onAccidentalExit(assignmentId, assignment)
+    } else {
+      onBack()
+    }
+  }
+
   return (
     <div className="assign-runner-container">
       {/* Top Application Bar */}
       <header className="assign-runner-header">
         <div className="runner-nav-left">
-          <button className="runner-back-btn" onClick={onBack}>
+          <button className="runner-back-btn" onClick={handleBackRequest}>
             <IconArrowLeft size={16} /> Back to Dashboard
           </button>
           <div className="runner-title-info">
@@ -410,6 +430,43 @@ export default function AssignmentRunner({
           </div>
         </aside>
       </div>
+
+      {/* Accidental Exit Warning Modal */}
+      {showExitModal && (
+        <div className="modal-backdrop">
+          <div className="exit-warning-modal-card">
+            <div className="exit-warning-icon">
+              <IconAlertTriangle size={36} color="#DC2626" />
+            </div>
+            <h3 className="exit-warning-title">Warning: Exiting Will Lock This Assignment!</h3>
+            <p className="exit-warning-body">
+              You are currently working on <strong>{assignment?.title || 'this assignment'}</strong> and have not completed final submission.
+            </p>
+            <div className="exit-warning-alert-box">
+              <strong>🔒 Strict Academic Integrity & Proctoring Rule:</strong>
+              <p>
+                If you leave now without submitting, this assignment will be <strong>IMMEDIATELY LOCKED</strong>. You will be barred from attempting it again until you raise an unlock ticket to your course teacher and your teacher reviews and authorizes your re-attempt.
+              </p>
+            </div>
+            <div className="exit-warning-actions">
+              <button
+                type="button"
+                className="btn-exit-stay"
+                onClick={() => setShowExitModal(false)}
+              >
+                Continue Working on Assignment
+              </button>
+              <button
+                type="button"
+                className="btn-exit-confirm-lock"
+                onClick={handleConfirmExitAndLock}
+              >
+                Exit & Lock Assignment
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

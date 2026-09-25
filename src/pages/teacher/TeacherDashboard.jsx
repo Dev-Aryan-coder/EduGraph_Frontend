@@ -9,6 +9,7 @@ import InstitutionalCalendar from '../shared/InstitutionalCalendar'
 import NewsResearchFeed from '../shared/NewsResearchFeed'
 import ProfileSettings from '../shared/ProfileSettings'
 import NoticeBoard from '../shared/NoticeBoard'
+import assignmentLockService from '../../services/assignmentLockService'
 import logoSvg from '../../assets/edugraph-logo.svg'
 import {
   IconLayoutDashboard,
@@ -85,6 +86,11 @@ export default function TeacherDashboard({ onNavigate, initialTab }) {
   const [gradingClassFilter, setGradingClassFilter] = useState('ALL')
   const [gradingStatusFilter, setGradingStatusFilter] = useState('ALL')
 
+  // Student Assignment Unlock Ticket State
+  const [unlockTickets, setUnlockTickets] = useState([])
+  const [ticketSubTab, setTicketSubTab] = useState('unlock') // 'unlock' | 'institutional'
+  const [unlockSearch, setUnlockSearch] = useState('')
+
   // Toast State
   const [toastMessage, setToastMessage] = useState(null)
   const showToast = (msg) => {
@@ -110,6 +116,10 @@ export default function TeacherDashboard({ onNavigate, initialTab }) {
       if (newsData) setNewsList(newsData)
       if (researchData) setResearchList(researchData)
 
+      // Fetch student accidental exit unlock tickets
+      const allUnlockTks = assignmentLockService.getUnlockTickets()
+      setUnlockTickets(allUnlockTks)
+
       // Fetch all submissions across teacher's assignments
       if (myAuthored && myAuthored.length > 0) {
         const subPromises = myAuthored.map((a) =>
@@ -125,6 +135,35 @@ export default function TeacherDashboard({ onNavigate, initialTab }) {
       console.error('Error fetching teacher data:', err)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // Cross-tab/component sync for student unlock tickets
+  useEffect(() => {
+    const handleSync = () => {
+      setUnlockTickets(assignmentLockService.getUnlockTickets())
+    }
+    window.addEventListener('edugraph_assignment_tickets_change', handleSync)
+    window.addEventListener('edugraph_assignment_lock_change', handleSync)
+    window.addEventListener('storage', handleSync)
+    return () => {
+      window.removeEventListener('edugraph_assignment_tickets_change', handleSync)
+      window.removeEventListener('edugraph_assignment_lock_change', handleSync)
+      window.removeEventListener('storage', handleSync)
+    }
+  }, [])
+
+  const handleUnlockStudent = (ticket) => {
+    const res = assignmentLockService.unlockAssignment(
+      ticket.id,
+      'Assignment unlocked by instructor. Student permitted to re-attempt.',
+      currentUser
+    )
+    if (res.success) {
+      showToast(`Assignment "${ticket.assignmentTitle}" unlocked for ${ticket.studentName}! Re-attempt permitted.`)
+      setUnlockTickets(assignmentLockService.getUnlockTickets())
+    } else {
+      alert('Failed to unlock assignment: ' + (res.message || 'Unknown error'))
     }
   }
 
@@ -261,6 +300,19 @@ export default function TeacherDashboard({ onNavigate, initialTab }) {
   // Submissions Awaiting Grading
   const pendingSubmissions = submissions.filter((s) => s.status === 'SUBMITTED')
 
+  // Pending student accidental exit unlock requests
+  const pendingUnlockTickets = unlockTickets.filter((t) => t.status === 'PENDING')
+  const filteredUnlockTickets = unlockTickets.filter((tk) => {
+    if (!unlockSearch.trim()) return true
+    const q = unlockSearch.toLowerCase()
+    return (
+      (tk.studentName && tk.studentName.toLowerCase().includes(q)) ||
+      (tk.studentRollNumber && tk.studentRollNumber.toLowerCase().includes(q)) ||
+      (tk.assignmentTitle && tk.assignmentTitle.toLowerCase().includes(q)) ||
+      (tk.id && tk.id.toLowerCase().includes(q))
+    )
+  })
+
   return (
     <div className="teacher-workspace">
       {/* Top Header */}
@@ -351,6 +403,11 @@ export default function TeacherDashboard({ onNavigate, initialTab }) {
                 >
                   <span className="nav-icon">{item.icon}</span>
                   <span className="nav-label">{item.label}</span>
+                  {item.id === 'tickets' && pendingUnlockTickets.length > 0 && (
+                    <span className="nav-badge-pending" style={{ background: '#DC2626' }}>
+                      {pendingUnlockTickets.length}
+                    </span>
+                  )}
                 </button>
               )
             })}
@@ -414,6 +471,26 @@ export default function TeacherDashboard({ onNavigate, initialTab }) {
                       <span>Create New Assignment</span>
                     </button>
                   </div>
+
+                  {/* Student Unlock Alert Banner if pending */}
+                  {pendingUnlockTickets.length > 0 && (
+                    <div
+                      className="pending-unlock-alert-banner"
+                      onClick={() => { setActiveTab('tickets'); setTicketSubTab('unlock'); }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="pua-left">
+                        <IconAlertTriangle size={22} color="#DC2626" />
+                        <div>
+                          <strong>{pendingUnlockTickets.length} Student Assignment Unlock Request{pendingUnlockTickets.length > 1 ? 's' : ''} Awaiting Review</strong>
+                          <p>Students accidentally exited active sessions. Review their requests to authorize re-attempts.</p>
+                        </div>
+                      </div>
+                      <button type="button" className="btn-pua-action">
+                        Review & Unlock Tickets ➔
+                      </button>
+                    </div>
+                  )}
 
                   {/* High-level Metric Counters */}
                   <div className="overview-metrics-grid">
@@ -978,9 +1055,9 @@ export default function TeacherDashboard({ onNavigate, initialTab }) {
                 <div className="module-container">
                   <div className="module-header-row">
                     <div>
-                      <h1 className="module-title">Institutional Ticket Queue & Requests</h1>
+                      <h1 className="module-title">Student Assignment Unlock & Support Queue</h1>
                       <p className="module-sub">
-                        Submit data correction requests to the Coordinator or permission-override requests to Super Admin.
+                        Review student accidental exit unlock requests to authorize re-attempts, or manage institutional tickets.
                       </p>
                     </div>
 
@@ -994,59 +1071,189 @@ export default function TeacherDashboard({ onNavigate, initialTab }) {
                     </button>
                   </div>
 
-                  <div className="section-panel-card">
-                    {tickets.length > 0 ? (
-                      <div className="table-responsive">
-                        <table className="faculty-table">
-                          <thead>
-                            <tr>
-                              <th>Ticket ID</th>
-                              <th>Category</th>
-                              <th>Title & Description</th>
-                              <th>Classroom</th>
-                              <th>Lodged Date</th>
-                              <th>Status</th>
-                              <th>Resolution Notes</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {tickets.map((tk) => (
-                              <tr key={tk.id}>
-                                <td><code>TICK-{tk.id}</code></td>
-                                <td>
-                                  <span className={`cat-pill ${tk.category}`}>
-                                    {tk.category === 'PERMISSION_OVERRIDE' ? 'Permission Override' : 'Data Correction'}
-                                  </span>
-                                </td>
-                                <td>
-                                  <strong>{tk.title}</strong>
-                                  <p className="tbl-sub-desc">{tk.description}</p>
-                                </td>
-                                <td>
-                                  {tk.classroomName || (tk.classroomId ? `Class #${tk.classroomId}` : 'General')}
-                                </td>
-                                <td>{tk.createdAt ? new Date(tk.createdAt).toLocaleDateString() : 'Recent'}</td>
-                                <td>
-                                  {tk.status === 'RESOLVED' && <span className="status-badge graded">RESOLVED</span>}
-                                  {tk.status === 'PENDING' && <span className="status-badge pending">PENDING</span>}
-                                  {tk.status === 'REJECTED' && <span className="status-badge rejected">REJECTED</span>}
-                                </td>
-                                <td>
-                                  <span className="res-notes">{tk.resolutionNotes || 'Awaiting staff review'}</span>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <div className="empty-classes-notice">
-                        <IconShield size={36} color="#94A3B8" />
-                        <h4>No Support Tickets Lodged</h4>
-                        <p>Raise a ticket if you require student roster adjustments or assignment overrides.</p>
-                      </div>
-                    )}
+                  {/* Sub-tab Navigation */}
+                  <div className="faculty-filter-bar" style={{ marginBottom: '16px', display: 'flex', gap: '8px' }}>
+                    <button
+                      type="button"
+                      className={`status-filter-pill ${ticketSubTab === 'unlock' ? 'active' : ''}`}
+                      onClick={() => setTicketSubTab('unlock')}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <IconShield size={14} />
+                      <span>Student Assignment Unlock Requests ({unlockTickets.length})</span>
+                      {pendingUnlockTickets.length > 0 && (
+                        <span style={{
+                          background: '#DC2626',
+                          color: '#FFFFFF',
+                          fontSize: '0.7rem',
+                          fontWeight: 800,
+                          padding: '1px 6px',
+                          borderRadius: '10px'
+                        }}>
+                          {pendingUnlockTickets.length} PENDING
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      className={`status-filter-pill ${ticketSubTab === 'institutional' ? 'active' : ''}`}
+                      onClick={() => setTicketSubTab('institutional')}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <IconWrench size={14} />
+                      <span>My Support Requests ({tickets.length})</span>
+                    </button>
                   </div>
+
+                  {/* SUBTAB 1: STUDENT ASSIGNMENT UNLOCK REQUESTS */}
+                  {ticketSubTab === 'unlock' && (
+                    <div className="section-panel-card">
+                      <div className="faculty-filter-bar" style={{ padding: '0 0 16px 0', border: 'none' }}>
+                        <div className="f-search-box" style={{ flex: 1, maxWidth: '420px' }}>
+                          <IconSearch size={16} color="#64748B" />
+                          <input
+                            type="text"
+                            placeholder="Search by student name, roll number, or assignment..."
+                            className="f-search-input"
+                            value={unlockSearch}
+                            onChange={(e) => setUnlockSearch(e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                      {filteredUnlockTickets.length > 0 ? (
+                        <div className="table-responsive">
+                          <table className="faculty-table">
+                            <thead>
+                              <tr>
+                                <th>Ticket ID</th>
+                                <th>Student Name</th>
+                                <th>Roll Number</th>
+                                <th>Assignment Title</th>
+                                <th>Incident Timestamp</th>
+                                <th>Student Explanation</th>
+                                <th>Status</th>
+                                <th>Instructor Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {filteredUnlockTickets.map((tk) => {
+                                const isPending = tk.status === 'PENDING'
+                                return (
+                                  <tr key={tk.id}>
+                                    <td><code>{tk.id}</code></td>
+                                    <td className="font-semibold">{tk.studentName}</td>
+                                    <td><code>{tk.studentRollNumber || 'N/A'}</code></td>
+                                    <td>
+                                      <strong>{tk.assignmentTitle}</strong>
+                                      <p className="tbl-sub-desc">{tk.subjectName || 'Coursework'}</p>
+                                    </td>
+                                    <td>
+                                      <span className="deadline-text">
+                                        {tk.createdAt ? new Date(tk.createdAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : 'Recent'}
+                                      </span>
+                                    </td>
+                                    <td>
+                                      <p className="tbl-sub-desc" style={{ maxWidth: '280px', margin: 0 }}>
+                                        {tk.description}
+                                      </p>
+                                    </td>
+                                    <td>
+                                      {isPending ? (
+                                        <span className="status-badge pending">PENDING REVIEW</span>
+                                      ) : (
+                                        <span className="status-badge graded">UNLOCKED</span>
+                                      )}
+                                    </td>
+                                    <td>
+                                      {isPending ? (
+                                        <button
+                                          type="button"
+                                          className="btn-tbl-action extend"
+                                          onClick={() => handleUnlockStudent(tk)}
+                                          title="Unlock assignment and authorize re-attempt"
+                                          style={{ background: '#1B7F72', color: '#FFFFFF', borderColor: '#1B7F72' }}
+                                        >
+                                          🔓 Unlock Assignment & Allow Re-attempt
+                                        </button>
+                                      ) : (
+                                        <span className="res-notes" style={{ color: '#16A34A', fontWeight: 600 }}>
+                                          ✓ Re-attempt Authorized ({tk.resolvedBy || 'Instructor'})
+                                        </span>
+                                      )}
+                                    </td>
+                                  </tr>
+                                )
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <div className="empty-classes-notice">
+                          <IconShield size={36} color="#94A3B8" />
+                          <h4>No Student Unlock Requests</h4>
+                          <p>When students accidentally leave an active assignment session before submitting, their unlock requests will arrive here.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* SUBTAB 2: INSTITUTIONAL TICKETS */}
+                  {ticketSubTab === 'institutional' && (
+                    <div className="section-panel-card">
+                      {tickets.length > 0 ? (
+                        <div className="table-responsive">
+                          <table className="faculty-table">
+                            <thead>
+                              <tr>
+                                <th>Ticket ID</th>
+                                <th>Category</th>
+                                <th>Title & Description</th>
+                                <th>Classroom</th>
+                                <th>Lodged Date</th>
+                                <th>Status</th>
+                                <th>Resolution Notes</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {tickets.map((tk) => (
+                                <tr key={tk.id}>
+                                  <td><code>TICK-{tk.id}</code></td>
+                                  <td>
+                                    <span className={`cat-pill ${tk.category}`}>
+                                      {tk.category === 'PERMISSION_OVERRIDE' ? 'Permission Override' : 'Data Correction'}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <strong>{tk.title}</strong>
+                                    <p className="tbl-sub-desc">{tk.description}</p>
+                                  </td>
+                                  <td>
+                                    {tk.classroomName || (tk.classroomId ? `Class #${tk.classroomId}` : 'General')}
+                                  </td>
+                                  <td>{tk.createdAt ? new Date(tk.createdAt).toLocaleDateString() : 'Recent'}</td>
+                                  <td>
+                                    {tk.status === 'RESOLVED' && <span className="status-badge graded">RESOLVED</span>}
+                                    {tk.status === 'PENDING' && <span className="status-badge pending">PENDING</span>}
+                                    {tk.status === 'REJECTED' && <span className="status-badge rejected">REJECTED</span>}
+                                  </td>
+                                  <td>
+                                    <span className="res-notes">{tk.resolutionNotes || 'Awaiting staff review'}</span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <div className="empty-classes-notice">
+                          <IconShield size={36} color="#94A3B8" />
+                          <h4>No Support Tickets Lodged</h4>
+                          <p>Raise a ticket if you require student roster adjustments or assignment overrides.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 

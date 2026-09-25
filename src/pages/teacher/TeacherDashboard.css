@@ -1072,3 +1072,65 @@
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ==========================================================================
+   Pending Unlock Alert Banner Styles
+   ========================================================================== */
+
+.pending-unlock-alert-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.05);
+  transition: all 0.15s ease;
+}
+
+.pending-unlock-alert-banner:hover {
+  background: #FEE2E2;
+  border-color: #F87171;
+  transform: translateY(-1px);
+}
+
+.pua-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pua-left strong {
+  display: block;
+  font-size: 0.96rem;
+  color: #991B1B;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.pua-left p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #B91C1C;
+}
+
+.btn-pua-action {
+  padding: 8px 16px;
+  background: #DC2626;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.btn-pua-action:hover {
+  background: #B91C1C;
+}

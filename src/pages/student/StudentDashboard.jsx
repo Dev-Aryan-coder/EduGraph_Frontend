@@ -10,6 +10,7 @@ import logoSvg from '../../assets/edugraph-logo.svg'
 import InstitutionalCalendar from '../shared/InstitutionalCalendar'
 import NewsResearchFeed from '../shared/NewsResearchFeed'
 import ProfileSettings from '../shared/ProfileSettings'
+import assignmentLockService from '../../services/assignmentLockService'
 import {
   IconGraduation,
   IconBrain,
@@ -75,7 +76,33 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
   // Mandatory Submission Warning Modal State
   const [pendingAssessmentAction, setPendingAssessmentAction] = useState(null)
 
+  // Accidental Exit Assignment Locking & Unlock Ticket State
+  const [lockStateTrigger, setLockStateTrigger] = useState(0)
+  const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false)
+  const [unlockAssignmentTarget, setUnlockAssignmentTarget] = useState(null)
+  const [unlockReason, setUnlockReason] = useState('')
+  const [isSubmittingUnlock, setIsSubmittingUnlock] = useState(false)
+
+  // Listen to lock and unlock events across windows or tabs
+  useEffect(() => {
+    const handleStorageSync = () => {
+      setLockStateTrigger(prev => prev + 1)
+    }
+    window.addEventListener('edugraph_assignment_lock_change', handleStorageSync)
+    window.addEventListener('edugraph_assignment_tickets_change', handleStorageSync)
+    window.addEventListener('storage', handleStorageSync)
+    return () => {
+      window.removeEventListener('edugraph_assignment_lock_change', handleStorageSync)
+      window.removeEventListener('edugraph_assignment_tickets_change', handleStorageSync)
+      window.removeEventListener('storage', handleStorageSync)
+    }
+  }, [])
+
   const handleOpenWhiteboard = (assignment, isSubmitted) => {
+    if (assignmentLockService.isAssignmentLocked(currentUser?.id, assignment.id)) {
+      handleOpenUnlockModal(assignment)
+      return
+    }
     if (isSubmitted) {
       setActiveAssignmentId(assignment.id)
     } else {
@@ -84,6 +111,10 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
   }
 
   const handleOpenQuiz = (assignment, isSubmitted) => {
+    if (assignmentLockService.isAssignmentLocked(currentUser?.id, assignment.id)) {
+      handleOpenUnlockModal(assignment)
+      return
+    }
     if (isSubmitted) {
       setActiveQuizAssignment(assignment)
     } else {
@@ -102,9 +133,56 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
     setPendingAssessmentAction(null)
   }
 
+  const handleAccidentalExit = (assignmentId, assignObj) => {
+    const targetAssign = assignObj || assignments.find(a => a.id === assignmentId) || { id: assignmentId, title: 'Coursework Assignment' }
+    assignmentLockService.lockAssignment(
+      currentUser,
+      targetAssign,
+      'Accidental exit before final submission'
+    )
+    setActiveAssignmentId(null)
+    setActiveQuizAssignment(null)
+    setLockStateTrigger(prev => prev + 1)
+    loadAllStudentData()
+    handleOpenUnlockModal(targetAssign)
+  }
+
+  const handleOpenUnlockModal = (assignment) => {
+    setUnlockAssignmentTarget(assignment)
+    const existingLock = assignmentLockService.getLock(currentUser?.id, assignment.id)
+    setUnlockReason(
+      existingLock?.exitReason === 'Accidental exit before final submission'
+        ? 'I accidentally navigated away from the assignment workspace before submitting. Please unlock it so I can re-attempt.'
+        : (existingLock?.exitReason || 'I accidentally exited the assignment session. Please unlock so I can re-attempt.')
+    )
+    setIsUnlockModalOpen(true)
+  }
+
+  const handleSubmitUnlockTicket = async (e) => {
+    e.preventDefault()
+    if (!unlockAssignmentTarget) return
+    setIsSubmittingUnlock(true)
+    try {
+      await assignmentLockService.raiseUnlockTicket(
+        currentUser,
+        unlockAssignmentTarget,
+        unlockReason.trim()
+      )
+      setIsUnlockModalOpen(false)
+      const updatedTickets = await sharedService.getMyTickets()
+      setTickets(updatedTickets)
+      setLockStateTrigger(prev => prev + 1)
+      alert(`Unlock ticket submitted to your course teacher for "${unlockAssignmentTarget.title}". Your teacher will review your request to enable your re-attempt.`)
+    } catch (err) {
+      alert('Failed to submit unlock ticket: ' + (err.message || 'Unknown error'))
+    } finally {
+      setIsSubmittingUnlock(false)
+    }
+  }
+
   useEffect(() => {
     loadAllStudentData()
-  }, [])
+  }, [lockStateTrigger])
 
   const loadAllStudentData = async () => {
     setIsLoading(true)
@@ -193,6 +271,7 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
         onSubmissionComplete={() => {
           loadAllStudentData()
         }}
+        onAccidentalExit={handleAccidentalExit}
       />
     )
   }
@@ -209,6 +288,7 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
         onQuizCompleted={() => {
           loadAllStudentData()
         }}
+        onAccidentalExit={handleAccidentalExit}
       />
     )
   }
@@ -525,19 +605,54 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
                     const isGraded = subStatus === 'GRADED'
                     const isSubmitted = subStatus === 'SUBMITTED' || isGraded
 
+                    const isLocked = assignmentLockService.isAssignmentLocked(currentUser?.id, a.id)
+                    const lockRecord = isLocked ? assignmentLockService.getLock(currentUser?.id, a.id) : null
+                    const isTicketPending = lockRecord?.ticketId && lockRecord?.ticketStatus === 'PENDING'
+                    const wasUnlocked = !isLocked && assignmentLockService.getLock(currentUser?.id, a.id)?.wasUnlocked
+
                     return (
-                      <div key={a.id} className="student-assignment-card">
+                      <div key={a.id} className={`student-assignment-card ${isLocked ? 'card-is-locked' : ''}`}>
                         <div className="assign-card-head">
                           <span className="assign-subject-badge">{a.subject || 'Core Subject'}</span>
-                          <span className={`assign-status-badge badge-${subStatus.toLowerCase()}`}>
-                            {subStatus}
-                          </span>
+                          {isLocked ? (
+                            <span className="assign-status-badge badge-locked">
+                              🔒 LOCKED (Accidental Exit)
+                            </span>
+                          ) : (
+                            <span className={`assign-status-badge badge-${subStatus.toLowerCase()}`}>
+                              {subStatus}
+                            </span>
+                          )}
                         </div>
 
                         <h3 className="assign-card-title">{a.title}</h3>
                         <p className="assign-card-desc">
                           {a.description ? `${a.description.slice(0, 110)}...` : 'Complete whiteboard diagram and 20-MCQ verification assessment.'}
                         </p>
+
+                        {/* Accidental Exit Locked Alert Banner */}
+                        {isLocked && (
+                          <div className="assign-locked-banner">
+                            <IconAlertTriangle size={18} color="#DC2626" />
+                            <div className="locked-banner-text">
+                              <strong>Session Locked (Premature Exit)</strong>
+                              <p>
+                                You navigated away before submitting. Academic integrity requires course teacher approval to re-attempt.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Unlocked Re-attempt Granted Notification */}
+                        {wasUnlocked && (
+                          <div className="assign-unlocked-banner">
+                            <IconCheck size={18} color="#059669" />
+                            <div className="unlocked-banner-text">
+                              <strong>Re-attempt Authorized!</strong>
+                              <p>Your course instructor unlocked this assignment. You may now attempt again.</p>
+                            </div>
+                          </div>
+                        )}
 
                         <div className="assign-card-meta">
                           <div className="meta-item">
@@ -561,20 +676,47 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
 
                         {/* Actions */}
                         <div className="assign-card-actions">
-                          <button
-                            className="btn-open-workspace"
-                            onClick={() => handleOpenWhiteboard(a, isSubmitted)}
-                          >
-                            <IconFileText size={15} />
-                            <span>{isSubmitted ? 'View Whiteboard Submission' : 'Open Whiteboard Canvas'}</span>
-                          </button>
-                          <button
-                            className="btn-open-mcq"
-                            onClick={() => handleOpenQuiz(a, a.submission?.mcqScore !== null && a.submission?.mcqScore !== undefined)}
-                          >
-                            <IconBrain size={15} />
-                            <span>{a.submission?.mcqScore !== null && a.submission?.mcqScore !== undefined ? 'View Quiz Result' : 'Take 20 MCQs'}</span>
-                          </button>
+                          {isLocked ? (
+                            isTicketPending ? (
+                              <button
+                                type="button"
+                                className="btn-locked-pending"
+                                onClick={() => alert(`Your unlock ticket (${lockRecord.ticketId}) has been submitted to your course teacher and is currently under review.`)}
+                                title="Click to view ticket status"
+                              >
+                                <IconClock size={16} />
+                                <span>Ticket {lockRecord.ticketId} Pending Teacher Review</span>
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                className="btn-raise-unlock"
+                                onClick={() => handleOpenUnlockModal(a)}
+                              >
+                                <IconShield size={16} />
+                                <span>Raise Ticket to Unlock Assignment</span>
+                              </button>
+                            )
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                className="btn-open-workspace"
+                                onClick={() => handleOpenWhiteboard(a, isSubmitted)}
+                              >
+                                <IconFileText size={15} />
+                                <span>{isSubmitted ? 'View Whiteboard Submission' : 'Open Whiteboard Canvas'}</span>
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-open-mcq"
+                                onClick={() => handleOpenQuiz(a, a.submission?.mcqScore !== null && a.submission?.mcqScore !== undefined)}
+                              >
+                                <IconBrain size={15} />
+                                <span>{a.submission?.mcqScore !== null && a.submission?.mcqScore !== undefined ? 'View Quiz Result' : 'Take 20 MCQs'}</span>
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
                     )
@@ -857,6 +999,7 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
                   value={ticketTargetRole}
                   onChange={(e) => setTicketTargetRole(e.target.value)}
                 >
+                  <option value="TEACHER">Course Faculty Instructor (Teacher)</option>
                   <option value="COORDINATOR">Department Academic Coordinator</option>
                   <option value="ADMIN">Super Administrator</option>
                 </select>
@@ -869,6 +1012,7 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
                   value={ticketType}
                   onChange={(e) => setTicketType(e.target.value)}
                 >
+                  <option value="ASSIGNMENT_UNLOCK">Assignment Unlock & Re-attempt</option>
                   <option value="DATA_CORRECTION">Data Correction (Classroom / Roster Issue)</option>
                   <option value="PERMISSION_OVERRIDE">Permission / Access Override</option>
                 </select>
@@ -908,6 +1052,86 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
                 </button>
                 <button type="submit" className="btn-submit">
                   <IconCheck size={16} /> Submit Ticket
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Specialized Assignment Unlock Request Modal */}
+      {isUnlockModalOpen && unlockAssignmentTarget && (
+        <div className="modal-backdrop">
+          <div className="student-modal-card unlock-modal-card">
+            <div className="modal-header">
+              <div className="modal-header-icon-title">
+                <div className="unlock-modal-icon-badge">
+                  <IconShield size={20} color="#1B7F72" />
+                </div>
+                <div>
+                  <h3>Raise Assignment Unlock Request</h3>
+                  <span className="modal-sub-label">Directly routed to your Course Faculty Instructor</span>
+                </div>
+              </div>
+              <button className="btn-close" onClick={() => setIsUnlockModalOpen(false)}>
+                <IconX size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitUnlockTicket} className="student-modal-form">
+              <div className="unlock-context-banner">
+                <div className="ucb-row">
+                  <span className="ucb-label">Assignment:</span>
+                  <span className="ucb-val font-bold">{unlockAssignmentTarget.title}</span>
+                </div>
+                <div className="ucb-row">
+                  <span className="ucb-label">Subject & Course:</span>
+                  <span className="ucb-val">{unlockAssignmentTarget.subject || 'Core Coursework'}</span>
+                </div>
+                <div className="ucb-row">
+                  <span className="ucb-label">Student:</span>
+                  <span className="ucb-val">{currentUser?.fullName} ({currentUser?.rollNumber || currentUser?.email})</span>
+                </div>
+                <div className="ucb-row">
+                  <span className="ucb-label">Target Reviewer:</span>
+                  <span className="ucb-val text-teal font-semibold">Course Faculty Instructor (Teacher)</span>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Explanation of Accidental Exit *</label>
+                <textarea
+                  className="student-textarea"
+                  rows={4}
+                  value={unlockReason}
+                  onChange={(e) => setUnlockReason(e.target.value)}
+                  placeholder="Explain why you navigated away from the assignment workspace..."
+                  required
+                />
+                <span className="field-hint">
+                  Your instructor will review your request in their Assignment Tickets queue and grant authorization to re-attempt.
+                </span>
+              </div>
+
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => setIsUnlockModalOpen(false)}
+                  disabled={isSubmittingUnlock}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-submit btn-submit-unlock"
+                  disabled={isSubmittingUnlock}
+                >
+                  {isSubmittingUnlock ? 'Submitting Request...' : (
+                    <>
+                      <IconCheck size={16} /> Submit Unlock Request to Teacher
+                    </>
+                  )}
                 </button>
               </div>
             </form>

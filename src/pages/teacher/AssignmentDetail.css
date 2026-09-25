@@ -531,3 +531,85 @@
   font-size: 0.8rem;
   margin: 0;
 }
+
+/* ==========================================================================
+   Assignment Unlock Tickets Tab Styles
+   ========================================================================== */
+
+.ad-tab-badge-pending {
+  background: #DC2626;
+  color: #FFFFFF;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 12px;
+  margin-left: 6px;
+  animation: pulseBadge 1.5s infinite;
+}
+
+@keyframes pulseBadge {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.btn-ad-unlock-student {
+  padding: 6px 14px;
+  background: #1B7F72;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 4px rgba(27, 127, 114, 0.2);
+}
+
+.btn-ad-unlock-student:hover {
+  background: #136056;
+  transform: translateY(-1px);
+}
+
+.ad-unlocked-done-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #DCFCE7;
+  color: #16A34A;
+  border: 1px solid #BBF7D0;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.ad-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 24px;
+  text-align: center;
+  gap: 12px;
+  color: #64748B;
+}
+
+.ad-empty-state h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+}
+
+.ad-empty-state p {
+  font-size: 0.86rem;
+  color: #64748B;
+  max-width: 440px;
+  margin: 0;
+  line-height: 1.5;
+}

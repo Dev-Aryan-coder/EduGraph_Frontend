@@ -16,7 +16,8 @@ export default function MCQQuizRunner({
   assignmentId,
   assignmentTitle,
   onBack,
-  onQuizCompleted
+  onQuizCompleted,
+  onAccidentalExit
 }) {
   const [questions, setQuestions] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -25,6 +26,7 @@ export default function MCQQuizRunner({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [quizResult, setQuizResult] = useState(null)
+  const [showExitModal, setShowExitModal] = useState(false)
 
   useEffect(() => {
     loadQuestionsAndExistingResult()
@@ -115,13 +117,30 @@ export default function MCQQuizRunner({
 
   const currentQ = questions[currentIndex]
 
+  const handleBackRequest = () => {
+    if (quizResult) {
+      onBack()
+    } else {
+      setShowExitModal(true)
+    }
+  }
+
+  const handleConfirmExitAndLock = () => {
+    setShowExitModal(false)
+    if (onAccidentalExit) {
+      onAccidentalExit(assignmentId, { id: assignmentId, title: assignmentTitle })
+    } else {
+      onBack()
+    }
+  }
+
   return (
     <div className="quiz-runner-container">
       {/* Top Banner */}
       <header className="quiz-header">
         <div className="quiz-header-left">
-          <button className="quiz-back-btn" onClick={onBack}>
-            <IconArrowLeft size={16} /> Back to Assignment
+          <button className="quiz-back-btn" onClick={handleBackRequest}>
+            <IconArrowLeft size={16} /> Back to Dashboard
           </button>
           <div className="quiz-meta-title">
             <span className="quiz-badge">20-MCQ Verification Assessment</span>
@@ -316,6 +335,43 @@ export default function MCQQuizRunner({
               </div>
             )}
           </main>
+        </div>
+      )}
+
+      {/* Accidental Exit Warning Modal */}
+      {showExitModal && (
+        <div className="modal-backdrop">
+          <div className="exit-warning-modal-card">
+            <div className="exit-warning-icon">
+              <IconAlertTriangle size={36} color="#DC2626" />
+            </div>
+            <h3 className="exit-warning-title">Warning: Exiting Will Lock This Assessment!</h3>
+            <p className="exit-warning-body">
+              Your 20-question verification assessment for <strong>{assignmentTitle || 'this assignment'}</strong> is currently in progress ({answeredCount} of {totalQuestions} answered).
+            </p>
+            <div className="exit-warning-alert-box">
+              <strong>🔒 Strict Academic Integrity & Proctoring Rule:</strong>
+              <p>
+                If you exit now without submitting, this assignment will be <strong>IMMEDIATELY LOCKED</strong>. You will not be permitted to attempt the MCQs or whiteboard again until you submit an unlock ticket to your course teacher and they grant authorization.
+              </p>
+            </div>
+            <div className="exit-warning-actions">
+              <button
+                type="button"
+                className="btn-exit-stay"
+                onClick={() => setShowExitModal(false)}
+              >
+                Continue Assessment
+              </button>
+              <button
+                type="button"
+                className="btn-exit-confirm-lock"
+                onClick={handleConfirmExitAndLock}
+              >
+                Exit & Lock Assignment
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

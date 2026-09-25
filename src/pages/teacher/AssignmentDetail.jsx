@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import teacherService from '../../services/teacherService'
+import authService from '../../services/authService'
+import assignmentLockService from '../../services/assignmentLockService'
 import EvaluationModal from './EvaluationModal'
 import ExtendDeadlineModal from './ExtendDeadlineModal'
 import {
@@ -21,13 +23,16 @@ export default function AssignmentDetail({
   onBack,
   onAssignmentDeleted
 }) {
+  const [currentUser] = useState(() => authService.getStoredUser())
   const [assignment, setAssignment] = useState(null)
   const [submissions, setSubmissions] = useState([])
   const [mcqs, setMcqs] = useState([])
   const [stats, setStats] = useState(null)
+  const [unlockTickets, setUnlockTickets] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('submissions') // 'submissions' | 'mcqs'
+  const [activeTab, setActiveTab] = useState('submissions') // 'submissions' | 'mcqs' | 'tickets'
   const [searchQuery, setSearchQuery] = useState('')
+  const [ticketSearch, setTicketSearch] = useState('')
 
   // Modals
   const [selectedSubmission, setSelectedSubmission] = useState(null)
@@ -48,6 +53,8 @@ export default function AssignmentDetail({
       if (subsData) setSubmissions(subsData)
       if (mcqsData) setMcqs(mcqsData)
       if (statsData) setStats(statsData)
+      const tks = assignmentLockService.getUnlockTickets({ assignmentId })
+      setUnlockTickets(tks)
     } catch (err) {
       console.error('Error fetching assignment details:', err)
     } finally {
@@ -60,6 +67,36 @@ export default function AssignmentDetail({
       loadData()
     }
   }, [assignmentId])
+
+  useEffect(() => {
+    const handleSync = () => {
+      if (assignmentId) {
+        setUnlockTickets(assignmentLockService.getUnlockTickets({ assignmentId }))
+      }
+    }
+    window.addEventListener('edugraph_assignment_tickets_change', handleSync)
+    window.addEventListener('edugraph_assignment_lock_change', handleSync)
+    window.addEventListener('storage', handleSync)
+    return () => {
+      window.removeEventListener('edugraph_assignment_tickets_change', handleSync)
+      window.removeEventListener('edugraph_assignment_lock_change', handleSync)
+      window.removeEventListener('storage', handleSync)
+    }
+  }, [assignmentId])
+
+  const handleUnlockStudent = (ticket) => {
+    const res = assignmentLockService.unlockAssignment(
+      ticket.id,
+      'Assignment unlocked by instructor. Student permitted to re-attempt.',
+      currentUser
+    )
+    if (res.success) {
+      alert(`Assignment successfully unlocked for ${ticket.studentName}! They are now authorized to re-attempt this assignment from their student dashboard.`)
+      setUnlockTickets(assignmentLockService.getUnlockTickets({ assignmentId }))
+    } else {
+      alert('Failed to unlock assignment: ' + (res.message || 'Unknown error'))
+    }
+  }
 
   const handleDeleteAssignment = async () => {
     if (!window.confirm(`Are you sure you want to delete assignment "${assignment?.title}"? This cannot be undone.`)) {
@@ -221,6 +258,19 @@ export default function AssignmentDetail({
           <IconBrain size={16} />
           <span>Authored 20 Verification MCQs ({mcqs.length})</span>
         </button>
+        <button
+          type="button"
+          className={`ad-tab-btn ${activeTab === 'tickets' ? 'active' : ''}`}
+          onClick={() => setActiveTab('tickets')}
+        >
+          <IconShield size={16} />
+          <span>Assignment Unlock Tickets ({unlockTickets.length})</span>
+          {unlockTickets.filter(t => t.status === 'PENDING').length > 0 && (
+            <span className="ad-tab-badge-pending">
+              {unlockTickets.filter(t => t.status === 'PENDING').length} PENDING
+            </span>
+          )}
+        </button>
       </div>
 
       {/* TAB 1: SUBMISSIONS ROSTER */}
@@ -366,6 +416,109 @@ export default function AssignmentDetail({
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: ASSIGNMENT UNLOCK TICKETS */}
+      {activeTab === 'tickets' && (
+        <div className="ad-tab-panel">
+          <div className="ad-filter-bar">
+            <div className="ad-search-box">
+              <IconSearch size={16} color="#64748B" />
+              <input
+                type="text"
+                placeholder="Search unlock tickets by student name or roll number..."
+                className="ad-search-input"
+                value={ticketSearch}
+                onChange={(e) => setTicketSearch(e.target.value)}
+              />
+              {ticketSearch && (
+                <button
+                  type="button"
+                  className="ad-clear-search"
+                  onClick={() => setTicketSearch('')}
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <span className="ad-count-info">
+              {unlockTickets.filter(t => t.status === 'PENDING').length} Pending Unlock Request(s)
+            </span>
+          </div>
+
+          <div className="ad-panel-card">
+            {filteredUnlockTickets.length > 0 ? (
+              <div className="table-responsive">
+                <table className="faculty-table">
+                  <thead>
+                    <tr>
+                      <th>Ticket ID</th>
+                      <th>Student Name</th>
+                      <th>Roll Number</th>
+                      <th>Incident Timestamp</th>
+                      <th>Student Explanation</th>
+                      <th>Status</th>
+                      <th>Instructor Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredUnlockTickets.map((tk) => {
+                      const isPending = tk.status === 'PENDING'
+                      return (
+                        <tr key={tk.id}>
+                          <td><code>{tk.id}</code></td>
+                          <td className="font-semibold">{tk.studentName}</td>
+                          <td><code>{tk.studentRollNumber || 'N/A'}</code></td>
+                          <td>
+                            <span className="deadline-text">
+                              {tk.createdAt ? new Date(tk.createdAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : 'Recent'}
+                            </span>
+                          </td>
+                          <td>
+                            <p className="tbl-sub-desc" style={{ maxWidth: '300px', margin: 0 }}>
+                              {tk.description}
+                            </p>
+                          </td>
+                          <td>
+                            {isPending ? (
+                              <span className="status-badge pending">PENDING REVIEW</span>
+                            ) : (
+                              <span className="status-badge graded">UNLOCKED</span>
+                            )}
+                          </td>
+                          <td>
+                            {isPending ? (
+                              <button
+                                type="button"
+                                className="btn-ad-unlock-student"
+                                onClick={() => handleUnlockStudent(tk)}
+                                title="Authorize student to re-attempt this assignment"
+                              >
+                                🔓 Unlock & Permit Re-attempt
+                              </button>
+                            ) : (
+                              <span className="ad-unlocked-done-tag">
+                                ✓ Re-attempt Permitted ({tk.resolvedBy || 'Faculty'})
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="ad-empty-state">
+                <IconShield size={44} color="#94A3B8" />
+                <h4>No Unlock Requests for this Assignment</h4>
+                <p>
+                  When a student accidentally exits before submitting and lodges an unlock ticket, it will appear here for your review and re-attempt authorization.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}

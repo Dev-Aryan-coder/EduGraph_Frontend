@@ -639,3 +639,104 @@
     min-height: 200px;
   }
 }
+
+/* ==========================================================================
+   Accidental Exit Warning Modal
+   ========================================================================== */
+
+.exit-warning-modal-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 32px 28px;
+  max-width: 520px;
+  width: 90%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #E2E8F0;
+  text-align: center;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.exit-warning-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #FEE2E2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.exit-warning-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 10px;
+}
+
+.exit-warning-body {
+  font-size: 0.92rem;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.exit-warning-alert-box {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.86rem;
+  color: #991B1B;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.exit-warning-alert-box strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #7F1D1D;
+  font-weight: 700;
+}
+
+.exit-warning-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn-exit-stay {
+  padding: 10px 18px;
+  background: #1B7F72;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-exit-stay:hover {
+  background: #135E54;
+  transform: translateY(-1px);
+}
+
+.btn-exit-confirm-lock {
+  padding: 10px 18px;
+  background: #FFFFFF;
+  color: #DC2626;
+  border: 1px solid #DC2626;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-exit-confirm-lock:hover {
+  background: #FEF2F2;
+}

@@ -1613,3 +1613,187 @@
 .btn-warning-proceed:hover {
   background: #136056;
 }
+
+/* ==========================================================================
+   Locked Assignment Card & Unlock Flow Styles
+   ========================================================================== */
+
+.student-assignment-card.card-is-locked {
+  border-color: #FECACA;
+  background: #FFFDFD;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.06);
+}
+
+.assign-status-badge.badge-locked {
+  background: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.assign-locked-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 12px 0;
+}
+
+.assign-locked-banner strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #991B1B;
+  margin-bottom: 2px;
+}
+
+.assign-locked-banner p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #B91C1C;
+  line-height: 1.4;
+}
+
+.assign-unlocked-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 12px 0;
+}
+
+.assign-unlocked-banner strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #065F46;
+  margin-bottom: 2px;
+}
+
+.assign-unlocked-banner p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #047857;
+  line-height: 1.4;
+}
+
+.btn-raise-unlock {
+  width: 100%;
+  padding: 11px 16px;
+  background: #DC2626;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.2);
+}
+
+.btn-raise-unlock:hover {
+  background: #B91C1C;
+  transform: translateY(-1px);
+}
+
+.btn-locked-pending {
+  width: 100%;
+  padding: 11px 16px;
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FCD34D;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-locked-pending:hover {
+  background: #FDE68A;
+}
+
+/* Unlock Ticket Modal */
+.unlock-modal-card {
+  max-width: 560px;
+  width: 90%;
+}
+
+.modal-header-icon-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.unlock-modal-icon-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #E6F4F2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-sub-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #64748B;
+  margin-top: 2px;
+}
+
+.unlock-context-banner {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ucb-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.86rem;
+}
+
+.ucb-label {
+  color: #64748B;
+  font-weight: 500;
+}
+
+.ucb-val {
+  color: #0F172A;
+  font-weight: 600;
+}
+
+.btn-submit-unlock {
+  background: #1B7F72;
+  color: #FFFFFF;
+}
+
+.btn-submit-unlock:hover {
+  background: #136056;
+}
