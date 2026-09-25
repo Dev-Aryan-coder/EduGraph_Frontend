@@ -1,31 +1,38 @@
+/* ==========================================================================
+   EduGraph — 404 Not Found Page Styles
+   Clean Light Theme (Fog White, Graph Teal, Slate)
+   ========================================================================== */
+
 .not-found-container {
   min-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px 24px;
-  background: #090D16;
-  color: #F8FAFC;
+  background: #F8FAFC;
+  color: #0F172A;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .not-found-card {
   max-width: 520px;
   width: 100%;
-  background: #0F172A;
-  border: 1px solid #1E293B;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: 20px;
   padding: 48px 36px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
 }
 
 .not-found-icon-wrap {
-  width: 90px;
-  height: 90px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background: rgba(13, 148, 136, 0.15);
+  background: rgba(27, 127, 114, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -35,7 +42,7 @@
 .not-found-code {
   font-size: 3.5rem;
   font-weight: 900;
-  color: #2DD4BF;
+  color: #1B7F72;
   line-height: 1;
   letter-spacing: -0.05em;
   margin-bottom: 8px;
@@ -44,14 +51,14 @@
 .not-found-card h2 {
   margin: 0 0 10px;
   font-size: 1.5rem;
-  font-weight: 700;
-  color: #F8FAFC;
+  font-weight: 800;
+  color: #0F172A;
 }
 
 .not-found-card p {
   margin: 0 0 28px;
   font-size: 0.95rem;
-  color: #94A3B8;
+  color: #64748B;
   line-height: 1.5;
 }
 
@@ -66,34 +73,36 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 11px 22px;
-  background: #0D9488;
-  color: #ffffff;
+  padding: 10px 22px;
+  background: #1B7F72;
+  color: #FFFFFF;
   border: none;
   border-radius: 8px;
-  font-weight: 600;
+  font-family: inherit;
+  font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s ease;
 }
 
 .btn-back-dashboard:hover {
-  background: #0F766E;
+  background: #136056;
 }
 
 .btn-back-home {
-  padding: 11px 22px;
-  background: #1E293B;
-  border: 1px solid #334155;
-  color: #CBD5E1;
+  padding: 10px 22px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #475569;
   border-radius: 8px;
-  font-weight: 600;
+  font-family: inherit;
+  font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
 }
 
 .btn-back-home:hover {
-  background: #334155;
-  color: #ffffff;
+  background: #E2E8F0;
+  color: #0F172A;
 }

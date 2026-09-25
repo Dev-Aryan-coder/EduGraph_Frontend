@@ -1,20 +1,27 @@
+/* ==========================================================================
+   EduGraph — Institutional News & Research Feed Styles
+   Consistent Light Institutional Aesthetic (Fog White, Graph Teal, Slate)
+   ========================================================================== */
+
 .feed-root {
   min-height: 100vh;
-  background: #090D16;
-  color: #F8FAFC;
+  background: #F8FAFC;
+  color: #0F172A;
   display: flex;
   flex-direction: column;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .feed-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 32px;
-  background: #0F172A;
-  border-bottom: 1px solid #1E293B;
+  padding: 20px 32px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
   flex-wrap: wrap;
   gap: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .feed-header-left {
@@ -28,51 +35,54 @@
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  background: #1E293B;
-  color: #CBD5E1;
-  border: 1px solid #334155;
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #E2E8F0;
   border-radius: 8px;
+  font-family: inherit;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
 }
 
 .feed-back-btn:hover {
-  background: #334155;
-  color: #ffffff;
+  background: #E2E8F0;
+  color: #0F172A;
 }
 
 .feed-title-wrap h2 {
   margin: 0 0 4px;
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  color: #F8FAFC;
+  color: #0F172A;
+  letter-spacing: -0.01em;
 }
 
 .feed-title-wrap p {
   margin: 0;
   font-size: 0.88rem;
-  color: #94A3B8;
+  color: #64748B;
 }
 
 .btn-upload-research {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
-  background: #0D9488;
-  color: #ffffff;
+  padding: 9px 18px;
+  background: #1B7F72;
+  color: #FFFFFF;
   border: none;
   border-radius: 8px;
+  font-family: inherit;
   font-size: 0.88rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s ease;
 }
 
 .btn-upload-research:hover {
-  background: #0F766E;
+  background: #136056;
 }
 
 .feed-content-container {
@@ -104,23 +114,25 @@
   gap: 8px;
   padding: 8px 16px;
   border-radius: 8px;
+  font-family: inherit;
   font-size: 0.88rem;
-  font-weight: 600;
-  background: #0F172A;
-  border: 1px solid #1E293B;
-  color: #94A3B8;
+  font-weight: 700;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  color: #64748B;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
 }
 
 .feed-tab:hover {
-  color: #CBD5E1;
+  color: #0F172A;
+  background: #F1F5F9;
 }
 
 .feed-tab.active {
-  background: #1E293B;
-  color: #2DD4BF;
-  border-color: #0D9488;
+  background: #1B7F72;
+  color: #FFFFFF;
+  border-color: #1B7F72;
 }
 
 .feed-search-wrap {
@@ -128,19 +140,29 @@
   align-items: center;
   gap: 10px;
   padding: 9px 16px;
-  background: #0F172A;
-  border: 1px solid #1E293B;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: 8px;
   width: 320px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.feed-search-wrap svg {
+  color: #94A3B8;
 }
 
 .feed-search-wrap input {
-  background: none;
+  background: transparent;
   border: none;
-  color: #F8FAFC;
+  color: #0F172A;
   outline: none;
   width: 100%;
+  font-family: inherit;
   font-size: 0.88rem;
+}
+
+.feed-search-wrap input::placeholder {
+  color: #94A3B8;
 }
 
 .feed-loading,
@@ -150,8 +172,8 @@
   align-items: center;
   justify-content: center;
   padding: 80px 24px;
-  background: #0F172A;
-  border: 1px dashed #334155;
+  background: #FFFFFF;
+  border: 1px dashed #CBD5E1;
   border-radius: 16px;
   text-align: center;
   gap: 10px;
@@ -161,13 +183,13 @@
   margin: 0;
   font-size: 1.2rem;
   font-weight: 700;
-  color: #F8FAFC;
+  color: #0F172A;
 }
 
 .feed-empty p {
   margin: 0 0 16px;
   font-size: 0.9rem;
-  color: #94A3B8;
+  color: #64748B;
 }
 
 /* Research Grid */
@@ -178,18 +200,20 @@
 }
 
 .research-card {
-  background: #0F172A;
-  border: 1px solid #1E293B;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: 14px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: border-color 0.15s;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: all 0.15s ease;
 }
 
 .research-card:hover {
-  border-color: #334155;
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
 }
 
 .research-card-top {
@@ -200,10 +224,10 @@
 
 .research-domain-badge {
   font-size: 0.72rem;
-  font-weight: 700;
-  color: #2DD4BF;
-  background: rgba(13, 148, 136, 0.15);
-  border: 1px solid rgba(45, 212, 191, 0.25);
+  font-weight: 800;
+  color: #1B7F72;
+  background: rgba(27, 127, 114, 0.1);
+  border: 1px solid rgba(27, 127, 114, 0.25);
   padding: 3px 10px;
   border-radius: 20px;
   text-transform: uppercase;
@@ -214,27 +238,27 @@
   align-items: center;
   gap: 6px;
   font-size: 0.8rem;
-  color: #64748B;
+  color: #94A3B8;
 }
 
 .research-card-title {
   margin: 0;
   font-size: 1.15rem;
-  font-weight: 700;
-  color: #F8FAFC;
+  font-weight: 800;
+  color: #0F172A;
   line-height: 1.35;
 }
 
 .research-authors {
   margin: 0;
   font-size: 0.82rem;
-  color: #94A3B8;
+  color: #64748B;
 }
 
 .research-abstract {
   margin: 0;
   font-size: 0.88rem;
-  color: #CBD5E1;
+  color: #475569;
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 4;
@@ -245,27 +269,28 @@
 .research-card-footer {
   margin-top: auto;
   padding-top: 12px;
-  border-top: 1px solid #1E293B;
+  border-top: 1px solid #F1F5F9;
 }
 
 .research-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #2DD4BF;
+  color: #1B7F72;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
-  transition: color 0.15s;
+  transition: color 0.15s ease;
 }
 
 .research-link:hover {
-  color: #5EEAD4;
+  color: #136056;
+  text-decoration: underline;
 }
 
 .research-archived-tag {
   font-size: 0.78rem;
-  color: #64748B;
+  color: #94A3B8;
 }
 
 /* News Stream */
@@ -276,13 +301,14 @@
 }
 
 .news-card {
-  background: #0F172A;
-  border: 1px solid #1E293B;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: 14px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .news-card-header {
@@ -295,34 +321,34 @@
   align-items: center;
   gap: 6px;
   font-size: 0.8rem;
-  color: #64748B;
+  color: #94A3B8;
 }
 
 .news-card-title {
   margin: 0;
   font-size: 1.2rem;
-  font-weight: 700;
-  color: #F8FAFC;
+  font-weight: 800;
+  color: #0F172A;
 }
 
 .news-card-content {
   margin: 0;
   font-size: 0.9rem;
-  color: #CBD5E1;
+  color: #334155;
   line-height: 1.55;
   white-space: pre-wrap;
 }
 
 /* Modal */
 .feed-modal-card {
-  background: #ffffff;
+  background: #FFFFFF;
   border-radius: 16px;
   width: 100%;
   max-width: 540px;
   color: #0F172A;
   box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
   overflow: hidden;
-  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid #E2E8F0;
 }
 
 .feed-modal-card .modal-header {
@@ -330,14 +356,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 18px 24px;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid #E2E8F0;
   background: #F8FAFC;
 }
 
 .feed-modal-card .modal-header h3 {
   margin: 0;
   font-size: 1.15rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #0F172A;
 }
 
@@ -369,7 +395,7 @@
 
 .feed-modal-form label {
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #334155;
 }
 
@@ -379,14 +405,17 @@
   padding: 10px 14px;
   border: 1px solid #CBD5E1;
   border-radius: 8px;
+  font-family: inherit;
   font-size: 0.92rem;
-  color: #1E293B;
+  color: #0F172A;
   outline: none;
-  background: #ffffff;
+  background: #F8FAFC;
+  transition: all 0.15s ease;
 }
 
 .feed-input:focus,
 .feed-textarea:focus {
-  border-color: #0D9488;
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+  background: #FFFFFF;
+  border-color: #1B7F72;
+  box-shadow: 0 0 0 3px rgba(27, 127, 114, 0.12);
 }

@@ -1,9 +1,15 @@
+/* ==========================================================================
+   EduGraph — Whiteboard Studio & Concept Graph Styles
+   Consistent Light Institutional Aesthetic (Fog White, Graph Teal, Slate)
+   ========================================================================== */
+
 .wb-studio-container {
   min-height: 100vh;
-  background: #090D16;
-  color: #F8FAFC;
+  background: #F8FAFC;
+  color: #0F172A;
   display: flex;
   flex-direction: column;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .wb-studio-header {
@@ -11,10 +17,11 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 32px;
-  background: #0F172A;
-  border-bottom: 1px solid #1E293B;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
   flex-wrap: wrap;
   gap: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .wb-header-left {
@@ -28,32 +35,33 @@
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  background: #1E293B;
-  color: #CBD5E1;
-  border: 1px solid #334155;
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #E2E8F0;
   border-radius: 8px;
+  font-family: inherit;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
 }
 
 .wb-back-btn:hover {
-  background: #334155;
-  color: #ffffff;
+  background: #E2E8F0;
+  color: #0F172A;
 }
 
 .wb-title-box h2 {
   margin: 2px 0 0;
   font-size: 1.25rem;
-  font-weight: 700;
-  color: #F8FAFC;
+  font-weight: 800;
+  color: #0F172A;
 }
 
 .wb-sub-tag {
   font-size: 0.72rem;
-  font-weight: 700;
-  color: #2DD4BF;
+  font-weight: 800;
+  color: #1B7F72;
   text-transform: uppercase;
 }
 
@@ -69,40 +77,43 @@
   gap: 8px;
   padding: 8px 16px;
   border-radius: 8px;
+  font-family: inherit;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
 }
 
 .btn-share {
-  background: #1E293B;
-  border: 1px solid #334155;
-  color: #E2E8F0;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #475569;
 }
 
 .btn-share:hover {
-  background: #334155;
+  background: #E2E8F0;
+  color: #0F172A;
 }
 
 .btn-add {
-  background: #0D9488;
+  background: #1B7F72;
   border: none;
-  color: #ffffff;
+  color: #FFFFFF;
 }
 
 .btn-add:hover {
-  background: #0F766E;
+  background: #136056;
 }
 
 .wb-alert-error {
   margin: 16px 32px 0;
   padding: 10px 16px;
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid #EF4444;
-  color: #FCA5A5;
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #B91C1C;
   border-radius: 8px;
   font-size: 0.88rem;
+  font-weight: 600;
 }
 
 /* Canvas Area */
@@ -121,7 +132,7 @@
   justify-content: center;
   gap: 16px;
   padding: 100px 0;
-  color: #94A3B8;
+  color: #64748B;
 }
 
 .wb-empty-state {
@@ -130,8 +141,8 @@
   align-items: center;
   justify-content: center;
   padding: 80px 24px;
-  background: #0F172A;
-  border: 1px dashed #334155;
+  background: #FFFFFF;
+  border: 1px dashed #CBD5E1;
   border-radius: 20px;
   text-align: center;
 }
@@ -140,7 +151,7 @@
   width: 72px;
   height: 72px;
   border-radius: 20px;
-  background: rgba(13, 148, 136, 0.15);
+  background: rgba(27, 127, 114, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,13 +161,13 @@
 .wb-empty-state h3 {
   margin: 0 0 8px;
   font-size: 1.3rem;
-  font-weight: 700;
-  color: #F8FAFC;
+  font-weight: 800;
+  color: #0F172A;
 }
 
 .wb-empty-state p {
   margin: 0 0 24px;
-  color: #94A3B8;
+  color: #64748B;
   max-width: 480px;
   font-size: 0.92rem;
   line-height: 1.5;
@@ -167,18 +178,19 @@
   align-items: center;
   gap: 8px;
   padding: 11px 22px;
-  background: #0D9488;
-  color: #ffffff;
+  background: #1B7F72;
+  color: #FFFFFF;
   border: none;
   border-radius: 8px;
-  font-weight: 600;
+  font-family: inherit;
+  font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s ease;
 }
 
 .wb-btn-primary:hover {
-  background: #0F766E;
+  background: #136056;
 }
 
 /* Nodes Grid */
@@ -189,8 +201,8 @@
 }
 
 .wb-node-card {
-  background: #0F172A;
-  border: 1px solid #1E293B;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: 14px;
   padding: 20px;
   display: flex;
@@ -198,12 +210,13 @@
   gap: 14px;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .wb-node-card:hover {
-  border-color: #334155;
+  border-color: #CBD5E1;
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
 }
 
 .node-card-head {
@@ -223,16 +236,16 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #2DD4BF;
-  box-shadow: 0 0 8px rgba(45, 212, 191, 0.6);
+  background: #1B7F72;
+  box-shadow: 0 0 8px rgba(27, 127, 114, 0.6);
   flex-shrink: 0;
 }
 
 .node-title-wrap h4 {
   margin: 0;
   font-size: 1.05rem;
-  font-weight: 700;
-  color: #F8FAFC;
+  font-weight: 800;
+  color: #0F172A;
   line-height: 1.3;
 }
 
@@ -245,36 +258,37 @@
 .btn-icon {
   background: none;
   border: none;
-  color: #64748B;
+  color: #94A3B8;
   padding: 6px;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
 }
 
 .btn-icon:hover {
-  background: #1E293B;
-  color: #CBD5E1;
+  background: #F1F5F9;
+  color: #0F172A;
 }
 
 .btn-delete:hover {
-  color: #F87171;
-  background: rgba(239, 68, 68, 0.15);
+  color: #DC2626;
+  background: #FEE2E2;
 }
 
 .node-desc {
   margin: 0;
   font-size: 0.85rem;
-  color: #94A3B8;
+  color: #64748B;
   line-height: 1.4;
 }
 
 .node-notes-snippet {
-  background: #1E293B;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 0.82rem;
-  color: #CBD5E1;
+  color: #475569;
   max-height: 120px;
   overflow-y: auto;
   line-height: 1.4;
@@ -291,19 +305,19 @@
   flex-direction: column;
   gap: 6px;
   padding-top: 10px;
-  border-top: 1px solid #1E293B;
+  border-top: 1px solid #F1F5F9;
 }
 
 .conns-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #64748B;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #94A3B8;
   text-transform: uppercase;
 }
 
 .no-conns {
   font-size: 0.8rem;
-  color: #475569;
+  color: #94A3B8;
   font-style: italic;
 }
 
@@ -317,26 +331,26 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: #1E293B;
-  border: 1px solid #334155;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
   border-radius: 6px;
   padding: 3px 8px;
   font-size: 0.78rem;
 }
 
 .conn-chip-label {
-  color: #2DD4BF;
-  font-weight: 600;
+  color: #1B7F72;
+  font-weight: 700;
 }
 
 .conn-chip-target {
-  color: #CBD5E1;
+  color: #334155;
 }
 
 .conn-chip-remove {
   background: none;
   border: none;
-  color: #64748B;
+  color: #94A3B8;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -344,7 +358,7 @@
 }
 
 .conn-chip-remove:hover {
-  color: #F87171;
+  color: #DC2626;
 }
 
 /* Node Footer */
@@ -354,7 +368,7 @@
   gap: 8px;
   margin-top: auto;
   padding-top: 12px;
-  border-top: 1px solid #1E293B;
+  border-top: 1px solid #F1F5F9;
 }
 
 .node-footer-btn {
@@ -362,31 +376,32 @@
   align-items: center;
   gap: 6px;
   padding: 5px 10px;
-  background: #1E293B;
-  border: 1px solid #334155;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
   border-radius: 6px;
-  color: #94A3B8;
+  color: #475569;
+  font-family: inherit;
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
 }
 
 .node-footer-btn:hover {
-  background: #334155;
-  color: #ffffff;
+  background: #E2E8F0;
+  color: #0F172A;
 }
 
 /* Create / Edit Node Modal */
 .wb-node-modal {
-  background: #ffffff;
+  background: #FFFFFF;
   border-radius: 16px;
   width: 100%;
   max-width: 540px;
   color: #0F172A;
   box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
   overflow: hidden;
-  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid #E2E8F0;
 }
 
 .wb-node-modal .modal-header {
@@ -394,14 +409,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 18px 24px;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid #E2E8F0;
   background: #F8FAFC;
 }
 
 .wb-node-modal .modal-header h3 {
   margin: 0;
   font-size: 1.15rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #0F172A;
 }
 
@@ -420,7 +435,7 @@
 
 .wb-node-form label {
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #334155;
 }
 
@@ -430,17 +445,19 @@
   padding: 10px 14px;
   border: 1px solid #CBD5E1;
   border-radius: 8px;
+  font-family: inherit;
   font-size: 0.92rem;
-  color: #1E293B;
+  color: #0F172A;
   outline: none;
-  transition: border-color 0.15s;
-  background: #ffffff;
+  transition: all 0.15s ease;
+  background: #F8FAFC;
 }
 
 .wb-input:focus,
 .wb-textarea:focus {
-  border-color: #0D9488;
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+  background: #FFFFFF;
+  border-color: #1B7F72;
+  box-shadow: 0 0 0 3px rgba(27, 127, 114, 0.12);
 }
 
 .wb-textarea {
@@ -457,16 +474,19 @@
 .btn-cancel {
   padding: 10px 18px;
   border: 1px solid #CBD5E1;
-  background: #ffffff;
+  background: #F1F5F9;
   color: #475569;
   border-radius: 8px;
-  font-weight: 600;
+  font-family: inherit;
+  font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .btn-cancel:hover {
-  background: #F1F5F9;
+  background: #E2E8F0;
+  color: #0F172A;
 }
 
 .btn-submit {
@@ -474,26 +494,28 @@
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background: #0D9488;
-  color: #ffffff;
+  background: #1B7F72;
+  color: #FFFFFF;
   border: none;
   border-radius: 8px;
-  font-weight: 600;
+  font-family: inherit;
+  font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .btn-submit:hover {
-  background: #0F766E;
+  background: #136056;
 }
 
 /* Mode Switcher */
 .wb-mode-switcher {
   display: flex;
-  background: #1E293B;
+  background: #F1F5F9;
   padding: 4px;
   border-radius: 10px;
-  border: 1px solid #334155;
+  border: 1px solid #E2E8F0;
   gap: 4px;
 }
 
@@ -503,9 +525,10 @@
   gap: 8px;
   padding: 6px 14px;
   border-radius: 6px;
+  font-family: inherit;
   font-size: 0.82rem;
-  font-weight: 600;
-  color: #94A3B8;
+  font-weight: 700;
+  color: #64748B;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -513,23 +536,23 @@
 }
 
 .mode-switch-btn:hover {
-  color: #F8FAFC;
+  color: #0F172A;
 }
 
 .mode-switch-btn.active {
-  background: #0D9488;
+  background: #1B7F72;
   color: #FFFFFF;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(27, 127, 114, 0.2);
 }
 
 .btn-save-board {
-  background: #0D9488;
+  background: #1B7F72;
   border: none;
-  color: #ffffff;
+  color: #FFFFFF;
 }
 
 .btn-save-board:hover {
-  background: #0F766E;
+  background: #136056;
 }
 
 .wb-alert-success {
@@ -540,7 +563,7 @@
   color: #065F46;
   border-radius: 8px;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 8px;
