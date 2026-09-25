@@ -10,7 +10,7 @@ export const principalService = {
       const response = await api.get('/principal/overview')
       return response.data?.data || response.data
     } catch (err) {
-      console.warn('Fallback: Error fetching principal overview', err.message)
+      console.warn('Error fetching principal overview', err.message)
       return null
     }
   },
@@ -24,13 +24,13 @@ export const principalService = {
       const response = await api.get('/admin/dashboard/stats')
       return response.data?.data || response.data
     } catch (err) {
-      console.warn('Fallback: Error fetching admin stats', err.message)
+      console.warn('Error fetching admin stats', err.message)
       return null
     }
   },
 
   /**
-   * Get list of appointed coordinators
+   * Get real list of appointed coordinators from MySQL
    * Calls GET /api/principal/coordinators
    */
   async getCoordinators() {
@@ -38,7 +38,35 @@ export const principalService = {
       const response = await api.get('/principal/coordinators')
       return response.data?.data || response.data || []
     } catch (err) {
-      console.warn('Fallback: Error fetching coordinators', err.message)
+      console.warn('Error fetching coordinators', err.message)
+      return []
+    }
+  },
+
+  /**
+   * Get real list of teachers in this college from MySQL
+   * Calls GET /api/principal/teachers
+   */
+  async getTeachers() {
+    try {
+      const response = await api.get('/principal/teachers')
+      return response.data?.data || response.data || []
+    } catch (err) {
+      console.warn('Error fetching teachers', err.message)
+      return []
+    }
+  },
+
+  /**
+   * Get real list of classrooms in this college from MySQL
+   * Calls GET /api/principal/classrooms
+   */
+  async getClassrooms() {
+    try {
+      const response = await api.get('/principal/classrooms')
+      return response.data?.data || response.data || []
+    } catch (err) {
+      console.warn('Error fetching classrooms', err.message)
       return []
     }
   },
@@ -71,7 +99,7 @@ export const principalService = {
   },
 
   /**
-   * Get campus notices feed
+   * Get real campus notices feed from MySQL
    * Calls GET /api/notices/my-feed
    */
   async getNoticesFeed() {
@@ -79,7 +107,7 @@ export const principalService = {
       const response = await api.get('/notices/my-feed')
       return response.data?.data || response.data || []
     } catch (err) {
-      console.warn('Fallback: Error fetching notices', err.message)
+      console.warn('Error fetching notices', err.message)
       return []
     }
   }

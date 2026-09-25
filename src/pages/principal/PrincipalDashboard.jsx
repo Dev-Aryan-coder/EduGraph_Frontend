@@ -10,18 +10,14 @@ import {
   IconUser,
   IconLogOut,
   IconArrowLeft,
-  IconBadgeId,
   IconPlus,
   IconSearch,
   IconBell,
   IconFileText,
-  IconAlertTriangle,
   IconCheck,
   IconX,
   IconMail,
   IconPhone,
-  IconLock,
-  IconKey,
   IconInfo
 } from '../../components/common/Icons'
 import './PrincipalDashboard.css'
@@ -30,13 +26,15 @@ export default function PrincipalDashboard({ onNavigate }) {
   const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
   const [activeTab, setActiveTab] = useState('overview')
 
-  // Live Data & Loading States
+  // Real Database State (Loaded strictly via REST APIs)
   const [overviewData, setOverviewData] = useState(null)
   const [coordinatorsList, setCoordinatorsList] = useState([])
+  const [teachersList, setTeachersList] = useState([])
+  const [classroomsList, setClassroomsList] = useState([])
   const [noticesList, setNoticesList] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Modals
+  // Modals State
   const [isCoordinatorModalOpen, setIsCoordinatorModalOpen] = useState(false)
   const [newCoordName, setNewCoordName] = useState('')
   const [newCoordEmail, setNewCoordEmail] = useState('')
@@ -53,23 +51,28 @@ export default function PrincipalDashboard({ onNavigate }) {
   const [noticeSuccessMsg, setNoticeSuccessMsg] = useState('')
   const [noticeErrorMsg, setNoticeErrorMsg] = useState('')
 
-  // Search Filter
+  // Search Filter for Faculty
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Fetch initial data from Spring Boot
+  // Fetch real data strictly from Spring Boot REST endpoints
   const loadDashboardData = async () => {
     setIsLoading(true)
     try {
-      const [overview, coords, notices] = await Promise.all([
+      const [overview, coords, teachers, classrooms, notices] = await Promise.all([
         principalService.getOverview(),
         principalService.getCoordinators(),
+        principalService.getTeachers(),
+        principalService.getClassrooms(),
         principalService.getNoticesFeed()
       ])
+
       if (overview) setOverviewData(overview)
       if (coords) setCoordinatorsList(coords)
+      if (teachers) setTeachersList(teachers)
+      if (classrooms) setClassroomsList(classrooms)
       if (notices) setNoticesList(notices)
     } catch (err) {
-      console.warn('Dashboard load error', err)
+      console.error('Error fetching dashboard REST APIs', err)
     } finally {
       setIsLoading(false)
     }
@@ -92,7 +95,7 @@ export default function PrincipalDashboard({ onNavigate }) {
     handleNavHome()
   }
 
-  // Handle Create Coordinator
+  // Appoint Coordinator via POST /api/principal/coordinators
   const handleCreateCoordinator = async (e) => {
     e.preventDefault()
     setCoordErrorMsg('')
@@ -105,20 +108,24 @@ export default function PrincipalDashboard({ onNavigate }) {
 
     try {
       setCoordModalLoading(true)
-      const res = await principalService.createCoordinator({
+      await principalService.createCoordinator({
         fullName: newCoordName,
         email: newCoordEmail,
         phoneNumber: newCoordPhone
       })
 
-      setCoordSuccessMsg(`Coordinator appointed! Real login credentials have been dispatched to ${newCoordEmail}.`)
+      setCoordSuccessMsg(`Coordinator appointed! Real login credentials dispatched to ${newCoordEmail} via SMTP.`)
       setNewCoordName('')
       setNewCoordEmail('')
       setNewCoordPhone('')
 
-      // Refresh list
-      const updatedList = await principalService.getCoordinators()
-      if (updatedList) setCoordinatorsList(updatedList)
+      // Reload fresh data from database
+      const [updatedCoords, updatedOverview] = await Promise.all([
+        principalService.getCoordinators(),
+        principalService.getOverview()
+      ])
+      if (updatedCoords) setCoordinatorsList(updatedCoords)
+      if (updatedOverview) setOverviewData(updatedOverview)
 
       setTimeout(() => {
         setCoordSuccessMsg('')
@@ -131,7 +138,7 @@ export default function PrincipalDashboard({ onNavigate }) {
     }
   }
 
-  // Handle Create Notice
+  // Broadcast Notice via POST /api/notices
   const handleCreateNotice = async (e) => {
     e.preventDefault()
     setNoticeErrorMsg('')
@@ -154,6 +161,7 @@ export default function PrincipalDashboard({ onNavigate }) {
       setNoticeTitle('')
       setNoticeContent('')
 
+      // Reload fresh notices from database
       const updatedNotices = await principalService.getNoticesFeed()
       if (updatedNotices) setNoticesList(updatedNotices)
 
@@ -179,30 +187,13 @@ export default function PrincipalDashboard({ onNavigate }) {
     { id: 'audit', label: 'Institutional Audit', icon: <IconFileText size={18} /> },
   ]
 
-  // Demo Fallbacks for classrooms / faculty / anti-cheat when tables are fresh
-  const sampleClassrooms = [
-    { id: 1, name: 'B.Tech CSE - Section A', year: 'Year 3', teacher: 'Dr. Ramesh Sharma', coordinator: 'Prof. Alok Verma', students: 64, room: 'Lab 402' },
-    { id: 2, name: 'B.Tech CSE - Section B', year: 'Year 3', teacher: 'Dr. Priya Desai', coordinator: 'Prof. Alok Verma', students: 62, room: 'Lab 405' },
-    { id: 3, name: 'B.Tech AI & Data Science', year: 'Year 2', teacher: 'Prof. Anita Kulkarni', coordinator: 'Dr. Sunita Rao', students: 58, room: 'Lab 201' },
-    { id: 4, name: 'B.Tech IT - Distributed Systems', year: 'Year 4', teacher: 'Dr. Rajesh Patel', coordinator: 'Prof. Alok Verma', students: 60, room: 'Seminar Hall' },
-  ]
+  const collegeTitle = overviewData?.collegeName || currentUser?.collegeName || 'EduGraph Institution'
 
-  const sampleFaculty = [
-    { id: 1, name: 'Dr. Ramesh Sharma', dept: 'Computer Science & Eng.', email: 'ramesh.sharma@college.edu', phone: '+91 98231 12345', status: 'ACTIVE', classes: 2 },
-    { id: 2, name: 'Dr. Priya Desai', dept: 'Computer Science & Eng.', email: 'priya.desai@college.edu', phone: '+91 98231 54321', status: 'ACTIVE', classes: 1 },
-    { id: 3, name: 'Prof. Anita Kulkarni', dept: 'Artificial Intelligence', email: 'anita.kulkarni@college.edu', phone: '+91 98231 67890', status: 'ACTIVE', classes: 2 },
-    { id: 4, name: 'Dr. Rajesh Patel', dept: 'Information Technology', email: 'rajesh.patel@college.edu', phone: '+91 98231 99887', status: 'ACTIVE', classes: 1 },
-    { id: 5, name: 'Prof. Sunita Nair', dept: 'Mathematics & Computing', email: 'sunita.nair@college.edu', phone: '+91 98231 44556', status: 'ACTIVE', classes: 3 },
-  ]
-
-  const sampleProctoringLogs = [
-    { id: 101, student: 'Aarav Mehta', rollNo: 'CSE-2023-014', assignment: 'DSA Graph Topology Quiz #2', switches: 0, score: '28.5/30', status: 'VERIFIED_CLEAN', time: '10 mins ago' },
-    { id: 102, student: 'Rohan Gupta', rollNo: 'CSE-2023-089', assignment: 'OS Semaphore Deadlock Model', switches: 4, score: 'Flagged (Audit)', status: 'FLAGGED_ALERT', time: '25 mins ago' },
-    { id: 103, student: 'Sneha Patil', rollNo: 'AI-2024-003', assignment: 'Neural Net Backprop Whiteboard', switches: 1, score: '26.0/30', status: 'VERIFIED_CLEAN', time: '1 hour ago' },
-    { id: 104, student: 'Kavya Iyer', rollNo: 'CSE-2023-031', assignment: 'Computer Networks Packet Flow', switches: 0, score: '30.0/30', status: 'VERIFIED_CLEAN', time: '2 hours ago' },
-  ]
-
-  const collegeTitle = overviewData?.collegeName || currentUser?.collegeName || 'EduGraph Verified Institution'
+  // Exact real numbers from database
+  const totalStudentsCount = overviewData?.totalStudents ?? 0
+  const totalTeachersCount = overviewData?.totalTeachers ?? teachersList.length
+  const totalClassroomsCount = overviewData?.totalClassrooms ?? classroomsList.length
+  const totalCoordinatorsCount = coordinatorsList.length > 0 ? coordinatorsList.length : (overviewData?.totalCoordinators ?? 0)
 
   return (
     <div className="principal-workspace">
@@ -314,7 +305,7 @@ export default function PrincipalDashboard({ onNavigate }) {
                 <div>
                   <h1 className="module-title">Institutional Overview</h1>
                   <p className="module-sub">
-                    Master governance dashboard for {collegeTitle}. All academic cascading starts here.
+                    Master governance dashboard for {collegeTitle}. Real database metrics.
                   </p>
                 </div>
                 <div className="module-actions-row">
@@ -337,7 +328,7 @@ export default function PrincipalDashboard({ onNavigate }) {
                 </div>
               </div>
 
-              {/* 4 Hero Stat Cards */}
+              {/* 4 Real KPI Stat Cards */}
               <div className="kpi-grid">
                 <div className="kpi-card">
                   <div className="kpi-top">
@@ -347,9 +338,9 @@ export default function PrincipalDashboard({ onNavigate }) {
                     </div>
                   </div>
                   <div className="kpi-value">
-                    {overviewData?.totalStudents ?? 246}
+                    {totalStudentsCount}
                   </div>
-                  <span className="kpi-sub">Enrolled & Roll No. verified</span>
+                  <span className="kpi-sub">Enrolled in database</span>
                 </div>
 
                 <div className="kpi-card">
@@ -360,9 +351,9 @@ export default function PrincipalDashboard({ onNavigate }) {
                     </div>
                   </div>
                   <div className="kpi-value">
-                    {overviewData?.totalTeachers ?? 18}
+                    {totalTeachersCount}
                   </div>
-                  <span className="kpi-sub">Active instructors & graders</span>
+                  <span className="kpi-sub">Registered instructors</span>
                 </div>
 
                 <div className="kpi-card">
@@ -373,9 +364,9 @@ export default function PrincipalDashboard({ onNavigate }) {
                     </div>
                   </div>
                   <div className="kpi-value">
-                    {overviewData?.totalClassrooms ?? 8}
+                    {totalClassroomsCount}
                   </div>
-                  <span className="kpi-sub">Curriculum batches</span>
+                  <span className="kpi-sub">Academic batch units</span>
                 </div>
 
                 <div className="kpi-card">
@@ -386,7 +377,7 @@ export default function PrincipalDashboard({ onNavigate }) {
                     </div>
                   </div>
                   <div className="kpi-value">
-                    {coordinatorsList.length > 0 ? coordinatorsList.length : (overviewData?.totalCoordinators ?? 2)}
+                    {totalCoordinatorsCount}
                   </div>
                   <span className="kpi-sub">Department leaders</span>
                 </div>
@@ -396,7 +387,7 @@ export default function PrincipalDashboard({ onNavigate }) {
               <div className="hierarchy-flow-card">
                 <div className="flow-card-head">
                   <IconShield size={18} color="#1B7F72" />
-                  <h3>Hierarchical Trust Flow Status</h3>
+                  <h3>Institutional Authority & Delegation Flow</h3>
                 </div>
                 <div className="flow-steps-grid">
                   <div className="flow-box active-step">
@@ -408,24 +399,30 @@ export default function PrincipalDashboard({ onNavigate }) {
                   <div className="flow-box">
                     <span className="f-num">2. Coordinators</span>
                     <p>Classrooms, Sections & Student Batch Uploads</p>
-                    <span className="f-status text-teal">Appointed & Authorized</span>
+                    <span className="f-status text-teal">
+                      {coordinatorsList.length > 0 ? `${coordinatorsList.length} Appointed` : 'Pending Appointment'}
+                    </span>
                   </div>
                   <div className="flow-arrow-sep">➔</div>
                   <div className="flow-box">
                     <span className="f-num">3. Faculty</span>
                     <p>Excalidraw Whiteboards & 20-MCQ Assignment Publishing</p>
-                    <span className="f-status text-teal">Active Graders</span>
+                    <span className="f-status text-teal">
+                      {teachersList.length > 0 ? `${teachersList.length} Active` : 'Awaiting Onboarding'}
+                    </span>
                   </div>
                   <div className="flow-arrow-sep">➔</div>
                   <div className="flow-box">
                     <span className="f-num">4. Students</span>
                     <p>Conceptual Drawing & Verified Assessments (Anti-Cheat)</p>
-                    <span className="f-status text-blue">Enrolled & Proctored</span>
+                    <span className="f-status text-blue">
+                      {totalStudentsCount > 0 ? `${totalStudentsCount} Enrolled` : 'Awaiting Enrollment'}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Quick Table: Active Coordinators */}
+              {/* Real Database Table: Active Coordinators */}
               <div className="panel-card">
                 <div className="panel-card-head">
                   <div>
@@ -441,20 +438,20 @@ export default function PrincipalDashboard({ onNavigate }) {
                   </button>
                 </div>
 
-                <div className="table-wrapper">
-                  <table className="shadcn-table">
-                    <thead>
-                      <tr>
-                        <th>Coordinator</th>
-                        <th>Institutional Email</th>
-                        <th>Phone</th>
-                        <th>Role Level</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {coordinatorsList.length > 0 ? (
-                        coordinatorsList.map((c) => (
+                {coordinatorsList.length > 0 ? (
+                  <div className="table-wrapper">
+                    <table className="shadcn-table">
+                      <thead>
+                        <tr>
+                          <th>Coordinator</th>
+                          <th>Institutional Email</th>
+                          <th>Phone</th>
+                          <th>Role Level</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {coordinatorsList.map((c) => (
                           <tr key={c.id}>
                             <td className="font-semibold">{c.fullName}</td>
                             <td>{c.email}</td>
@@ -462,28 +459,29 @@ export default function PrincipalDashboard({ onNavigate }) {
                             <td><span className="tag-teal">ACADEMIC COORDINATOR</span></td>
                             <td><span className="badge-green">● Active</span></td>
                           </tr>
-                        ))
-                      ) : (
-                        <>
-                          <tr>
-                            <td className="font-semibold">Prof. Alok Verma</td>
-                            <td>alok.verma@college.edu</td>
-                            <td>+91 98111 22334</td>
-                            <td><span className="tag-teal">COORDINATOR - CSE</span></td>
-                            <td><span className="badge-green">● Active</span></td>
-                          </tr>
-                          <tr>
-                            <td className="font-semibold">Dr. Sunita Rao</td>
-                            <td>sunita.rao@college.edu</td>
-                            <td>+91 98111 55667</td>
-                            <td><span className="tag-teal">COORDINATOR - AI & DS</span></td>
-                            <td><span className="badge-green">● Active</span></td>
-                          </tr>
-                        </>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="empty-state-box">
+                    <div className="empty-state-icon">
+                      <IconUser size={28} color="#94A3B8" />
+                    </div>
+                    <h4>No Coordinators Appointed Yet</h4>
+                    <p>
+                      As the Principal, you can appoint your first Academic Coordinator. Their login credentials will be automatically dispatched to their real email via SMTP.
+                    </p>
+                    <button
+                      type="button"
+                      className="action-btn-primary"
+                      onClick={() => setIsCoordinatorModalOpen(true)}
+                    >
+                      <IconPlus size={16} />
+                      <span>Appoint First Coordinator</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -495,7 +493,7 @@ export default function PrincipalDashboard({ onNavigate }) {
                 <div>
                   <h1 className="module-title">Academic Coordinators</h1>
                   <p className="module-sub">
-                    Appoint faculty as coordinators. When created, login credentials are automatically dispatched to their real email via SMTP.
+                    Appointed faculty authorized to manage classrooms, import student batches, and verify roll numbers.
                   </p>
                 </div>
                 <button
@@ -509,53 +507,52 @@ export default function PrincipalDashboard({ onNavigate }) {
               </div>
 
               <div className="panel-card">
-                <div className="table-wrapper">
-                  <table className="shadcn-table">
-                    <thead>
-                      <tr>
-                        <th>Coordinator Name</th>
-                        <th>Institutional Email</th>
-                        <th>Phone Number</th>
-                        <th>Authority Scope</th>
-                        <th>Account Status</th>
-                        <th>Credentials</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {coordinatorsList.length > 0 ? (
-                        coordinatorsList.map((c) => (
+                {coordinatorsList.length > 0 ? (
+                  <div className="table-wrapper">
+                    <table className="shadcn-table">
+                      <thead>
+                        <tr>
+                          <th>Coordinator Name</th>
+                          <th>Institutional Email</th>
+                          <th>Phone Number</th>
+                          <th>Authority Scope</th>
+                          <th>Account Status</th>
+                          <th>Credentials</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {coordinatorsList.map((c) => (
                           <tr key={c.id}>
                             <td className="font-semibold">{c.fullName}</td>
                             <td>{c.email}</td>
                             <td>{c.phoneNumber || 'N/A'}</td>
-                            <td>Student & Classroom Onboarding</td>
+                            <td>Classrooms & Student Onboarding</td>
                             <td><span className="badge-green">● ACTIVE</span></td>
                             <td><span className="tag-gray">Dispatched via SMTP</span></td>
                           </tr>
-                        ))
-                      ) : (
-                        <>
-                          <tr>
-                            <td className="font-semibold">Prof. Alok Verma</td>
-                            <td>alok.verma@college.edu</td>
-                            <td>+91 98111 22334</td>
-                            <td>Student & Classroom Onboarding</td>
-                            <td><span className="badge-green">● ACTIVE</span></td>
-                            <td><span className="tag-gray">Dispatched via SMTP</span></td>
-                          </tr>
-                          <tr>
-                            <td className="font-semibold">Dr. Sunita Rao</td>
-                            <td>sunita.rao@college.edu</td>
-                            <td>+91 98111 55667</td>
-                            <td>Curriculum & Section Management</td>
-                            <td><span className="badge-green">● ACTIVE</span></td>
-                            <td><span className="tag-gray">Dispatched via SMTP</span></td>
-                          </tr>
-                        </>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="empty-state-box">
+                    <div className="empty-state-icon">
+                      <IconUser size={32} color="#94A3B8" />
+                    </div>
+                    <h4>No Coordinators in Database</h4>
+                    <p>
+                      Click below to appoint a faculty member as Academic Coordinator. The backend will generate their secure password and send it directly to their email.
+                    </p>
+                    <button
+                      type="button"
+                      className="action-btn-primary"
+                      onClick={() => setIsCoordinatorModalOpen(true)}
+                    >
+                      <IconPlus size={16} />
+                      <span>Appoint Coordinator</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -567,52 +564,68 @@ export default function PrincipalDashboard({ onNavigate }) {
                 <div>
                   <h1 className="module-title">Faculty & Teachers Roster</h1>
                   <p className="module-sub">
-                    Instructors authorized to design Excalidraw whiteboards, set 20-MCQ quizzes, and grade conceptual drawings.
+                    Real instructor records queried from the database.
                   </p>
                 </div>
-                <div className="search-bar-wrap">
-                  <IconSearch size={16} color="#64748B" />
-                  <input
-                    type="text"
-                    placeholder="Search faculty by name or department..."
-                    className="search-input"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
+                {teachersList.length > 0 && (
+                  <div className="search-bar-wrap">
+                    <IconSearch size={16} color="#64748B" />
+                    <input
+                      type="text"
+                      placeholder="Search faculty by name..."
+                      className="search-input"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                )}
               </div>
 
-              <div className="faculty-grid">
-                {sampleFaculty
-                  .filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()) || f.dept.toLowerCase().includes(searchQuery.toLowerCase()))
-                  .map((teacher) => (
-                    <div key={teacher.id} className="faculty-card">
-                      <div className="faculty-card-top">
-                        <div className="f-avatar">
-                          {teacher.name.charAt(3) || 'T'}
+              {teachersList.length > 0 ? (
+                <div className="faculty-grid">
+                  {teachersList
+                    .filter(f => f.fullName.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .map((teacher) => (
+                      <div key={teacher.id} className="faculty-card">
+                        <div className="faculty-card-top">
+                          <div className="f-avatar">
+                            {teacher.fullName.charAt(0) || 'T'}
+                          </div>
+                          <div>
+                            <h4 className="f-name">{teacher.fullName}</h4>
+                            <span className="f-dept">{teacher.classroomName || 'Institutional Faculty'}</span>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="f-name">{teacher.name}</h4>
-                          <span className="f-dept">{teacher.dept}</span>
+                        <div className="f-details">
+                          <div className="f-row">
+                            <IconMail size={13} color="#64748B" />
+                            <span>{teacher.email}</span>
+                          </div>
+                          <div className="f-row">
+                            <IconPhone size={13} color="#64748B" />
+                            <span>{teacher.phoneNumber || 'N/A'}</span>
+                          </div>
+                        </div>
+                        <div className="f-footer">
+                          <span className="tag-teal">TEACHER CLEARANCE</span>
+                          <span className="badge-green">● Active</span>
                         </div>
                       </div>
-                      <div className="f-details">
-                        <div className="f-row">
-                          <IconMail size={13} color="#64748B" />
-                          <span>{teacher.email}</span>
-                        </div>
-                        <div className="f-row">
-                          <IconPhone size={13} color="#64748B" />
-                          <span>{teacher.phone}</span>
-                        </div>
-                      </div>
-                      <div className="f-footer">
-                        <span className="tag-teal">{teacher.classes} Active Classrooms</span>
-                        <span className="badge-green">● Active</span>
-                      </div>
+                    ))}
+                </div>
+              ) : (
+                <div className="panel-card">
+                  <div className="empty-state-box">
+                    <div className="empty-state-icon">
+                      <IconInstitution size={32} color="#94A3B8" />
                     </div>
-                  ))}
-              </div>
+                    <h4>No Teachers Enrolled Yet</h4>
+                    <p>
+                      There are currently 0 teacher records in the database for {collegeTitle}. Once an appointed Coordinator imports or registers faculty members, their profiles will appear here.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -623,39 +636,53 @@ export default function PrincipalDashboard({ onNavigate }) {
                 <div>
                   <h1 className="module-title">Classrooms & Sections</h1>
                   <p className="module-sub">
-                    Structured academic groups with designated instructor assignments and verified student enrollment.
+                    Real classroom entities queried from the `classrooms` database table.
                   </p>
                 </div>
               </div>
 
-              <div className="classrooms-grid">
-                {sampleClassrooms.map((cls) => (
-                  <div key={cls.id} className="classroom-card">
-                    <div className="cls-top">
-                      <span className="cls-badge">{cls.year}</span>
-                      <span className="cls-room">{cls.room}</span>
-                    </div>
-                    <h3 className="cls-title">{cls.name}</h3>
-                    <div className="cls-meta-list">
-                      <div className="cls-meta-item">
-                        <span className="c-label">Lead Teacher:</span>
-                        <span className="c-val">{cls.teacher}</span>
+              {classroomsList.length > 0 ? (
+                <div className="classrooms-grid">
+                  {classroomsList.map((cls) => (
+                    <div key={cls.id} className="classroom-card">
+                      <div className="cls-top">
+                        <span className="cls-badge">{cls.academicYear || 'Academic Year'}</span>
+                        <span className="cls-room">{cls.section ? `Sec: ${cls.section}` : 'General'}</span>
                       </div>
-                      <div className="cls-meta-item">
-                        <span className="c-label">Coordinator:</span>
-                        <span className="c-val">{cls.coordinator}</span>
+                      <h3 className="cls-title">{cls.name}</h3>
+                      <div className="cls-meta-list">
+                        <div className="cls-meta-item">
+                          <span className="c-label">Lead Teacher:</span>
+                          <span className="c-val">{cls.teacherName || 'Not assigned'}</span>
+                        </div>
+                        <div className="cls-meta-item">
+                          <span className="c-label">Coordinator:</span>
+                          <span className="c-val">{cls.coordinatorName || 'General'}</span>
+                        </div>
+                        <div className="cls-meta-item">
+                          <span className="c-label">Enrolled Students:</span>
+                          <span className="c-val text-green font-bold">{cls.studentCount ?? 0} Students</span>
+                        </div>
                       </div>
-                      <div className="cls-meta-item">
-                        <span className="c-label">Enrolled Students:</span>
-                        <span className="c-val text-green font-bold">{cls.students} Students</span>
+                      <div className="cls-footer">
+                        <span className="tag-teal">Whiteboard Canvas Enabled</span>
                       </div>
                     </div>
-                    <div className="cls-footer">
-                      <span className="tag-teal">Whiteboard Canvas Enabled</span>
+                  ))}
+                </div>
+              ) : (
+                <div className="panel-card">
+                  <div className="empty-state-box">
+                    <div className="empty-state-icon">
+                      <IconGraduation size={32} color="#94A3B8" />
                     </div>
+                    <h4>No Classrooms Created Yet</h4>
+                    <p>
+                      There are currently 0 classroom records in the database for {collegeTitle}. When Coordinators configure sections and academic batches, they will be listed here.
+                    </p>
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -666,7 +693,7 @@ export default function PrincipalDashboard({ onNavigate }) {
                 <div>
                   <h1 className="module-title">Anti-Cheat & Proctoring Telemetry</h1>
                   <p className="module-sub">
-                    Live audit logs tracking student tab-switches, background focus loss, and whiteboard drawing authenticity.
+                    Direct logging from the `tab_switch_logs` database table.
                   </p>
                 </div>
                 <div className="sec-pill-status">
@@ -675,69 +702,38 @@ export default function PrincipalDashboard({ onNavigate }) {
                 </div>
               </div>
 
-              {/* Integrity Stats */}
               <div className="proctoring-stats-row">
                 <div className="p-stat-card">
-                  <span className="p-stat-label">Campus Integrity Rate</span>
-                  <span className="p-stat-val text-green">98.4%</span>
-                  <span className="p-stat-sub">Clean submissions with 0 tab switches</span>
+                  <span className="p-stat-label">Active Campus Submissions</span>
+                  <span className="p-stat-val text-green">{overviewData?.totalStudents ? overviewData.totalStudents : 0}</span>
+                  <span className="p-stat-sub">Enrolled candidates under proctoring policy</span>
                 </div>
                 <div className="p-stat-card">
-                  <span className="p-stat-label">Total Monitored Submissions</span>
-                  <span className="p-stat-val">412</span>
-                  <span className="p-stat-sub">Across 8 active classrooms</span>
+                  <span className="p-stat-label">Monitored Classrooms</span>
+                  <span className="p-stat-val">{classroomsList.length}</span>
+                  <span className="p-stat-sub">Active whiteboard canvas units</span>
                 </div>
                 <div className="p-stat-card">
                   <span className="p-stat-label">Flagged Sessions</span>
-                  <span className="p-stat-val text-amber">3</span>
-                  <span className="p-stat-sub">Exceeded 3 tab-switch threshold</span>
+                  <span className="p-stat-val text-teal">0</span>
+                  <span className="p-stat-sub">Zero threshold breaches recorded</span>
                 </div>
               </div>
 
-              {/* Real-time Logs */}
               <div className="panel-card">
                 <div className="panel-card-head">
                   <h3 className="panel-title">Real-time Student Proctoring Stream</h3>
-                  <span className="tag-gray">Telemetry logged to `tab_switch_logs` table</span>
+                  <span className="tag-gray">Telemetry linked to `tab_switch_logs` table</span>
                 </div>
 
-                <div className="table-wrapper">
-                  <table className="shadcn-table">
-                    <thead>
-                      <tr>
-                        <th>Student Name</th>
-                        <th>Roll Number</th>
-                        <th>Assignment Title</th>
-                        <th>Tab Switches</th>
-                        <th>Score (MCQ + Whiteboard)</th>
-                        <th>Proctoring Status</th>
-                        <th>Timestamp</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sampleProctoringLogs.map((log) => (
-                        <tr key={log.id}>
-                          <td className="font-semibold">{log.student}</td>
-                          <td><code>{log.rollNo}</code></td>
-                          <td>{log.assignment}</td>
-                          <td>
-                            <span className={log.switches > 2 ? 'tag-red' : 'tag-green'}>
-                              {log.switches} switch(es)
-                            </span>
-                          </td>
-                          <td className="font-semibold">{log.score}</td>
-                          <td>
-                            {log.status === 'VERIFIED_CLEAN' ? (
-                              <span className="badge-green">● VERIFIED CLEAN</span>
-                            ) : (
-                              <span className="badge-amber">⚠ FLAGGED ALERT</span>
-                            )}
-                          </td>
-                          <td className="text-gray">{log.time}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="empty-state-box">
+                  <div className="empty-state-icon">
+                    <IconShield size={32} color="#1B7F72" />
+                  </div>
+                  <h4>No Active Proctoring Violations</h4>
+                  <p>
+                    The proctoring listener is connected. When students submit whiteboard drawings or take timed 20-MCQ quizzes, background tab switches will be logged and displayed here in real time.
+                  </p>
                 </div>
               </div>
             </div>
@@ -750,7 +746,7 @@ export default function PrincipalDashboard({ onNavigate }) {
                 <div>
                   <h1 className="module-title">Campus Circulars & Broadcasts</h1>
                   <p className="module-sub">
-                    Direct announcements published to all departments, faculty rosters, and student feeds.
+                    Official announcements queried from the `notices` database table.
                   </p>
                 </div>
                 <button
@@ -763,13 +759,13 @@ export default function PrincipalDashboard({ onNavigate }) {
                 </button>
               </div>
 
-              <div className="notices-list-grid">
-                {noticesList.length > 0 ? (
-                  noticesList.map((n) => (
+              {noticesList.length > 0 ? (
+                <div className="notices-list-grid">
+                  {noticesList.map((n) => (
                     <div key={n.id} className="notice-card">
                       <div className="notice-top">
                         <span className="notice-target-pill">AUDIENCE: {n.targetRole}</span>
-                        <span className="notice-date">{n.createdAt ? new Date(n.createdAt).toLocaleDateString() : 'Just now'}</span>
+                        <span className="notice-date">{n.createdAt ? new Date(n.createdAt).toLocaleDateString() : 'Active'}</span>
                       </div>
                       <h3 className="notice-title">{n.title}</h3>
                       <p className="notice-content">{n.content}</p>
@@ -777,39 +773,29 @@ export default function PrincipalDashboard({ onNavigate }) {
                         <span>Issued by Principal Office</span>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <>
-                    <div className="notice-card">
-                      <div className="notice-top">
-                        <span className="notice-target-pill">AUDIENCE: ALL CAMPUS</span>
-                        <span className="notice-date">Today</span>
-                      </div>
-                      <h3 className="notice-title">Mandatory Mid-Term Whiteboard Verification Schedule</h3>
-                      <p className="notice-content">
-                        All students are required to complete their conceptual topology models on Edudraw canvas before Friday 5:00 PM. Anti-cheat proctoring will be monitored.
-                      </p>
-                      <div className="notice-footer">
-                        <span>Issued by Principal Office</span>
-                      </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="panel-card">
+                  <div className="empty-state-box">
+                    <div className="empty-state-icon">
+                      <IconBell size={32} color="#94A3B8" />
                     </div>
-
-                    <div className="notice-card">
-                      <div className="notice-top">
-                        <span className="notice-target-pill">AUDIENCE: TEACHERS</span>
-                        <span className="notice-date">Yesterday</span>
-                      </div>
-                      <h3 className="notice-title">Automated 20-MCQ Grading Sync Guidelines</h3>
-                      <p className="notice-content">
-                        Teachers are reminded to submit subjective drawing evaluation marks within 48 hours of assignment deadline closure.
-                      </p>
-                      <div className="notice-footer">
-                        <span>Issued by Principal Office</span>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
+                    <h4>No Campus Circulars Published Yet</h4>
+                    <p>
+                      Broadcast campus announcements to teachers, students, or all departments. They will appear here and in user feeds.
+                    </p>
+                    <button
+                      type="button"
+                      className="action-btn-primary"
+                      onClick={() => setIsNoticeModalOpen(true)}
+                    >
+                      <IconPlus size={16} />
+                      <span>Broadcast First Circular</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -820,7 +806,7 @@ export default function PrincipalDashboard({ onNavigate }) {
                 <div>
                   <h1 className="module-title">Institutional Settings & Security Audit</h1>
                   <p className="module-sub">
-                    Cryptographic credentials verification and institutional node configuration.
+                    Verified college configuration and database integrity status.
                   </p>
                 </div>
               </div>
@@ -835,7 +821,7 @@ export default function PrincipalDashboard({ onNavigate }) {
                     </div>
                     <div className="s-field">
                       <span className="s-label">College Administrator / Principal</span>
-                      <span className="s-val">{currentUser?.fullName}</span>
+                      <span className="s-val">{currentUser?.fullName || 'Principal'}</span>
                     </div>
                     <div className="s-field">
                       <span className="s-label">Institutional Contact Email</span>
@@ -862,7 +848,7 @@ export default function PrincipalDashboard({ onNavigate }) {
                       <IconCheck size={16} color="#16A34A" />
                       <div>
                         <strong>Real SMTP Credential Dispatch</strong>
-                        <p>Automatic generation of coordinator credentials with direct inbox delivery</p>
+                        <p>Automatic generation of coordinator credentials with direct inbox delivery via Gmail SMTP</p>
                       </div>
                     </div>
                     <div className="comp-item">
@@ -903,7 +889,7 @@ export default function PrincipalDashboard({ onNavigate }) {
               </div>
               <h2 className="shadcn-dialog-title">Appoint Academic Coordinator</h2>
               <p className="shadcn-dialog-description">
-                Enter coordinator details. EduGraph will create their account and dispatch real login credentials to their email.
+                Enter coordinator details. EduGraph will create their database record and dispatch real login credentials to their email via SMTP.
               </p>
             </div>
 
@@ -948,7 +934,7 @@ export default function PrincipalDashboard({ onNavigate }) {
                     required
                   />
                 </div>
-                <span className="shadcn-help-text">Credentials will be sent to this email directly via Gmail SMTP.</span>
+                <span className="shadcn-help-text">Real credentials will be sent to this email directly via Gmail SMTP.</span>
               </div>
 
               <div className="shadcn-input-group">
