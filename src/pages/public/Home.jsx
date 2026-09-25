@@ -258,7 +258,7 @@ export default function Home({ onNavigate }) {
           <div className="hero-dashed-divider" aria-hidden="true" />
 
           {/* 4. Our Goal Section with Visualizations */}
-          <div className="hero-goal-section">
+          <div className="hero-goal-section" id="services">
             <div className="goal-layout-grid">
               
               {/* Left Column: Goal Text & Milestones */}
@@ -419,7 +419,7 @@ export default function Home({ onNavigate }) {
           <div className="hero-dashed-divider" aria-hidden="true" />
 
           {/* 5. What is the Problem & How We Solve It Section (Title on the Right) */}
-          <div className="hero-problem-solution-section" id="problem-solution">
+          <div className="hero-problem-solution-section" id="features">
             <div className="ps-layout-grid">
               
               {/* Left Column: Visual Problem vs Solution Comparison Matrix Card */}

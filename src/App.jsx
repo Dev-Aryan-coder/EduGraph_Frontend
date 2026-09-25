@@ -2,44 +2,61 @@ import React, { useState, useEffect } from 'react'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import Home from './pages/public/Home'
-import AboutUs from './pages/public/AboutUs'
 import './App.css'
 
 function App() {
-  const [activeTab, setActiveTab] = useState(() => {
-    const hash = window.location.hash.replace('#', '')
-    return ['home', 'about', 'features', 'services', 'contact'].includes(hash) ? hash : 'home'
-  })
+  const [activeTab, setActiveTab] = useState('home')
 
-  useEffect(() => {
-    const onHashChange = () => {
-      const hash = window.location.hash.replace('#', '')
-      if (['home', 'about', 'features', 'services', 'contact'].includes(hash)) {
-        setActiveTab(hash)
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+  const scrollToSection = (tabId) => {
+    setActiveTab(tabId)
+    if (tabId === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      const element = document.getElementById(tabId)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
       }
     }
-    window.addEventListener('hashchange', onHashChange)
-    return () => window.removeEventListener('hashchange', onHashChange)
+  }
+
+  // Handle initial hash on page load (e.g. #about)
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '')
+    if (hash) {
+      setTimeout(() => {
+        scrollToSection(hash)
+      }, 150)
+    }
   }, [])
 
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId)
-    window.location.hash = `#${tabId}`
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+  // Highlight active navbar tab dynamically as the user scrolls
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['contact', 'how-it-works', 'features', 'services', 'about', 'home']
+      const scrollPos = window.scrollY + 220
+
+      for (const sectionId of sections) {
+        const el = document.getElementById(sectionId)
+        if (el && el.offsetTop <= scrollPos) {
+          let navId = sectionId
+          if (sectionId === 'how-it-works') navId = 'features'
+          setActiveTab(navId)
+          break
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
     <div className="app-container">
-      <Navbar activeTab={activeTab} setActiveTab={handleTabChange} />
+      <Navbar activeTab={activeTab} setActiveTab={scrollToSection} />
       <main>
-        {activeTab === 'about' ? (
-          <AboutUs onNavigate={handleTabChange} />
-        ) : (
-          <Home onNavigate={handleTabChange} />
-        )}
+        <Home onNavigate={scrollToSection} />
       </main>
-      <Footer onNavigate={handleTabChange} />
+      <Footer onNavigate={scrollToSection} />
     </div>
   )
 }

@@ -13,7 +13,7 @@ export default function Footer({ onNavigate }) {
   }
 
   return (
-    <footer className="edugraph-footer" id="footer">
+    <footer className="edugraph-footer" id="contact">
       <div className="footer-inner-container">
         
         {/* Top Section: Brand Info + 4 Concise Link Columns */}
