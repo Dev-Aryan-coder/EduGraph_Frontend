@@ -128,7 +128,19 @@ export default function PrincipalDashboard({ onNavigate }) {
     }
   }
 
-  // Sidebar Items
+  const isAdmin = currentUser?.role && (
+    currentUser.role.toUpperCase() === 'ADMIN' ||
+    currentUser.role.toUpperCase() === 'ROLE_ADMIN'
+  )
+
+  // If user is not admin, prevent access to audit tab
+  useEffect(() => {
+    if (activeTab === 'audit' && !isAdmin) {
+      setActiveTab('overview')
+    }
+  }, [activeTab, isAdmin])
+
+  // Sidebar Items (Institutional Audit is restricted to Admin role only)
   const sidenavItems = [
     { id: 'overview', label: 'College Overview', icon: <IconLayoutDashboard size={18} /> },
     { id: 'coordinators', label: 'Academic Coordinators', icon: <IconUser size={18} /> },
@@ -136,7 +148,7 @@ export default function PrincipalDashboard({ onNavigate }) {
     { id: 'classrooms', label: 'Classrooms & Sections', icon: <IconGraduation size={18} /> },
     { id: 'anticheat', label: 'Anti-Cheat & Proctoring', icon: <IconShield size={18} /> },
     { id: 'notices', label: 'Campus Circulars', icon: <IconBell size={18} /> },
-    { id: 'audit', label: 'Institutional Audit', icon: <IconFileText size={18} /> },
+    ...(isAdmin ? [{ id: 'audit', label: 'Institutional Audit', icon: <IconFileText size={18} /> }] : [])
   ]
 
   const collegeTitle = overviewData?.collegeName || currentUser?.collegeName || 'EduGraph Institution'
@@ -751,8 +763,8 @@ export default function PrincipalDashboard({ onNavigate }) {
             </div>
           )}
 
-          {/* 7. INSTITUTIONAL AUDIT & SETTINGS */}
-          {activeTab === 'audit' && (
+          {/* 7. INSTITUTIONAL AUDIT & SETTINGS (Restricted to Admin Only) */}
+          {activeTab === 'audit' && isAdmin && (
             <div className="module-container">
               <div className="module-header-row">
                 <div>
