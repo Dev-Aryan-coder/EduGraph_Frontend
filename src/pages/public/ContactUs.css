@@ -236,6 +236,10 @@
   font-size: 0.74rem;
   color: #64748B;
   text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 /* Success Message */

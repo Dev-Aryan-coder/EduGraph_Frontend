@@ -255,6 +255,9 @@
   border: 1px solid #E2E8F0;
   border-radius: 6px;
   padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .about-wb-tool-pill.active {
@@ -753,9 +756,15 @@
 }
 
 .value-symbol {
-  font-size: 1.8rem;
-  display: block;
-  margin-bottom: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #F8FAFC;
+  border: 1px solid rgba(16, 35, 63, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
 }
 
 .value-card h4 {

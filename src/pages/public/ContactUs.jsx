@@ -1,4 +1,11 @@
 import React, { useState } from 'react'
+import {
+  IconBolt,
+  IconLock,
+  IconMail,
+  IconPhone,
+  IconWrench
+} from '../../components/common/Icons'
 import './ContactUs.css'
 
 export default function ContactUs({ onNavigate }) {
@@ -84,7 +91,7 @@ export default function ContactUs({ onNavigate }) {
             <div className="contact-form-card">
               <div className="form-card-header">
                 <h3 className="form-title">Request Campus Briefing & Demo</h3>
-                <span className="form-sla-pill">⚡ 4-Hour Response SLA</span>
+                <span className="form-sla-pill"><IconBolt size={13} color="#C6822E" /> 4-Hour Response SLA</span>
               </div>
 
               {isSubmitted ? (
@@ -213,7 +220,7 @@ export default function ContactUs({ onNavigate }) {
                   </button>
 
                   <span className="form-privacy-note">
-                    🔒 We protect academic privacy. Your information is never shared or monetized.
+                    <IconLock size={13} color="#16A34A" /> We protect academic privacy. Your information is never shared or monetized.
                   </span>
                 </form>
               )}
@@ -227,7 +234,7 @@ export default function ContactUs({ onNavigate }) {
                 <h3 className="info-card-title">Connect Directly</h3>
 
                 <div className="direct-item">
-                  <span className="direct-icon">✉️</span>
+                  <span className="direct-icon"><IconMail size={18} color="#1B7F72" /></span>
                   <div>
                     <span className="direct-label">Academic Partnerships</span>
                     <a href="mailto:partnerships@edugraph.edu" className="direct-val">partnerships@edugraph.edu</a>
@@ -235,7 +242,7 @@ export default function ContactUs({ onNavigate }) {
                 </div>
 
                 <div className="direct-item">
-                  <span className="direct-icon">📞</span>
+                  <span className="direct-icon"><IconPhone size={18} color="#1B7F72" /></span>
                   <div>
                     <span className="direct-label">Institutional Hotline</span>
                     <a href="tel:+18003384727" className="direct-val">+1 (800) EDU-GRAPH</a>
@@ -243,7 +250,7 @@ export default function ContactUs({ onNavigate }) {
                 </div>
 
                 <div className="direct-item">
-                  <span className="direct-icon">🛠️</span>
+                  <span className="direct-icon"><IconWrench size={18} color="#1B7F72" /></span>
                   <div>
                     <span className="direct-label">Technical & Faculty Support</span>
                     <a href="mailto:support@edugraph.edu" className="direct-val">support@edugraph.edu</a>

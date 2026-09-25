@@ -204,7 +204,14 @@
 }
 
 .tier-icon {
-  font-size: 2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #F8FAFC;
+  border: 1px solid rgba(16, 35, 63, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tier-tag {
@@ -320,7 +327,14 @@
 }
 
 .dept-icon-circle {
-  font-size: 1.8rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #F8FAFC;
+  border: 1px solid rgba(16, 35, 63, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 14px;
 }
 

@@ -1,4 +1,16 @@
 import React from 'react'
+import {
+  IconBolt,
+  IconPencil,
+  IconPin,
+  IconGraduation,
+  IconLightbulb,
+  IconBrain,
+  IconShield,
+  IconInstitution,
+  IconTarget,
+  IconRefresh
+} from '../../components/common/Icons'
 import './Home.css'
 
 export default function Home({ onNavigate }) {
@@ -73,7 +85,7 @@ export default function Home({ onNavigate }) {
               </div>
 
               <div className="card-footer-meta">
-                <span className="meta-badge">⚡ Real-time Synced</span>
+                <span className="meta-badge"><IconBolt size={13} color="#C6822E" /> Real-time Synced</span>
                 <span className="meta-subtext">32 Active Nodes</span>
               </div>
             </div>
@@ -88,10 +100,10 @@ export default function Home({ onNavigate }) {
                   <span className="dot dot-green" />
                 </div>
                 <div className="canvas-tool-icons">
-                  <span className="tool-pill active" title="Pencil Tool">✏️ Draw</span>
+                  <span className="tool-pill active" title="Pencil Tool"><IconPencil size={13} color="#1B7F72" /> Draw</span>
                   <span className="tool-pill" title="Concept Node">▢ Node</span>
                   <span className="tool-pill" title="Link Connector">⇄ Connect</span>
-                  <span className="tool-pill" title="Sticky Note">📝 Note</span>
+                  <span className="tool-pill" title="Sticky Note"><IconPin size={13} color="#1B7F72" /> Note</span>
                 </div>
               </div>
 
@@ -121,13 +133,13 @@ export default function Home({ onNavigate }) {
 
                 {/* Sticky Note Accent */}
                 <div className="canvas-sticky-note">
-                  <span className="sticky-pin">📌</span>
+                  <span className="sticky-pin"><IconPin size={13} color="#C6822E" /></span>
                   <span className="sticky-text">Exam Focus: Derive wave equation from curl!</span>
                 </div>
 
                 {/* Active Collaborator Avatar */}
                 <div className="canvas-collaborator-pill">
-                  <span className="collab-avatar">🎓</span>
+                  <span className="collab-avatar"><IconGraduation size={14} color="#1B7F72" /></span>
                   <span>Aryan • Editing Node #4</span>
                 </div>
               </div>
@@ -215,7 +227,7 @@ export default function Home({ onNavigate }) {
                 <div className="mini-wb-canvas-area">
                   {/* Central Vision Node */}
                   <div className="wb-node wb-center-node">
-                    <span className="wb-node-icon">💡</span>
+                    <span className="wb-node-icon"><IconLightbulb size={18} color="#C6822E" /></span>
                     <span className="wb-node-text">Conceptual Mastery</span>
                   </div>
 
@@ -224,7 +236,7 @@ export default function Home({ onNavigate }) {
                     <div className="wb-branch-item">
                       <span className="wb-arrow-text">Visual Mapping ➔</span>
                       <div className="wb-node wb-sub-node">
-                        <span className="wb-node-icon">🧠</span>
+                        <span className="wb-node-icon"><IconBrain size={18} color="#1B7F72" /></span>
                         <span>Mind Graph</span>
                       </div>
                     </div>
@@ -232,7 +244,7 @@ export default function Home({ onNavigate }) {
                     <div className="wb-branch-item">
                       <span className="wb-arrow-text">➔ Verification</span>
                       <div className="wb-node wb-sub-node">
-                        <span className="wb-node-icon">🛡️</span>
+                        <span className="wb-node-icon"><IconShield size={18} color="#16A34A" /></span>
                         <span>Integrity Shield</span>
                       </div>
                     </div>
@@ -240,7 +252,7 @@ export default function Home({ onNavigate }) {
 
                   {/* Mini Sticky Note */}
                   <div className="wb-mini-sticky">
-                    <span className="sticky-pin">📌</span>
+                    <span className="sticky-pin"><IconPin size={13} color="#C6822E" /></span>
                     <span>Zero Cheating • 100% Genuine Understanding</span>
                   </div>
                 </div>
@@ -565,7 +577,7 @@ export default function Home({ onNavigate }) {
                   <span className="hiw-tool-btn active" title="Pointer Select">↖ Select</span>
                   <span className="hiw-tool-btn" title="Concept Node">▢ Nodes</span>
                   <span className="hiw-tool-btn" title="Flow Connectors">⇄ Arrows</span>
-                  <span className="hiw-tool-btn" title="Integrity Shield">🛡️ Shield</span>
+                  <span className="hiw-tool-btn" title="Integrity Shield"><IconShield size={13} color="#1B7F72" /> Shield</span>
                   <span className="hiw-tool-btn hiw-zoom-pill">100%</span>
                 </div>
               </div>
@@ -590,7 +602,7 @@ export default function Home({ onNavigate }) {
                   {/* Stage 1: Faculty Blueprint */}
                   <div className="hiw-stage-node stage-faculty">
                     <div className="stage-step-tag">STEP 01</div>
-                    <div className="stage-card-icon">🏛️</div>
+                    <div className="stage-card-icon"><IconInstitution size={28} color="#1B7F72" /></div>
                     <h3 className="stage-title">Faculty Assignment</h3>
                     <p className="stage-sub">Professors define syllabus concept graphs and anti-cheat thresholds.</p>
                     
@@ -614,7 +626,7 @@ export default function Home({ onNavigate }) {
                   {/* Stage 2: Student Edudraw Canvas */}
                   <div className="hiw-stage-node stage-student">
                     <div className="stage-step-tag stage-tag-teal">STEP 02</div>
-                    <div className="stage-card-icon">🧠</div>
+                    <div className="stage-card-icon"><IconBrain size={28} color="#10233F" /></div>
                     <h3 className="stage-title">Spatial Mind Graph</h3>
                     <p className="stage-sub">Students visually construct interlinked equations, proofs, and theory nodes.</p>
                     
@@ -626,7 +638,7 @@ export default function Home({ onNavigate }) {
                     </div>
 
                     <div className="stage-sticky-note">
-                      <span className="sticky-pin">📌</span>
+                      <span className="sticky-pin"><IconPin size={13} color="#C6822E" /></span>
                       <span>Requires relational comprehension!</span>
                     </div>
                   </div>
@@ -645,7 +657,7 @@ export default function Home({ onNavigate }) {
                   {/* Stage 3: Live Anti-Cheat Proctoring */}
                   <div className="hiw-stage-node stage-security">
                     <div className="stage-step-tag stage-tag-amber">STEP 03</div>
-                    <div className="stage-card-icon">🛡️</div>
+                    <div className="stage-card-icon"><IconShield size={28} color="#C6822E" /></div>
                     <h3 className="stage-title">Proctor Shield</h3>
                     <p className="stage-sub">Real-time page visibility and tab tracking halt unauthorized external assistance.</p>
                     
@@ -655,7 +667,7 @@ export default function Home({ onNavigate }) {
                     </div>
 
                     <div className="stage-sticky-note note-security">
-                      <span className="sticky-pin">⚡</span>
+                      <span className="sticky-pin"><IconBolt size={13} color="#C6822E" /></span>
                       <span>Zero tolerance for external copy-paste</span>
                     </div>
                   </div>
@@ -674,7 +686,7 @@ export default function Home({ onNavigate }) {
                   {/* Stage 4: Instant 20-MCQ Verification & Mastery */}
                   <div className="hiw-stage-node stage-verification">
                     <div className="stage-step-tag stage-tag-green">STEP 04</div>
-                    <div className="stage-card-icon">🎯</div>
+                    <div className="stage-card-icon"><IconTarget size={28} color="#16A34A" /></div>
                     <h3 className="stage-title">Mastery Validation</h3>
                     <p className="stage-sub">Post-submission 20-MCQ quiz verifies author authentic understanding.</p>
                     
@@ -689,7 +701,7 @@ export default function Home({ onNavigate }) {
                 {/* Return Loop / Telemetry Feedback Loop Banner */}
                 <div className="hiw-return-loop-banner">
                   <div className="loop-indicator-track">
-                    <span className="loop-icon">🔄</span>
+                    <span className="loop-icon"><IconRefresh size={16} color="#1B7F72" /></span>
                     <span className="loop-text">
                       <strong>Institutional Telemetry Loop:</strong> Verified grades & comprehension heatmaps automatically sync to College Principal & Faculty Dashboards.
                     </span>

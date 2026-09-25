@@ -416,12 +416,18 @@
   font-weight: 700;
   color: #1B7F72;
   font-family: 'Space Grotesk', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .meta-badge-success {
   font-weight: 700;
   color: #16A34A;
   font-family: 'Space Grotesk', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .meta-subtext {
@@ -475,6 +481,9 @@
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
   color: #4A5568;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .tool-pill.active {
@@ -1657,6 +1666,7 @@
 .hiw-tool-btn {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   padding: 5px 11px;
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
@@ -1807,8 +1817,15 @@
 }
 
 .stage-card-icon {
-  font-size: 1.6rem;
-  margin-bottom: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #F8FAFC;
+  border: 1px solid rgba(16, 35, 63, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
 }
 
 .stage-title {

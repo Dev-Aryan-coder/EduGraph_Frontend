@@ -1,4 +1,15 @@
 import React from 'react'
+import {
+  IconPencil,
+  IconPin,
+  IconBrain,
+  IconGlobe,
+  IconShield,
+  IconLightbulb,
+  IconScale,
+  IconPalette,
+  IconSprout
+} from '../../components/common/Icons'
 import './AboutUs.css'
 
 export default function AboutUs({ onNavigate }) {
@@ -82,9 +93,9 @@ export default function AboutUs({ onNavigate }) {
                 <span className="about-wb-badge">VERIFIED BY DESIGN</span>
               </div>
               <div className="about-wb-tools">
-                <span className="about-wb-tool-pill active">✏️ Draw Node</span>
+                <span className="about-wb-tool-pill active"><IconPencil size={13} color="#1B7F72" /> Draw Node</span>
                 <span className="about-wb-tool-pill">⇄ Link</span>
-                <span className="about-wb-tool-pill">📌 Annotate</span>
+                <span className="about-wb-tool-pill"><IconPin size={13} color="#1B7F72" /> Annotate</span>
                 <span className="about-wb-zoom">100%</span>
               </div>
             </div>
@@ -97,7 +108,7 @@ export default function AboutUs({ onNavigate }) {
                 {/* Node 1: Visual Encoding */}
                 <div className="about-canvas-node node-teal">
                   <div className="node-head">
-                    <span className="node-icon">🧠</span>
+                    <span className="node-icon"><IconBrain size={20} color="#1B7F72" /></span>
                     <span className="node-tag">COGNITIVE STEP 1</span>
                   </div>
                   <h4 className="node-title">Spatial Encoding</h4>
@@ -121,7 +132,7 @@ export default function AboutUs({ onNavigate }) {
                 {/* Node 2: Relational Topology */}
                 <div className="about-canvas-node node-navy">
                   <div className="node-head">
-                    <span className="node-icon">🌐</span>
+                    <span className="node-icon"><IconGlobe size={20} color="#10233F" /></span>
                     <span className="node-tag">COGNITIVE STEP 2</span>
                   </div>
                   <h4 className="node-title">Relational Topology</h4>
@@ -145,7 +156,7 @@ export default function AboutUs({ onNavigate }) {
                 {/* Node 3: Immediate Verification */}
                 <div className="about-canvas-node node-green">
                   <div className="node-head">
-                    <span className="node-icon">🛡️</span>
+                    <span className="node-icon"><IconShield size={20} color="#16A34A" /></span>
                     <span className="node-tag">COGNITIVE STEP 3</span>
                   </div>
                   <h4 className="node-title">Integrity Shield & Quiz</h4>
@@ -160,11 +171,11 @@ export default function AboutUs({ onNavigate }) {
               {/* Whiteboard Sticky Notes */}
               <div className="about-sticky-notes-row">
                 <div className="about-sticky-note sticky-amber">
-                  <span className="sticky-pin">📌</span>
+                  <span className="sticky-pin"><IconPin size={13} color="#C6822E" /></span>
                   <p><strong>The Retention Dividend:</strong> Relational diagrams resist memory decay up to 4x longer than linear bullet points.</p>
                 </div>
                 <div className="about-sticky-note sticky-teal">
-                  <span className="sticky-pin">📍</span>
+                  <span className="sticky-pin"><IconPin size={13} color="#1B7F72" /></span>
                   <p><strong>Anti-Cheat Guarantee:</strong> You cannot fake an interactive topology graph followed by real-time validation.</p>
                 </div>
               </div>
@@ -204,7 +215,7 @@ export default function AboutUs({ onNavigate }) {
               </p>
 
               <div className="origin-highlight-box">
-                <span className="highlight-icon">💡</span>
+                <span className="highlight-icon"><IconLightbulb size={22} color="#C6822E" /></span>
                 <p>
                   <em>"True education is not the memorization of facts, but the training of the mind to think relationally."</em>
                 </p>
@@ -340,22 +351,22 @@ export default function AboutUs({ onNavigate }) {
 
           <div className="about-values-grid">
             <div className="value-card">
-              <span className="value-symbol">⚖️</span>
+              <span className="value-symbol"><IconScale size={24} color="#1B7F72" /></span>
               <h4>Authenticity Over Speed</h4>
               <p>We reject quick-fix shortcuts that undermine true learning. We prioritize deep, enduring understanding.</p>
             </div>
             <div className="value-card">
-              <span className="value-symbol">🛡️</span>
+              <span className="value-symbol"><IconShield size={24} color="#10233F" /></span>
               <h4>Institutional Trust</h4>
               <p>We provide transparent, auditable verification data that deans, faculties, and students can rely upon with confidence.</p>
             </div>
             <div className="value-card">
-              <span className="value-symbol">🎨</span>
+              <span className="value-symbol"><IconPalette size={24} color="#C6822E" /></span>
               <h4>Joyful Visual Thinking</h4>
               <p>Education should feel creative and exploratory. Our interactive whiteboard canvas makes abstract ideas intuitive.</p>
             </div>
             <div className="value-card">
-              <span className="value-symbol">🌱</span>
+              <span className="value-symbol"><IconSprout size={24} color="#16A34A" /></span>
               <h4>Accessibility & Scalability</h4>
               <p>Designed to scale seamlessly from single classrooms to statewide university systems with zero overhead.</p>
             </div>

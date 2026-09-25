@@ -1,4 +1,14 @@
 import React from 'react'
+import {
+  IconInstitution,
+  IconGraduation,
+  IconPlug,
+  IconChart,
+  IconCode,
+  IconFlask,
+  IconCompass,
+  IconTrending
+} from '../../components/common/Icons'
 import './Services.css'
 
 export default function Services({ onNavigate }) {
@@ -23,7 +33,7 @@ export default function Services({ onNavigate }) {
         'Custom institutional branding & subdomain',
         'Dedicated 99.99% uptime SLA & disaster recovery'
       ],
-      icon: '🏛️'
+      icon: <IconInstitution size={26} color="#1B7F72" />
     },
     {
       id: 'faculty-enablement',
@@ -37,7 +47,7 @@ export default function Services({ onNavigate }) {
         'Curated 20-MCQ validation quiz repositories',
         'Accredited faculty certification program'
       ],
-      icon: '🎓'
+      icon: <IconGraduation size={26} color="#10233F" />
     },
     {
       id: 'lms-integration',
@@ -51,7 +61,7 @@ export default function Services({ onNavigate }) {
         'Automated real-time gradebook synchronization',
         'REST API & Webhook data streaming'
       ],
-      icon: '🔌'
+      icon: <IconPlug size={26} color="#C6822E" />
     },
     {
       id: 'accreditation-audit',
@@ -65,32 +75,32 @@ export default function Services({ onNavigate }) {
         'Curricular outcome mapping reports',
         'FERPA, GDPR & SOC-2 compliance documentation'
       ],
-      icon: '📊'
+      icon: <IconChart size={26} color="#16A34A" />
     }
   ]
 
   const departments = [
     {
       name: 'Engineering & Computing',
-      icon: '💻',
+      icon: <IconCode size={24} color="#1B7F72" />,
       desc: 'Algorithm trace graphs, circuit topology models, distributed systems blueprints, and data structure visualizations.',
       topics: ['Data Structures', 'Circuit Theory', 'OS Kernels', 'Network Topologies']
     },
     {
       name: 'Physical & Natural Sciences',
-      icon: '🔬',
+      icon: <IconFlask size={24} color="#10233F" />,
       desc: 'Quantum state vectors, organic reaction mechanisms, biochemical metabolic pathways, and thermodynamics cycles.',
       topics: ['Quantum Optics', 'Reaction Pathways', 'Cellular Respiration', 'Fluid Dynamics']
     },
     {
       name: 'Mathematics & Proofs',
-      icon: '📐',
+      icon: <IconCompass size={24} color="#C6822E" />,
       desc: 'Step-by-step theorem derivations, multivariable coordinate systems, topological manifolds, and linear algebra transformations.',
       topics: ['Real Analysis', 'Differential Geometry', 'Linear Transformations', 'Combinatorics']
     },
     {
       name: 'Business & Economics',
-      icon: '📈',
+      icon: <IconTrending size={24} color="#16A34A" />,
       desc: 'Macroeconomic equilibrium topologies, supply chain dependency models, econometric flows, and financial decision trees.',
       topics: ['Market Equilibrium', 'Game Theory', 'Supply Chain Networks', 'Econometrics']
     }

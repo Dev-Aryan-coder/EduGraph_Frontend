@@ -1,4 +1,13 @@
 import React, { useState } from 'react'
+import {
+  IconPencil,
+  IconShield,
+  IconTarget,
+  IconBrain,
+  IconChart,
+  IconLock,
+  IconPin
+} from '../../components/common/Icons'
 import './Features.css'
 
 export default function Features({ onNavigate }) {
@@ -20,7 +29,7 @@ export default function Features({ onNavigate }) {
       title: 'Edudraw Interactive Whiteboard',
       badge: 'Core Engine',
       desc: 'An ultra-low latency, vector-based whiteboard studio allowing students to draw, link concepts, connect formulas, and annotate proofs in real time.',
-      icon: '✏️',
+      icon: <IconPencil size={24} color="#1B7F72" />,
       highlights: ['Infinite panning & zooming', 'LaTeX equation rendering', 'Hand-drawn aesthetic connectors', 'Auto-saving node topology'],
       metric: '0.04s Canvas Latency'
     },
@@ -31,7 +40,7 @@ export default function Features({ onNavigate }) {
       title: 'Real-Time Page Visibility Proctor',
       badge: 'Zero-Cheating',
       desc: 'Continuous browser focus monitoring detects unauthorized tab switches, background window blurring, and external copy-paste attempts.',
-      icon: '🛡️',
+      icon: <IconShield size={24} color="#16A34A" />,
       highlights: ['Tab switch telemetry log', 'Focus loss counter', 'Non-intrusive privacy model', 'Instant alert to instructor'],
       metric: '99.4% Verified Integrity'
     },
@@ -42,7 +51,7 @@ export default function Features({ onNavigate }) {
       title: 'Post-Submission 20-MCQ Quiz',
       badge: 'Automated Scoring',
       desc: 'Immediately following whiteboard submission, students must answer 20 rapid-fire concept questions verifying genuine intellectual ownership.',
-      icon: '🎯',
+      icon: <IconTarget size={24} color="#C6822E" />,
       highlights: ['Auto-scored in < 0.2s', 'Node-specific comprehension checks', 'Verified grade report generation', 'Halts ghost submissions'],
       metric: '100% Personal Authorship'
     },
@@ -53,7 +62,7 @@ export default function Features({ onNavigate }) {
       title: 'Bidirectional Concept Topology',
       badge: 'Dual-Coding',
       desc: 'Replace fragile linear memorization with structural relational graphs. Interconnect lectures, equations, and lab records across disciplines.',
-      icon: '🧠',
+      icon: <IconBrain size={24} color="#10233F" />,
       highlights: ['Graph-based relational logic', 'Prerequisite concept tracking', 'Multi-disciplinary bridges', 'Cognitive retention anchor'],
       metric: '+3.8x Enduring Retention'
     },
@@ -64,7 +73,7 @@ export default function Features({ onNavigate }) {
       title: 'Principal & Faculty Telemetry',
       badge: 'Institutional Scale',
       desc: 'Real-time cohort comprehension heatmaps allow deans and educators to pinpoint knowledge gaps long before midterm exams.',
-      icon: '📊',
+      icon: <IconChart size={24} color="#1B7F72" />,
       highlights: ['Classroom bottleneck heatmaps', 'Automated gradebook exports', 'Student struggle flags', 'Accreditation audit logs'],
       metric: '250+ Campuses Onboard'
     },
@@ -75,7 +84,7 @@ export default function Features({ onNavigate }) {
       title: 'Cryptographic Grade Verification',
       badge: 'SHA-256 Hashed',
       desc: 'Every whiteboard canvas submission and quiz response is timestamped and cryptographically sealed, creating an immutable audit trail.',
-      icon: '🔒',
+      icon: <IconLock size={24} color="#10233F" />,
       highlights: ['SHA-256 state hashing', 'Time-stamped audit dossier', 'Tamper-evident grade records', 'FERPA & GDPR compliant'],
       metric: '0% Plagiarism Tolerance'
     }
@@ -119,25 +128,25 @@ export default function Features({ onNavigate }) {
               className={`filter-pill ${activeCategory === 'canvas' ? 'active' : ''}`}
               onClick={() => setActiveCategory('canvas')}
             >
-              ✏️ Edudraw Canvas
+              <IconPencil size={13} color="currentColor" /> Edudraw Canvas
             </button>
             <button 
               className={`filter-pill ${activeCategory === 'security' ? 'active' : ''}`}
               onClick={() => setActiveCategory('security')}
             >
-              🛡️ Anti-Cheat Proctoring
+              <IconShield size={13} color="currentColor" /> Anti-Cheat Proctoring
             </button>
             <button 
               className={`filter-pill ${activeCategory === 'evaluation' ? 'active' : ''}`}
               onClick={() => setActiveCategory('evaluation')}
             >
-              🎯 20-MCQ Validation
+              <IconTarget size={13} color="currentColor" /> 20-MCQ Validation
             </button>
             <button 
               className={`filter-pill ${activeCategory === 'analytics' ? 'active' : ''}`}
               onClick={() => setActiveCategory('analytics')}
             >
-              📊 Telemetry & Analytics
+              <IconChart size={13} color="currentColor" /> Telemetry & Analytics
             </button>
           </div>
         </div>
@@ -200,10 +209,10 @@ export default function Features({ onNavigate }) {
                 <span className="demo-status-pill">● Session Live</span>
               </div>
               <div className="demo-canvas-tools">
-                <span className="tool-btn active">✏️ Draw</span>
+                <span className="tool-btn active"><IconPencil size={13} color="#1B7F72" /> Draw</span>
                 <span className="tool-btn">▢ Node</span>
                 <span className="tool-btn">⇄ Arrow</span>
-                <span className="tool-btn">🛡️ Proctored</span>
+                <span className="tool-btn"><IconShield size={13} color="#16A34A" /> Proctored</span>
               </div>
             </div>
 
@@ -227,7 +236,7 @@ export default function Features({ onNavigate }) {
               </div>
 
               <div className="demo-sticky-box">
-                <span className="sticky-pin">📌</span>
+                <span className="sticky-pin"><IconPin size={13} color="#C6822E" /></span>
                 <span>Proctor Active: 0 tab switches • Focus retention 100%</span>
               </div>
 
@@ -238,7 +247,7 @@ export default function Features({ onNavigate }) {
                   <span>• Autosaved to Cloud</span>
                 </div>
                 <div className="footer-bar-right">
-                  <span className="quiz-ready-pill">🎯 20-MCQ Validation Ready</span>
+                  <span className="quiz-ready-pill"><IconTarget size={13} color="#16A34A" /> 20-MCQ Validation Ready</span>
                 </div>
               </div>
             </div>
@@ -284,7 +293,7 @@ export default function Features({ onNavigate }) {
                   </td>
                   <td className="td-edugraph">✓ Built-in Real-Time</td>
                   <td className="td-other">✕ None</td>
-                  <td className="td-other">⚠️ Third-party Plugins</td>
+                  <td className="td-other">Requires Third-party Plugins</td>
                 </tr>
                 <tr>
                   <td className="td-feature-name">
@@ -293,7 +302,7 @@ export default function Features({ onNavigate }) {
                   </td>
                   <td className="td-edugraph">✓ Automated & Linked</td>
                   <td className="td-other">✕ None</td>
-                  <td className="td-other">⚠️ Disconnected Quizzes</td>
+                  <td className="td-other">Disconnected Third-party Quizzes</td>
                 </tr>
                 <tr>
                   <td className="td-feature-name">
