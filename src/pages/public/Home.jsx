@@ -370,6 +370,34 @@ export default function Home() {
               </div>
 
             </div>
+
+            {/* 4-Column Goal Impact / Institutional Statistics Grid */}
+            <div className="hero-stats-grid">
+              <div className="stat-card">
+                <div className="stat-number">10K+</div>
+                <div className="stat-label">Active Student Minds</div>
+                <p className="stat-subtext">Mapping concepts daily across disciplines and engineering subjects.</p>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-number">250+</div>
+                <div className="stat-label">Institutional Colleges</div>
+                <p className="stat-subtext">Empowered by automated onboarding and credential cascade workflows.</p>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-number">3K+</div>
+                <div className="stat-label">Whiteboard Topic Graphs</div>
+                <p className="stat-subtext">Connecting core theories, equations, proofs, and laboratory records.</p>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-number">+99.4%</div>
+                <div className="stat-label">Verified Integrity Rate</div>
+                <p className="stat-subtext">Ensured through live Page Visibility proctoring and post-submission quizzes.</p>
+              </div>
+            </div>
+
           </div>
 
           {/* Horizontal Dashed Divider */}
@@ -520,35 +548,6 @@ export default function Home() {
                 </div>
               </div>
 
-            </div>
-          </div>
-
-          {/* Horizontal Dashed Divider */}
-          <div className="hero-dashed-divider" aria-hidden="true" />
-
-          <div className="hero-stats-grid">
-            <div className="stat-card">
-              <div className="stat-number">10K+</div>
-              <div className="stat-label">Active Student Minds</div>
-              <p className="stat-subtext">Mapping concepts daily across disciplines and engineering subjects.</p>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-number">250+</div>
-              <div className="stat-label">Institutional Colleges</div>
-              <p className="stat-subtext">Empowered by automated onboarding and credential cascade workflows.</p>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-number">3K+</div>
-              <div className="stat-label">Whiteboard Topic Graphs</div>
-              <p className="stat-subtext">Connecting core theories, equations, proofs, and laboratory records.</p>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-number">+99.4%</div>
-              <div className="stat-label">Verified Integrity Rate</div>
-              <p className="stat-subtext">Ensured through live Page Visibility proctoring and post-submission quizzes.</p>
             </div>
           </div>
 
