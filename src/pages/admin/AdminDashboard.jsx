@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import authService from '../../services/authService'
 import adminService from '../../services/adminService'
+import CollegeManager from './CollegeManager'
+import PlatformTickets from './PlatformTickets'
+import GlobalNotices from './GlobalNotices'
 import logoSvg from '../../assets/edugraph-logo.svg'
 import {
   IconLayoutDashboard,
@@ -17,7 +20,8 @@ import {
   IconMail,
   IconPhone,
   IconKey,
-  IconInfo
+  IconInfo,
+  IconBolt
 } from '../../components/common/Icons'
 import './AdminDashboard.css'
 
@@ -30,6 +34,7 @@ export default function AdminDashboard({ onNavigate }) {
   const [colleges, setColleges] = useState([])
   const [users, setUsers] = useState([])
   const [tickets, setTickets] = useState([])
+  const [notices, setNotices] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
   // Filters
@@ -41,17 +46,19 @@ export default function AdminDashboard({ onNavigate }) {
   const loadAdminData = async () => {
     setIsLoading(true)
     try {
-      const [platformStats, allColleges, allUsers, allTickets] = await Promise.all([
+      const [platformStats, allColleges, allUsers, allTickets, allNotices] = await Promise.all([
         adminService.getPlatformStats(),
         adminService.getAllColleges(),
         adminService.getAllUsers(),
-        adminService.getAllTickets()
+        adminService.getAllTickets(),
+        adminService.getGlobalNotices()
       ])
 
       if (platformStats) setStats(platformStats)
       if (allColleges) setColleges(allColleges)
       if (allUsers) setUsers(allUsers)
       if (allTickets) setTickets(allTickets)
+      if (allNotices) setNotices(allNotices)
     } catch (err) {
       console.error('Error fetching admin platform data', err)
     } finally {
@@ -94,6 +101,7 @@ export default function AdminDashboard({ onNavigate }) {
     { id: 'colleges', label: 'Institutions & Colleges', icon: <IconInstitution size={18} /> },
     { id: 'users', label: 'User & Role Directory', icon: <IconUser size={18} /> },
     { id: 'tickets', label: 'Support & Tickets', icon: <IconShield size={18} /> },
+    { id: 'notices', label: 'Global Notices & Broadcasts', icon: <IconBolt size={18} /> },
     { id: 'audit', label: 'System & DB Audit', icon: <IconFileText size={18} /> },
   ]
 
@@ -357,69 +365,13 @@ export default function AdminDashboard({ onNavigate }) {
             </div>
           )}
 
-          {/* 2. COLLEGES MODULE */}
+          {/* 2. COLLEGES MODULE (Modular Component) */}
           {activeTab === 'colleges' && (
-            <div className="module-container">
-              <div className="module-header-row">
-                <div>
-                  <h1 className="module-title">Institutions & Colleges Directory</h1>
-                  <p className="module-sub">
-                    All verified university campuses onboarded on EduGraph.
-                  </p>
-                </div>
-                {colleges.length > 0 && (
-                  <div className="search-bar-wrap">
-                    <IconSearch size={16} color="#64748B" />
-                    <input
-                      type="text"
-                      placeholder="Search institutions by name..."
-                      className="search-input"
-                      value={collegeSearch}
-                      onChange={(e) => setCollegeSearch(e.target.value)}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="panel-card">
-                {colleges.length > 0 ? (
-                  <div className="table-wrapper">
-                    <table className="shadcn-table">
-                      <thead>
-                        <tr>
-                          <th>College Name</th>
-                          <th>Campus Address</th>
-                          <th>Contact Email</th>
-                          <th>Database ID</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredColleges.map((c) => (
-                          <tr key={c.id}>
-                            <td className="font-semibold">{c.name}</td>
-                            <td>{c.address || 'Address on file'}</td>
-                            <td>{c.contactEmail || 'N/A'}</td>
-                            <td><code>COLLEGE-#{c.id}</code></td>
-                            <td><span className="badge-green">● VERIFIED NODE</span></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <div className="empty-state-box">
-                    <div className="empty-state-icon">
-                      <IconInstitution size={32} color="#94A3B8" />
-                    </div>
-                    <h4>No Colleges Registered Yet</h4>
-                    <p>
-                      When a Principal registers their college via the Sign Up portal, their institution node will appear here.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
+            <CollegeManager
+              colleges={colleges}
+              isLoading={isLoading}
+              onRefresh={loadAdminData}
+            />
           )}
 
           {/* 3. USERS MODULE */}
@@ -519,61 +471,23 @@ export default function AdminDashboard({ onNavigate }) {
             </div>
           )}
 
-          {/* 4. TICKETS MODULE */}
+          {/* 4. TICKETS MODULE (Modular Component) */}
           {activeTab === 'tickets' && (
-            <div className="module-container">
-              <div className="module-header-row">
-                <div>
-                  <h1 className="module-title">Platform Support & Data Correction Tickets</h1>
-                  <p className="module-sub">
-                    Direct ticketing feed from the `tickets` database table.
-                  </p>
-                </div>
-              </div>
+            <PlatformTickets
+              tickets={tickets}
+              isLoading={isLoading}
+              onRefresh={loadAdminData}
+            />
+          )}
 
-              <div className="panel-card">
-                {tickets.length > 0 ? (
-                  <div className="table-wrapper">
-                    <table className="shadcn-table">
-                      <thead>
-                        <tr>
-                          <th>Ticket ID</th>
-                          <th>Subject</th>
-                          <th>Raised By</th>
-                          <th>Type</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {tickets.map((t) => (
-                          <tr key={t.id}>
-                            <td><code>TICKET-#{t.id}</code></td>
-                            <td className="font-semibold">{t.title}</td>
-                            <td>{t.createdByName || t.createdByEmail}</td>
-                            <td><span className="tag-teal">{t.type}</span></td>
-                            <td>
-                              <span className={t.status === 'PENDING' ? 'badge-amber' : 'badge-green'}>
-                                ● {t.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <div className="empty-state-box">
-                    <div className="empty-state-icon">
-                      <IconShield size={32} color="#94A3B8" />
-                    </div>
-                    <h4>No Support Tickets Pending</h4>
-                    <p>
-                      All support inquiries, roll number updates, and data correction requests have been addressed.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
+          {/* 5. GLOBAL NOTICES MODULE (Modular Component) */}
+          {activeTab === 'notices' && (
+            <GlobalNotices
+              notices={notices}
+              isLoading={isLoading}
+              onRefresh={loadAdminData}
+              onNoticeCreated={loadAdminData}
+            />
           )}
 
           {/* 5. AUDIT MODULE */}

@@ -64,6 +64,38 @@ export const adminService = {
   async toggleUserStatus(userId) {
     const response = await api.put(`/admin/users/${userId}/toggle-status`)
     return response.data?.data || response.data
+  },
+
+  /**
+   * Fetch global platform notices
+   * Calls GET /api/notices/my-feed
+   */
+  async getGlobalNotices() {
+    try {
+      const response = await api.get('/notices/my-feed')
+      return response.data?.data || response.data || []
+    } catch (err) {
+      console.error('Error fetching global notices', err.message)
+      return []
+    }
+  },
+
+  /**
+   * Broadcast a new platform notice
+   * Calls POST /api/notices
+   */
+  async createNotice(noticeData) {
+    const response = await api.post('/notices', noticeData)
+    return response.data?.data || response.data
+  },
+
+  /**
+   * Delete a notice by ID
+   * Calls DELETE /api/notices/{id}
+   */
+  async deleteNotice(noticeId) {
+    const response = await api.delete(`/notices/${noticeId}`)
+    return response.data?.data || response.data
   }
 }
 
