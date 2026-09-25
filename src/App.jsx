@@ -9,6 +9,7 @@ import ContactUs from './pages/public/ContactUs'
 import Login from './pages/auth/Login'
 import SignUp from './pages/auth/SignUp'
 import ForgotPassword from './pages/auth/ForgotPassword'
+import DashboardOverview from './pages/dashboard/DashboardOverview'
 import './App.css'
 
 const VALID_TABS = [
@@ -19,7 +20,8 @@ const VALID_TABS = [
   'contact',
   'login',
   'signup',
-  'forgot-password'
+  'forgot-password',
+  'dashboard'
 ]
 
 function App() {
@@ -48,8 +50,25 @@ function App() {
   }
 
   const isAuthPage = ['login', 'signup', 'forgot-password'].includes(activeTab)
+  const isDashboardPage = activeTab === 'dashboard'
 
-  // Render the active view
+  // If on split-screen auth pages, hide public floating navbar and footer
+  if (isAuthPage) {
+    return (
+      <div className="app-auth-container">
+        {activeTab === 'login' && <Login onNavigate={navigateToTab} />}
+        {activeTab === 'signup' && <SignUp onNavigate={navigateToTab} />}
+        {activeTab === 'forgot-password' && <ForgotPassword onNavigate={navigateToTab} />}
+      </div>
+    )
+  }
+
+  // If on Dashboard, render full-screen workspace with its own topbar & sidenav
+  if (isDashboardPage) {
+    return <DashboardOverview onNavigate={navigateToTab} />
+  }
+
+  // Render the active public view
   const renderCurrentPage = () => {
     switch (activeTab) {
       case 'about':
@@ -60,25 +79,10 @@ function App() {
         return <Services onNavigate={navigateToTab} />
       case 'contact':
         return <ContactUs onNavigate={navigateToTab} />
-      case 'login':
-        return <Login onNavigate={navigateToTab} />
-      case 'signup':
-        return <SignUp onNavigate={navigateToTab} />
-      case 'forgot-password':
-        return <ForgotPassword onNavigate={navigateToTab} />
       case 'home':
       default:
         return <Home onNavigate={navigateToTab} />
     }
-  }
-
-  // If on split-screen auth pages, hide public floating navbar and footer
-  if (isAuthPage) {
-    return (
-      <div className="app-auth-container">
-        {renderCurrentPage()}
-      </div>
-    )
   }
 
   return (

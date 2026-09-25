@@ -1,0 +1,61 @@
+/* ==========================================================================
+   Shadcn UI Style Dialog — Account Settings Modal
+   ========================================================================== */
+
+.account-dialog {
+  max-width: 520px !important;
+}
+
+.badge-amber {
+  background: rgba(198, 130, 46, 0.1) !important;
+  border-color: rgba(198, 130, 46, 0.25) !important;
+  color: #C6822E !important;
+}
+
+.input-with-icon .shadcn-input.with-suffix {
+  padding-right: 38px;
+}
+
+.input-suffix-btn {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: opacity 0.15s ease;
+}
+
+.input-suffix-btn:hover {
+  opacity: 0.7;
+}
+
+.security-policy-box {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.policy-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.76rem;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.policy-row strong {
+  color: #10233F;
+}

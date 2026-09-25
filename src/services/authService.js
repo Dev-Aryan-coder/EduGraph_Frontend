@@ -76,11 +76,62 @@ export const authService = {
   },
 
   /**
+   * Fetch latest profile from DB
+   * Calls GET /api/users/me
+   */
+  async getCurrentUser() {
+    const response = await api.get('/users/me')
+    const user = response.data?.data || response.data
+    if (user) {
+      const current = this.getStoredUser() || {}
+      const merged = { ...current, ...user }
+      localStorage.setItem('edugraph_user', JSON.stringify(merged))
+      window.dispatchEvent(new Event('edugraph_auth_change'))
+      return merged
+    }
+    return user
+  },
+
+  /**
+   * Update Profile (Name, Phone, Profile Image Online URL)
+   * Calls PUT /api/users/me
+   */
+  async updateProfile(profileData) {
+    const response = await api.put('/users/me', {
+      fullName: profileData.fullName.trim(),
+      phoneNumber: profileData.phoneNumber?.trim() || null,
+      profileImageUrl: profileData.profileImageUrl?.trim() || null,
+    })
+    const updated = response.data?.data || response.data
+    if (updated) {
+      const current = this.getStoredUser() || {}
+      const merged = { ...current, ...updated }
+      localStorage.setItem('edugraph_user', JSON.stringify(merged))
+      window.dispatchEvent(new Event('edugraph_auth_change'))
+      return merged
+    }
+    return updated
+  },
+
+  /**
+   * Change / Reset Password from Account Settings
+   * Calls PUT /api/users/me/password
+   */
+  async changePassword(oldPassword, newPassword) {
+    const response = await api.put('/users/me/password', {
+      oldPassword,
+      newPassword,
+    })
+    return response.data?.message || 'Password updated successfully.'
+  },
+
+  /**
    * Save session tokens and user info in localStorage
    */
   saveAuthSession(token, user) {
     localStorage.setItem('edugraph_token', token)
     localStorage.setItem('edugraph_user', JSON.stringify(user))
+    window.dispatchEvent(new Event('edugraph_auth_change'))
   },
 
   /**
@@ -113,6 +164,7 @@ export const authService = {
     } finally {
       localStorage.removeItem('edugraph_token')
       localStorage.removeItem('edugraph_user')
+      window.dispatchEvent(new Event('edugraph_auth_change'))
     }
   },
 

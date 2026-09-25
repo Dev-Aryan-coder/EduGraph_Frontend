@@ -1,8 +1,26 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import logoSvg from '../../assets/edugraph-logo.svg'
+import authService from '../../services/authService'
+import AccountMenu from '../auth/AccountMenu'
 import './Navbar.css'
 
 export default function Navbar({ activeTab = 'home', setActiveTab }) {
+  const [user, setUser] = useState(() => authService.getStoredUser())
+
+  useEffect(() => {
+    const checkUser = () => {
+      setUser(authService.getStoredUser())
+    }
+
+    window.addEventListener('edugraph_auth_change', checkUser)
+    window.addEventListener('storage', checkUser)
+
+    return () => {
+      window.removeEventListener('edugraph_auth_change', checkUser)
+      window.removeEventListener('storage', checkUser)
+    }
+  }, [])
+
   const navItems = [
     { id: 'home', label: 'Home', href: '#home' },
     { id: 'about', label: 'About Us', href: '#about' },
@@ -61,28 +79,34 @@ export default function Navbar({ activeTab = 'home', setActiveTab }) {
         </div>
       </nav>
 
-      {/* 3. Login and Sign Up Buttons at the FAR RIGHT of the browser screen */}
+      {/* 3. Account Symbol or Login/SignUp Buttons at the FAR RIGHT */}
       <div className="screen-right-auth-actions">
-        <a 
-          href="#login" 
-          className="auth-btn login-btn"
-          onClick={(e) => {
-            e.preventDefault()
-            handleNavClick('login')
-          }}
-        >
-          Login
-        </a>
-        <a 
-          href="#signup" 
-          className="auth-btn signup-btn"
-          onClick={(e) => {
-            e.preventDefault()
-            handleNavClick('signup')
-          }}
-        >
-          Sign Up
-        </a>
+        {user ? (
+          <AccountMenu onNavigate={setActiveTab} />
+        ) : (
+          <>
+            <a 
+              href="#login" 
+              className="auth-btn login-btn"
+              onClick={(e) => {
+                e.preventDefault()
+                handleNavClick('login')
+              }}
+            >
+              Login
+            </a>
+            <a 
+              href="#signup" 
+              className="auth-btn signup-btn"
+              onClick={(e) => {
+                e.preventDefault()
+                handleNavClick('signup')
+              }}
+            >
+              Sign Up
+            </a>
+          </>
+        )}
       </div>
     </header>
   )
