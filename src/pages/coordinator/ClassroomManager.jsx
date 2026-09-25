@@ -65,6 +65,7 @@ export default function ClassroomManager({
       await coordinatorService.createClassroom({
         name: name.trim(),
         section: section.trim() || null,
+        academicYear: '2026-2027',
         teacherId: teacherId ? Number(teacherId) : null
       })
 
