@@ -1,0 +1,297 @@
+/* ==========================================================================
+   EduGraph Top Header & Navigation Bar
+   - Logo: At the MOST LEFT edge of the browser screen
+   - Navbar: Floating in the TOP MIDDLE of the screen (5 pages)
+   - Auth: Sign Up and Login at the MOST RIGHT edge of the browser screen
+   - Strict 15px border radius on navbar
+   - Blueprint Grid Pattern Background inside the navbar
+   - Excalidraw Hand-Drawn Stroke + Neomorphic Dual Shadow
+   ========================================================================== */
+
+/* Header Wrapper */
+.navbar-header-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* 1. Brand Logo at the MOST LEFT of the browser screen */
+.screen-left-logo-link {
+  position: fixed;
+  top: 20px;
+  left: 36px;
+  z-index: 1001;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  user-select: none;
+}
+
+.screen-left-logo-link:hover {
+  transform: scale(1.05);
+}
+
+.screen-left-logo-img {
+  height: 48px;
+  width: auto;
+  max-width: 190px;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(1px 2px 4px rgba(16, 35, 63, 0.12));
+}
+
+/* 2. Centered Floating Navbar in the Middle of Screen */
+.excalidraw-navbar {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  max-width: calc(100vw - 32px);
+}
+
+/* 3. Neumorphic + Excalidraw Frame with Blueprint Grid (Strict 15px Radius) */
+.navbar-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  
+  /* Uploaded Blueprint Grid Texture */
+  background-color: #EEF2F6;
+  background-image: url('../../assets/navbar-bg.png');
+  background-repeat: repeat;
+  background-position: center;
+  background-size: 320px auto;
+
+  /* Strict 15px border radius and cleanly clipped corners */
+  border-radius: 15px !important;
+  overflow: hidden;
+  
+  /* Excalidraw Hand-drawn Charcoal Ink Stroke */
+  border: 2px solid #10233F;
+
+  /* Neumorphic Dual Shadow (Soft light top-left, soft shadow bottom-right) */
+  box-shadow: 
+    8px 8px 18px rgba(16, 35, 63, 0.12),
+    -8px -8px 18px #FFFFFF,
+    inset 1px 1px 2px rgba(255, 255, 255, 0.85);
+
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+/* 4. Navigation Links (Excalidraw + Neumorphic Pill) */
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  border-radius: 11px;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #10233F;
+  text-decoration: none;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.nav-label {
+  position: relative;
+  z-index: 2;
+  letter-spacing: -0.01em;
+}
+
+/* Neumorphic Hover: Soft Raised Pill with Frosted Glass */
+.nav-link:hover {
+  color: #1B7F72;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 
+    3px 3px 7px rgba(16, 35, 63, 0.08),
+    -3px -3px 7px rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
+}
+
+/* Neumorphic Active: Sunken / Debossed Inset Pill */
+.nav-link.active {
+  color: #1B7F72;
+  background: rgba(226, 232, 240, 0.9);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 
+    inset 2px 2px 5px rgba(16, 35, 63, 0.14),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+  transform: translateY(0);
+}
+
+/* Excalidraw Sketchy Hand-Drawn Underline on Active Link */
+.active-sketch-line {
+  position: absolute;
+  bottom: 3px;
+  left: 18%;
+  right: 18%;
+  height: 2.2px;
+  background: #1B7F72;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+/* 5. Login & Sign Up Buttons at the MOST RIGHT of the browser screen */
+.screen-right-auth-actions {
+  position: fixed;
+  top: 24px;
+  right: 36px;
+  z-index: 1001;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  border-radius: 12px;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: 2px solid #10233F;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+/* Neumorphic Login Button (Subtle, sleek, elevated) */
+.login-btn {
+  background: #EEF2F6;
+  color: #10233F;
+  box-shadow: 
+    4px 4px 10px rgba(16, 35, 63, 0.1),
+    -4px -4px 10px #FFFFFF;
+}
+
+.login-btn:hover,
+.login-btn:focus {
+  color: #1B7F72 !important;
+  background: #E8EDF3;
+  transform: translateY(-1px);
+  box-shadow: 
+    5px 5px 12px rgba(16, 35, 63, 0.14),
+    -5px -5px 12px #FFFFFF;
+}
+
+.login-btn:active {
+  transform: translateY(0);
+  box-shadow: 
+    inset 2px 2px 5px rgba(16, 35, 63, 0.14),
+    inset -2px -2px 5px #FFFFFF;
+}
+
+/* Neumorphic + Excalidraw Sign Up Button (Graph Teal Accent) */
+.signup-btn {
+  background: #1B7F72;
+  color: #FFFFFF !important;
+  box-shadow: 
+    4px 4px 12px rgba(27, 127, 114, 0.28),
+    -3px -3px 8px #FFFFFF;
+}
+
+.signup-btn:hover,
+.signup-btn:focus {
+  background: #146358;
+  color: #FFFFFF !important;
+  transform: translateY(-2px);
+  box-shadow: 
+    6px 6px 16px rgba(27, 127, 114, 0.38),
+    -4px -4px 10px #FFFFFF;
+}
+
+.signup-btn:active {
+  color: #FFFFFF !important;
+  transform: translateY(0);
+  box-shadow: 
+    inset 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* 6. Responsive adjustments */
+@media (max-width: 1180px) {
+  .screen-left-logo-link {
+    left: 18px;
+    top: 22px;
+  }
+  
+  .screen-left-logo-img {
+    height: 40px;
+    max-width: 140px;
+  }
+
+  .screen-right-auth-actions {
+    right: 18px;
+    top: 24px;
+    gap: 8px;
+  }
+
+  .auth-btn {
+    padding: 7px 14px;
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .screen-left-logo-link {
+    position: static;
+    display: flex;
+    justify-content: center;
+    padding-top: 14px;
+    margin-bottom: 8px;
+  }
+
+  .screen-right-auth-actions {
+    position: static;
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+
+  .excalidraw-navbar {
+    position: static;
+    transform: none;
+    margin: 0 auto;
+    max-width: calc(100vw - 20px);
+  }
+
+  .navbar-container {
+    padding: 6px 8px;
+    gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .navbar-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-link {
+    padding: 6px 12px;
+    font-size: 0.82rem;
+  }
+}
