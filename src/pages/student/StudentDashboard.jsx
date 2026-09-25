@@ -72,6 +72,36 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
   const [ticketTargetRole, setTicketTargetRole] = useState('COORDINATOR')
   const [inspectGradeSubmission, setInspectGradeSubmission] = useState(null)
 
+  // Mandatory Submission Warning Modal State
+  const [pendingAssessmentAction, setPendingAssessmentAction] = useState(null)
+
+  const handleOpenWhiteboard = (assignment, isSubmitted) => {
+    if (isSubmitted) {
+      setActiveAssignmentId(assignment.id)
+    } else {
+      setPendingAssessmentAction({ type: 'WHITEBOARD', assignment })
+    }
+  }
+
+  const handleOpenQuiz = (assignment, isSubmitted) => {
+    if (isSubmitted) {
+      setActiveQuizAssignment(assignment)
+    } else {
+      setPendingAssessmentAction({ type: 'QUIZ', assignment })
+    }
+  }
+
+  const handleConfirmStartAssessment = () => {
+    if (!pendingAssessmentAction) return
+    const { type, assignment } = pendingAssessmentAction
+    if (type === 'WHITEBOARD') {
+      setActiveAssignmentId(assignment.id)
+    } else if (type === 'QUIZ') {
+      setActiveQuizAssignment(assignment)
+    }
+    setPendingAssessmentAction(null)
+  }
+
   useEffect(() => {
     loadAllStudentData()
   }, [])
@@ -533,14 +563,14 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
                         <div className="assign-card-actions">
                           <button
                             className="btn-open-workspace"
-                            onClick={() => setActiveAssignmentId(a.id)}
+                            onClick={() => handleOpenWhiteboard(a, isSubmitted)}
                           >
                             <IconFileText size={15} />
                             <span>{isSubmitted ? 'View Whiteboard Submission' : 'Open Whiteboard Canvas'}</span>
                           </button>
                           <button
                             className="btn-open-mcq"
-                            onClick={() => setActiveQuizAssignment(a)}
+                            onClick={() => handleOpenQuiz(a, a.submission?.mcqScore !== null && a.submission?.mcqScore !== undefined)}
                           >
                             <IconBrain size={15} />
                             <span>{a.submission?.mcqScore !== null && a.submission?.mcqScore !== undefined ? 'View Quiz Result' : 'Take 20 MCQs'}</span>
@@ -941,6 +971,81 @@ export default function StudentDashboard({ onNavigate, initialTab = 'assignments
             <div className="grade-modal-footer">
               <button className="btn-cancel" onClick={() => setInspectGradeSubmission(null)}>
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mandatory Assessment Submission Warning Modal */}
+      {pendingAssessmentAction && (
+        <div className="modal-backdrop">
+          <div className="student-modal-card assessment-warning-card">
+            <div className="modal-header warning-header">
+              <div className="warning-title-wrap">
+                <div className="warning-icon-pill">
+                  <IconAlertTriangle size={22} color="#D97706" />
+                </div>
+                <div>
+                  <h3>Mandatory Submission Warning</h3>
+                  <p className="warning-subtitle">{pendingAssessmentAction.assignment?.title}</p>
+                </div>
+              </div>
+              <button className="btn-close" onClick={() => setPendingAssessmentAction(null)}>
+                <IconX size={18} />
+              </button>
+            </div>
+
+            <div className="assessment-warning-body">
+              <div className="warning-banner-box">
+                <div className="warning-banner-title">
+                  <IconShield size={16} color="#B45309" />
+                  <span>Important Academic Assessment Rule</span>
+                </div>
+                <p>
+                  Once you start this {pendingAssessmentAction.type === 'WHITEBOARD' ? 'Whiteboard Canvas' : '20-MCQ Verification Assessment'}, <strong>you must complete and submit your work</strong>.
+                </p>
+              </div>
+
+              <div className="warning-rules-list">
+                <div className="warning-rule-item">
+                  <span className="rule-bullet">1</span>
+                  <div>
+                    <strong>Mandatory Final Submission</strong>
+                    <p>Once assessment begins, you are required to submit before leaving. Incomplete attempts will be recorded on your transcript.</p>
+                  </div>
+                </div>
+                <div className="warning-rule-item">
+                  <span className="rule-bullet">2</span>
+                  <div>
+                    <strong>Proctoring & Anti-Cheat Active</strong>
+                    <p>Tab switches and copy-paste deterrence are monitored in real time and audited by your faculty instructor.</p>
+                  </div>
+                </div>
+                <div className="warning-rule-item">
+                  <span className="rule-bullet">3</span>
+                  <div>
+                    <strong>Option to Go Back Now</strong>
+                    <p>If you are not prepared to finish right now, click <strong>"Go Back / Not Now"</strong> to return safely to your coursework dashboard.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-actions warning-actions">
+              <button
+                type="button"
+                className="btn-cancel btn-warning-cancel"
+                onClick={() => setPendingAssessmentAction(null)}
+              >
+                Go Back / Not Now
+              </button>
+              <button
+                type="button"
+                className="btn-submit btn-warning-proceed"
+                onClick={handleConfirmStartAssessment}
+              >
+                {pendingAssessmentAction.type === 'WHITEBOARD' ? 'I Understand, Open Canvas ➔' : 'I Understand, Begin 20 MCQs ➔'}
               </button>
             </div>
           </div>

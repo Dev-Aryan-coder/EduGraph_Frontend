@@ -1466,3 +1466,150 @@
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ==========================================================================
+   ASSESSMENT MANDATORY SUBMISSION WARNING MODAL
+   ========================================================================== */
+.assessment-warning-card {
+  max-width: 540px;
+  animation: modalScale 0.2s ease-out;
+}
+
+.warning-header {
+  background: #FFFBEB;
+  border-bottom: 1px solid #FDE68A;
+}
+
+.warning-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.warning-icon-pill {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #FEF3C7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.warning-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.84rem;
+  color: #92400E;
+  font-weight: 600;
+}
+
+.assessment-warning-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.warning-banner-box {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.warning-banner-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #B45309;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.warning-banner-box p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #78350F;
+  line-height: 1.5;
+}
+
+.warning-rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.warning-rule-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.rule-bullet {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  color: #475569;
+  font-size: 0.76rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.warning-rule-item strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 2px;
+}
+
+.warning-rule-item p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #64748B;
+  line-height: 1.4;
+}
+
+.warning-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-warning-cancel {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  color: #475569;
+}
+
+.btn-warning-cancel:hover {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+.btn-warning-proceed {
+  background: #1B7F72;
+  color: #FFFFFF;
+  border: none;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-warning-proceed:hover {
+  background: #136056;
+}
