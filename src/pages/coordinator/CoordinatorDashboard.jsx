@@ -84,9 +84,24 @@ export default function CoordinatorDashboard({ onNavigate }) {
     }
   }
 
+  // Role Guard: If logged in as Principal or Admin, route to appropriate workspace
   useEffect(() => {
-    loadCoordinatorData()
-  }, [])
+    const role = (currentUser?.role || '').toUpperCase()
+    if (role === 'PRINCIPAL' || role === 'ROLE_PRINCIPAL') {
+      if (onNavigate) onNavigate('dashboard')
+      else window.location.hash = '#dashboard'
+    } else if (role === 'ADMIN' || role === 'ROLE_ADMIN') {
+      if (onNavigate) onNavigate('admin')
+      else window.location.hash = '#admin'
+    }
+  }, [currentUser, onNavigate])
+
+  useEffect(() => {
+    const role = (currentUser?.role || '').toUpperCase()
+    if (role === 'COORDINATOR' || role === 'ROLE_COORDINATOR') {
+      loadCoordinatorData()
+    }
+  }, [currentUser])
 
   const handleNavHome = () => {
     if (onNavigate) {

@@ -70,10 +70,25 @@ function App() {
     )
   }
 
-  // Check current user role to route dashboard appropriately
-  const storedUser = authService.getStoredUser()
-  const isUserAdmin = storedUser?.role && (storedUser.role.toUpperCase() === 'ADMIN' || storedUser.role.toUpperCase() === 'ROLE_ADMIN')
-  const isUserCoordinator = storedUser?.role && (storedUser.role.toUpperCase() === 'COORDINATOR' || storedUser.role.toUpperCase() === 'ROLE_COORDINATOR')
+  // Reactive user session state
+  const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser())
+
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setCurrentUser(authService.getStoredUser())
+    }
+    window.addEventListener('edugraph_auth_change', handleAuthChange)
+    window.addEventListener('storage', handleAuthChange)
+    return () => {
+      window.removeEventListener('edugraph_auth_change', handleAuthChange)
+      window.removeEventListener('storage', handleAuthChange)
+    }
+  }, [])
+
+  const role = (currentUser?.role || '').toUpperCase()
+  const isUserAdmin = role === 'ADMIN' || role === 'ROLE_ADMIN'
+  const isUserCoordinator = role === 'COORDINATOR' || role === 'ROLE_COORDINATOR'
+  const isUserPrincipal = role === 'PRINCIPAL' || role === 'ROLE_PRINCIPAL'
 
   // Render Super Admin Workspace
   if (isAdminPage || (isDashboardPage && isUserAdmin)) {
@@ -85,8 +100,20 @@ function App() {
     return <CoordinatorDashboard onNavigate={navigateToTab} />
   }
 
-  // If on Dashboard, render Principal Workspace with full-screen sidenav layout
+  // Render Principal Workspace
+  if (isDashboardPage && isUserPrincipal) {
+    return <PrincipalDashboard onNavigate={navigateToTab} />
+  }
+
+  // If on Dashboard without specific role or unauthenticated
   if (isDashboardPage) {
+    if (!currentUser) {
+      return (
+        <div className="app-auth-container">
+          <Login onNavigate={navigateToTab} />
+        </div>
+      )
+    }
     return <PrincipalDashboard onNavigate={navigateToTab} />
   }
 
