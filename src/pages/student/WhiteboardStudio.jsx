@@ -386,41 +386,42 @@ export default function WhiteboardStudio({
               </button>
             </div>
 
-            <form onSubmit={handleSaveNode}>
-              <div className="modal-body">
-                <div className="form-group">
-                  <label>Node Title *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Asynchronous I/O & Event Loops"
-                    value={nodeTitle}
-                    onChange={(e) => setNodeTitle(e.target.value)}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Brief Concept Description</label>
-                  <input
-                    type="text"
-                    placeholder="Short summary of this concept or module"
-                    value={nodeDescription}
-                    onChange={(e) => setNodeDescription(e.target.value)}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Detailed Study Content / Notes</label>
-                  <textarea
-                    rows={4}
-                    placeholder="Type detailed notes, key equations, or implementation details..."
-                    value={nodeContent}
-                    onChange={(e) => setNodeContent(e.target.value)}
-                  />
-                </div>
+            <form onSubmit={handleSaveNode} className="wb-node-form">
+              <div className="form-group">
+                <label>Node Title *</label>
+                <input
+                  type="text"
+                  required
+                  className="wb-input"
+                  placeholder="e.g. Asynchronous I/O & Event Loops"
+                  value={nodeTitle}
+                  onChange={(e) => setNodeTitle(e.target.value)}
+                />
               </div>
 
-              <div className="modal-footer">
+              <div className="form-group">
+                <label>Brief Concept Description</label>
+                <input
+                  type="text"
+                  className="wb-input"
+                  placeholder="Short summary of this concept or module"
+                  value={nodeDescription}
+                  onChange={(e) => setNodeDescription(e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Detailed Study Content / Notes</label>
+                <textarea
+                  rows={4}
+                  className="wb-textarea"
+                  placeholder="Type detailed notes, key equations, or implementation details..."
+                  value={nodeContent}
+                  onChange={(e) => setNodeContent(e.target.value)}
+                />
+              </div>
+
+              <div className="modal-actions">
                 <button
                   type="button"
                   className="btn-cancel"
@@ -428,7 +429,7 @@ export default function WhiteboardStudio({
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn-save">
+                <button type="submit" className="btn-submit">
                   {editingNode ? 'Save Changes' : 'Create Node'}
                 </button>
               </div>

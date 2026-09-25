@@ -392,6 +392,20 @@
   color: #0F172A;
 }
 
+/* Modal Backdrop */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
 /* Create / Edit Node Modal */
 .wb-node-modal {
   background: #FFFFFF;
@@ -402,6 +416,7 @@
   box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
   overflow: hidden;
   border: 1px solid #E2E8F0;
+  animation: modalScale 0.2s ease-out;
 }
 
 .wb-node-modal .modal-header {
@@ -420,27 +435,51 @@
   color: #0F172A;
 }
 
-.wb-node-form {
+.wb-node-modal .btn-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.wb-node-modal .btn-close:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+.wb-node-form,
+.wb-node-modal .modal-body {
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.wb-node-form .form-group {
+.wb-node-form .form-group,
+.wb-node-modal .form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.wb-node-form label {
+.wb-node-form label,
+.wb-node-modal label {
   font-size: 0.85rem;
   font-weight: 700;
   color: #334155;
 }
 
 .wb-input,
-.wb-textarea {
+.wb-textarea,
+.wb-node-modal input[type="text"],
+.wb-node-modal textarea {
   width: 100%;
   padding: 10px 14px;
   border: 1px solid #CBD5E1;
@@ -451,20 +490,26 @@
   outline: none;
   transition: all 0.15s ease;
   background: #F8FAFC;
+  box-sizing: border-box;
 }
 
 .wb-input:focus,
-.wb-textarea:focus {
+.wb-textarea:focus,
+.wb-node-modal input[type="text"]:focus,
+.wb-node-modal textarea:focus {
   background: #FFFFFF;
   border-color: #1B7F72;
   box-shadow: 0 0 0 3px rgba(27, 127, 114, 0.12);
 }
 
-.wb-textarea {
+.wb-textarea,
+.wb-node-modal textarea {
   resize: vertical;
+  min-height: 90px;
 }
 
-.wb-node-modal .modal-actions {
+.wb-node-modal .modal-actions,
+.wb-node-modal .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
@@ -489,7 +534,8 @@
   color: #0F172A;
 }
 
-.btn-submit {
+.btn-submit,
+.wb-node-modal .btn-save {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -505,8 +551,14 @@
   transition: background 0.15s ease;
 }
 
-.btn-submit:hover {
+.btn-submit:hover,
+.wb-node-modal .btn-save:hover {
   background: #136056;
+}
+
+@keyframes modalScale {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 /* Mode Switcher */
