@@ -28,6 +28,66 @@ export default function ClassroomManager({
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
 
+  // Edit Classroom State
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editId, setEditId] = useState(null)
+  const [editName, setEditName] = useState('')
+  const [editSection, setEditSection] = useState('')
+  const [editTeacherId, setEditTeacherId] = useState('')
+  const [isEditSubmitting, setIsEditSubmitting] = useState(false)
+  const [editErrorMessage, setEditErrorMessage] = useState('')
+  const [editSuccessMessage, setEditSuccessMessage] = useState('')
+
+  const handleOpenEditModal = (c) => {
+    setEditId(c.id)
+    setEditName(c.name || '')
+    setEditSection(c.section || '')
+    setEditTeacherId(c.teacherId ? String(c.teacherId) : '')
+    setEditErrorMessage('')
+    setEditSuccessMessage('')
+    setIsEditModalOpen(true)
+  }
+
+  const handleCloseEditModal = () => {
+    if (isEditSubmitting) return
+    setIsEditModalOpen(false)
+  }
+
+  const handleUpdateClassroom = async (e) => {
+    e.preventDefault()
+    setEditErrorMessage('')
+    setEditSuccessMessage('')
+
+    if (!editName.trim()) {
+      setEditErrorMessage('Classroom name is required.')
+      return
+    }
+
+    setIsEditSubmitting(true)
+    try {
+      await coordinatorService.updateClassroom(editId, {
+        name: editName.trim(),
+        section: editSection.trim() || null,
+        academicYear: '2026-2027',
+        teacherId: editTeacherId ? Number(editTeacherId) : null
+      })
+
+      setEditSuccessMessage('Classroom updated & faculty assigned successfully!')
+      if (onRefresh) await onRefresh()
+
+      setTimeout(() => {
+        setIsEditModalOpen(false)
+        setEditSuccessMessage('')
+      }, 1400)
+    } catch (err) {
+      setEditErrorMessage(
+        err.response?.data?.message || err.message || 'Failed to update classroom.'
+      )
+    } finally {
+      setIsEditSubmitting(false)
+    }
+  }
+
   const filteredClassrooms = classrooms.filter((c) => {
     const q = searchQuery.toLowerCase()
     const matchName = c.name && c.name.toLowerCase().includes(q)
@@ -235,7 +295,15 @@ export default function ClassroomManager({
                     <td>
                       <code>CLASS-#{c.id}</code>
                     </td>
-                    <td>
+                    <td className="crm-actions-cell">
+                      <button
+                        type="button"
+                        className="crm-edit-btn"
+                        onClick={() => handleOpenEditModal(c)}
+                        title="Edit Classroom Details & Assign Faculty"
+                      >
+                        Edit / Assign
+                      </button>
                       <button
                         type="button"
                         className="crm-delete-btn"
@@ -370,6 +438,111 @@ export default function ClassroomManager({
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Creating Classroom...' : 'Create Classroom ➔'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Edit Classroom & Faculty Assignment Modal */}
+      {isEditModalOpen && (
+        <div className="crm-modal-overlay" onClick={handleCloseEditModal}>
+          <div className="crm-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="crm-modal-head">
+              <div>
+                <h3 className="crm-modal-title">Edit Classroom & Faculty Assignment</h3>
+                <p className="crm-modal-sub">
+                  Update section details and allocate an onboarded faculty instructor.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="crm-modal-close"
+                onClick={handleCloseEditModal}
+                disabled={isEditSubmitting}
+                aria-label="Close"
+              >
+                <IconX size={18} />
+              </button>
+            </div>
+
+            {editErrorMessage && (
+              <div className="crm-alert alert-error">
+                <span>{editErrorMessage}</span>
+              </div>
+            )}
+            {editSuccessMessage && (
+              <div className="crm-alert alert-success">
+                <IconCheck size={16} color="#16A34A" />
+                <span>{editSuccessMessage}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleUpdateClassroom} className="crm-form">
+              <div className="crm-input-group">
+                <label className="crm-label">Classroom Name *</label>
+                <input
+                  type="text"
+                  className="crm-input"
+                  placeholder="e.g. Information Technology - Final Year"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="crm-input-group">
+                <label className="crm-label">Section / Division (Optional)</label>
+                <input
+                  type="text"
+                  className="crm-input"
+                  placeholder="e.g. Division A / Batch 1"
+                  value={editSection}
+                  onChange={(e) => setEditSection(e.target.value)}
+                />
+              </div>
+
+              <div className="crm-input-group">
+                <label className="crm-label">Assign Faculty Instructor</label>
+                <select
+                  className="crm-select"
+                  value={editTeacherId}
+                  onChange={(e) => setEditTeacherId(e.target.value)}
+                >
+                  <option value="">-- Leave Unassigned (No Faculty) --</option>
+                  {teachers.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.fullName} ({t.email})
+                    </option>
+                  ))}
+                </select>
+                {teachers.length === 0 ? (
+                  <span className="crm-help-note">
+                    No faculty onboarded yet. You can onboard faculty via Excel in the Faculty Directory.
+                  </span>
+                ) : (
+                  <span className="crm-help-note">
+                    The assigned instructor will immediately be able to publish assignments & grade this section.
+                  </span>
+                )}
+              </div>
+
+              <div className="crm-modal-footer">
+                <button
+                  type="button"
+                  className="crm-btn-cancel"
+                  onClick={handleCloseEditModal}
+                  disabled={isEditSubmitting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="crm-btn-submit"
+                  disabled={isEditSubmitting}
+                >
+                  {isEditSubmitting ? 'Saving Changes...' : 'Save & Assign Faculty ➔'}
                 </button>
               </div>
             </form>

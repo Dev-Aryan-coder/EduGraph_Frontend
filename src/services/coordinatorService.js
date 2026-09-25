@@ -67,6 +67,15 @@ export const coordinatorService = {
   },
 
   /**
+   * Update an existing classroom (name, section, assign/reassign faculty instructor)
+   * Calls PUT /api/coordinator/classrooms/{id}
+   */
+  async updateClassroom(classroomId, classroomData) {
+    const response = await api.put(`/coordinator/classrooms/${classroomId}`, classroomData)
+    return response.data?.data || response.data
+  },
+
+  /**
    * Delete a classroom
    * Calls DELETE /api/coordinator/classrooms/{id}
    */
@@ -81,6 +90,15 @@ export const coordinatorService = {
    */
   async createStudent(studentData) {
     const response = await api.post('/coordinator/students', studentData)
+    return response.data?.data || response.data
+  },
+
+  /**
+   * Update student details (full name, roll number, phone, assign/change classroom)
+   * Calls PUT /api/coordinator/students/{id}
+   */
+  async updateStudent(studentId, studentData) {
+    const response = await api.put(`/coordinator/students/${studentId}`, studentData)
     return response.data?.data || response.data
   },
 

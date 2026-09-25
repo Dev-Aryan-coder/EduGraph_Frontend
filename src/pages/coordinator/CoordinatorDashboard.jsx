@@ -54,6 +54,17 @@ export default function CoordinatorDashboard({ onNavigate }) {
   const [studError, setStudError] = useState('')
   const [studSuccess, setStudSuccess] = useState('')
 
+  // Edit Student State
+  const [isEditStudentModalOpen, setIsEditStudentModalOpen] = useState(false)
+  const [editStudentId, setEditStudentId] = useState(null)
+  const [editStudentName, setEditStudentName] = useState('')
+  const [editStudentRoll, setEditStudentRoll] = useState('')
+  const [editStudentPhone, setEditStudentPhone] = useState('')
+  const [editStudentClassroomId, setEditStudentClassroomId] = useState('')
+  const [isEditStudentSubmitting, setIsEditStudentSubmitting] = useState(false)
+  const [editStudentError, setEditStudentError] = useState('')
+  const [editStudentSuccess, setEditStudentSuccess] = useState('')
+
   const [isSingleTeacherModalOpen, setIsSingleTeacherModalOpen] = useState(false)
   const [teachName, setTeachName] = useState('')
   const [teachEmail, setTeachEmail] = useState('')
@@ -199,6 +210,56 @@ export default function CoordinatorDashboard({ onNavigate }) {
       setTeachError(err.response?.data?.message || err.message || 'Failed to onboard teacher.')
     } finally {
       setIsTeachSubmitting(false)
+    }
+  }
+
+  // Handle Edit Student Details & Classroom Allocation
+  const handleOpenEditStudentModal = (s) => {
+    setEditStudentId(s.id)
+    setEditStudentName(s.fullName || '')
+    setEditStudentRoll(s.rollNumber || '')
+    setEditStudentPhone(s.phoneNumber || '')
+    const cId = s.classroomId || s.classroom?.id || ''
+    setEditStudentClassroomId(cId ? String(cId) : '')
+    setEditStudentError('')
+    setEditStudentSuccess('')
+    setIsEditStudentModalOpen(true)
+  }
+
+  const handleCloseEditStudentModal = () => {
+    if (isEditStudentSubmitting) return
+    setIsEditStudentModalOpen(false)
+  }
+
+  const handleUpdateStudent = async (e) => {
+    e.preventDefault()
+    setEditStudentError('')
+    setEditStudentSuccess('')
+
+    if (!editStudentName.trim() || !editStudentRoll.trim()) {
+      setEditStudentError('Student Full Name and Roll Number are required.')
+      return
+    }
+
+    setIsEditStudentSubmitting(true)
+    try {
+      await coordinatorService.updateStudent(editStudentId, {
+        fullName: editStudentName.trim(),
+        rollNumber: editStudentRoll.trim(),
+        phoneNumber: editStudentPhone.trim() || null,
+        classroomId: editStudentClassroomId ? Number(editStudentClassroomId) : null
+      })
+
+      setEditStudentSuccess('Student profile & classroom allocation updated successfully!')
+      await loadCoordinatorData()
+      setTimeout(() => {
+        setIsEditStudentModalOpen(false)
+        setEditStudentSuccess('')
+      }, 1400)
+    } catch (err) {
+      setEditStudentError(err.response?.data?.message || err.message || 'Failed to update student.')
+    } finally {
+      setIsEditStudentSubmitting(false)
     }
   }
 
@@ -588,34 +649,60 @@ export default function CoordinatorDashboard({ onNavigate }) {
                           <th>Roll Number</th>
                           <th>Institutional Email</th>
                           <th>Phone</th>
+                          <th>Classroom / Division</th>
                           <th>Status</th>
-                          <th>Credentials</th>
+                          <th>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredStudents.map((s) => (
-                          <tr key={s.id}>
-                            <td className="font-semibold">{s.fullName}</td>
-                            <td>
-                              <code className="roll-pill">{s.rollNumber || 'PENDING'}</code>
-                            </td>
-                            <td>{s.email}</td>
-                            <td>{s.phoneNumber || 'N/A'}</td>
-                            <td>
-                              <span className="badge-green">● ACTIVE</span>
-                            </td>
-                            <td>
-                              <button
-                                type="button"
-                                className="resend-cred-btn"
-                                onClick={() => handleResendCredentials(s.id, s.email)}
-                                title="Dispatch new password to inbox via SMTP"
-                              >
-                                Resend Email
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
+                        {filteredStudents.map((s) => {
+                          const classText = s.classroomName
+                            ? `${s.classroomName}${s.classroomSection ? ` (${s.classroomSection})` : ''}`
+                            : s.classroom?.name
+                            ? `${s.classroom.name}${s.classroom.section ? ` (${s.classroom.section})` : ''}`
+                            : null
+
+                          return (
+                            <tr key={s.id}>
+                              <td className="font-semibold">{s.fullName}</td>
+                              <td>
+                                <code className="roll-pill">{s.rollNumber || 'PENDING'}</code>
+                              </td>
+                              <td>{s.email}</td>
+                              <td>{s.phoneNumber || 'N/A'}</td>
+                              <td>
+                                {classText ? (
+                                  <span className="badge-class-pill">{classText}</span>
+                                ) : (
+                                  <span className="badge-unassigned-pill">General Roster</span>
+                                )}
+                              </td>
+                              <td>
+                                <span className="badge-green">● ACTIVE</span>
+                              </td>
+                              <td>
+                                <div className="table-actions-cell">
+                                  <button
+                                    type="button"
+                                    className="edit-student-btn"
+                                    onClick={() => handleOpenEditStudentModal(s)}
+                                    title="Edit Student Profile & Assign Classroom"
+                                  >
+                                    Edit Details
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="resend-cred-btn"
+                                    onClick={() => handleResendCredentials(s.id, s.email)}
+                                    title="Dispatch new password to inbox via SMTP"
+                                  >
+                                    Resend Email
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          )
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -946,6 +1033,117 @@ export default function CoordinatorDashboard({ onNavigate }) {
                   disabled={isTeachSubmitting}
                 >
                   {isTeachSubmitting ? 'Onboarding...' : 'Onboard & Dispatch Email ➔'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal 4: Edit Student Details & Classroom Allocation */}
+      {isEditStudentModalOpen && (
+        <div className="coord-modal-overlay" onClick={handleCloseEditStudentModal}>
+          <div className="coord-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="coord-modal-head">
+              <div>
+                <h3 className="coord-modal-title">Edit Student Profile & Allocation</h3>
+                <p className="coord-modal-sub">
+                  Update student identity details or assign / transfer them to a classroom batch.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="coord-modal-close"
+                onClick={handleCloseEditStudentModal}
+              >
+                <IconX size={18} />
+              </button>
+            </div>
+
+            {editStudentError && (
+              <div className="coord-alert alert-error">
+                <span>{editStudentError}</span>
+              </div>
+            )}
+            {editStudentSuccess && (
+              <div className="coord-alert alert-success">
+                <IconCheck size={16} color="#16A34A" />
+                <span>{editStudentSuccess}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleUpdateStudent} className="coord-modal-form">
+              <div className="coord-form-group">
+                <label className="coord-label">Student Full Name *</label>
+                <input
+                  type="text"
+                  className="coord-input"
+                  placeholder="e.g. Tanmay Amte"
+                  value={editStudentName}
+                  onChange={(e) => setEditStudentName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="coord-form-row">
+                <div className="coord-form-group">
+                  <label className="coord-label">Roll Number / Enrollment ID *</label>
+                  <input
+                    type="text"
+                    className="coord-input"
+                    placeholder="e.g. CS2026-001"
+                    value={editStudentRoll}
+                    onChange={(e) => setEditStudentRoll(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="coord-form-group">
+                  <label className="coord-label">Phone Number (Optional)</label>
+                  <input
+                    type="tel"
+                    className="coord-input"
+                    placeholder="e.g. +91 98765 43210"
+                    value={editStudentPhone}
+                    onChange={(e) => setEditStudentPhone(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="coord-form-group">
+                <label className="coord-label">Assign / Move to Classroom Section</label>
+                <select
+                  className="coord-select"
+                  value={editStudentClassroomId}
+                  onChange={(e) => setEditStudentClassroomId(e.target.value)}
+                >
+                  <option value="">-- General Roster (Unassigned) --</option>
+                  {classrooms.map((c) => (
+                    <option key={c.id} value={String(c.id)}>
+                      {c.name} {c.section ? `(${c.section})` : ''} {c.teacherName ? `• Faculty: ${c.teacherName}` : '• No Faculty'}
+                    </option>
+                  ))}
+                </select>
+                <span className="coord-hint">
+                  Assigning student to a classroom connects them to that classroom's course roadmap and assigned faculty.
+                </span>
+              </div>
+
+              <div className="coord-modal-footer">
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={handleCloseEditStudentModal}
+                  disabled={isEditStudentSubmitting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-submit"
+                  disabled={isEditStudentSubmitting}
+                >
+                  {isEditStudentSubmitting ? 'Saving...' : 'Save & Update Student ➔'}
                 </button>
               </div>
             </form>

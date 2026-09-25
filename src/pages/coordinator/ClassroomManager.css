@@ -285,8 +285,33 @@
   font-weight: 700;
 }
 
+.crm-actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.crm-edit-btn {
+  padding: 5px 12px;
+  background: #F0FDFA;
+  border: 1px solid #CCFBF1;
+  border-radius: 6px;
+  color: #1B7F72;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.crm-edit-btn:hover {
+  background: #CCFBF1;
+  border-color: #99F6E4;
+  color: #134E4A;
+}
+
 .crm-delete-btn {
-  padding: 4px 10px;
+  padding: 5px 10px;
   background: #FEF2F2;
   border: 1px solid #FEE2E2;
   border-radius: 6px;

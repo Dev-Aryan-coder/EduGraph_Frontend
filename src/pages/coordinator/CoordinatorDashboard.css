@@ -729,6 +729,32 @@
   letter-spacing: 0.03em;
 }
 
+.table-actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-student-btn {
+  background: rgba(27, 127, 114, 0.08);
+  border: 1px solid rgba(27, 127, 114, 0.3);
+  padding: 5px 11px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #1B7F72;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.edit-student-btn:hover {
+  background: #1B7F72;
+  border-color: #1B7F72;
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(27, 127, 114, 0.25);
+}
+
 .resend-cred-btn {
   background: #FFFFFF;
   border: 1px solid #CBD5E1;
@@ -746,6 +772,30 @@
   background: #F8FAFC;
   border-color: #1B7F72;
   color: #1B7F72;
+}
+
+.badge-class-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  background: rgba(27, 127, 114, 0.1);
+  color: #1B7F72;
+  border: 1px solid rgba(27, 127, 114, 0.25);
+}
+
+.badge-unassigned-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  background: #F1F5F9;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
 }
 
 /* ==========================================================================
