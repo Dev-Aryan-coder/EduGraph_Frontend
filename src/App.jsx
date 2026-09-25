@@ -13,6 +13,12 @@ import PrincipalDashboard from './pages/principal/PrincipalDashboard'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import CoordinatorDashboard from './pages/coordinator/CoordinatorDashboard'
 import TeacherDashboard from './pages/teacher/TeacherDashboard'
+import StudentDashboard from './pages/student/StudentDashboard'
+import ProfileSettings from './pages/shared/ProfileSettings'
+import NoticeBoard from './pages/shared/NoticeBoard'
+import InstitutionalCalendar from './pages/shared/InstitutionalCalendar'
+import NewsResearchFeed from './pages/shared/NewsResearchFeed'
+import HelpDesk from './pages/shared/HelpDesk'
 import authService from './services/authService'
 import './App.css'
 
@@ -28,7 +34,13 @@ const VALID_TABS = [
   'dashboard',
   'admin',
   'coordinator',
-  'teacher'
+  'teacher',
+  'student',
+  'profile',
+  'notices',
+  'calendar',
+  'news',
+  'help-desk'
 ]
 
 function App() {
@@ -77,6 +89,7 @@ function App() {
   const isAdminPage = activeTab === 'admin'
   const isCoordinatorPage = activeTab === 'coordinator'
   const isTeacherPage = activeTab === 'teacher'
+  const isStudentPage = activeTab === 'student'
 
   // If on split-screen auth pages, hide public floating navbar and footer
   if (isAuthPage) {
@@ -89,11 +102,29 @@ function App() {
     )
   }
 
+  // Shared feature full-page views
+  if (activeTab === 'profile') {
+    return <ProfileSettings onBack={() => navigateToTab('dashboard')} />
+  }
+  if (activeTab === 'notices') {
+    return <NoticeBoard onBack={() => navigateToTab('dashboard')} />
+  }
+  if (activeTab === 'calendar') {
+    return <InstitutionalCalendar onBack={() => navigateToTab('dashboard')} />
+  }
+  if (activeTab === 'news') {
+    return <NewsResearchFeed onBack={() => navigateToTab('dashboard')} />
+  }
+  if (activeTab === 'help-desk') {
+    return <HelpDesk onBack={() => navigateToTab('dashboard')} />
+  }
+
   const role = (currentUser?.role || '').toUpperCase()
   const isUserAdmin = role === 'ADMIN' || role === 'ROLE_ADMIN'
   const isUserCoordinator = role === 'COORDINATOR' || role === 'ROLE_COORDINATOR'
   const isUserPrincipal = role === 'PRINCIPAL' || role === 'ROLE_PRINCIPAL'
   const isUserTeacher = role === 'TEACHER' || role === 'ROLE_TEACHER'
+  const isUserStudent = role === 'STUDENT' || role === 'ROLE_STUDENT'
 
   // Render Super Admin Workspace
   if (isAdminPage || (isDashboardPage && isUserAdmin)) {
@@ -115,6 +146,11 @@ function App() {
     return <TeacherDashboard onNavigate={navigateToTab} />
   }
 
+  // Render Student Workspace
+  if (isStudentPage || (isDashboardPage && isUserStudent)) {
+    return <StudentDashboard onNavigate={navigateToTab} />
+  }
+
   // If on Dashboard without specific role or unauthenticated
   if (isDashboardPage) {
     if (!currentUser) {
@@ -126,6 +162,7 @@ function App() {
     }
     return <PrincipalDashboard onNavigate={navigateToTab} />
   }
+
 
   // Render the active public view
   const renderCurrentPage = () => {

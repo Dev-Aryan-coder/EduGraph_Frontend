@@ -1,10 +1,353 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import studentService from '../../services/studentService'
+import NodeConnectionModal from './NodeConnectionModal'
+import ShareNodeModal from './ShareNodeModal'
+import {
+  IconArrowLeft,
+  IconPlus,
+  IconLink,
+  IconShare,
+  IconTrash,
+  IconPencil,
+  IconBrain,
+  IconNodes,
+  IconCheck,
+  IconX
+} from '../../components/common/Icons'
 import './WhiteboardStudio.css'
 
-export default function WhiteboardStudio() {
+export default function WhiteboardStudio({
+  panelId,
+  panelName,
+  onBack
+}) {
+  const [nodes, setNodes] = useState([])
+  const [connectionsMap, setConnectionsMap] = useState({}) // { [nodeId]: Connection[] }
+  const [isLoading, setIsLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('')
+
+  // Modals state
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [editingNode, setEditingNode] = useState(null)
+  const [connectingSourceNode, setConnectingSourceNode] = useState(null)
+  const [sharingItem, setSharingItem] = useState(null)
+
+  // Node form state
+  const [nodeTitle, setNodeTitle] = useState('')
+  const [nodeDescription, setNodeDescription] = useState('')
+  const [nodeContent, setNodeContent] = useState('')
+
+  useEffect(() => {
+    loadPanelNodes()
+  }, [panelId])
+
+  const loadPanelNodes = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+    try {
+      const nodeList = await studentService.getNodesForPanel(panelId)
+      setNodes(nodeList)
+
+      // Fetch connections for each node
+      const connPromises = nodeList.map(async (n) => {
+        try {
+          const conns = await studentService.getConnections(n.id)
+          return { nodeId: n.id, conns }
+        } catch {
+          return { nodeId: n.id, conns: [] }
+        }
+      })
+      const results = await Promise.all(connPromises)
+      const map = {}
+      results.forEach(r => { map[r.nodeId] = r.conns })
+      setConnectionsMap(map)
+    } catch (err) {
+      setErrorMessage(err.response?.data?.message || 'Failed to load topic nodes.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleOpenCreateModal = () => {
+    setEditingNode(null)
+    setNodeTitle('')
+    setNodeDescription('')
+    setNodeContent('')
+    setIsCreateModalOpen(true)
+  }
+
+  const handleOpenEditModal = (node) => {
+    setEditingNode(node)
+    setNodeTitle(node.title || '')
+    setNodeDescription(node.description || '')
+    setNodeContent(node.content || '')
+    setIsCreateModalOpen(true)
+  }
+
+  const handleSaveNode = async (e) => {
+    e.preventDefault()
+    if (!nodeTitle.trim()) return
+
+    try {
+      if (editingNode) {
+        await studentService.updateNode(editingNode.id, {
+          title: nodeTitle.trim(),
+          description: nodeDescription.trim(),
+          content: nodeContent.trim(),
+          positionX: editingNode.positionX || 0,
+          positionY: editingNode.positionY || 0
+        })
+      } else {
+        await studentService.createNode(panelId, {
+          title: nodeTitle.trim(),
+          description: nodeDescription.trim(),
+          content: nodeContent.trim(),
+          positionX: Math.floor(Math.random() * 400),
+          positionY: Math.floor(Math.random() * 300)
+        })
+      }
+      setIsCreateModalOpen(false)
+      loadPanelNodes()
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to save topic node.')
+    }
+  }
+
+  const handleDeleteNode = async (nodeId) => {
+    if (!window.confirm('Are you sure you want to delete this topic node?')) return
+    try {
+      await studentService.deleteNode(nodeId)
+      loadPanelNodes()
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete node.')
+    }
+  }
+
+  const handleUnlink = async (sourceNodeId, connId) => {
+    try {
+      await studentService.unlinkNodes(sourceNodeId, connId)
+      loadPanelNodes()
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to unlink connection.')
+    }
+  }
+
   return (
-    <div className="whiteboardStudio-container">
-      {/* Excalidraw canvas with floating topic nodes & palette */}
+    <div className="wb-studio-container">
+      {/* Studio Header */}
+      <header className="wb-studio-header">
+        <div className="wb-header-left">
+          <button className="wb-back-btn" onClick={onBack}>
+            <IconArrowLeft size={16} /> Back to Panels
+          </button>
+          <div className="wb-title-box">
+            <span className="wb-sub-tag">Subject Whiteboard Studio</span>
+            <h2>{panelName || 'Subject Knowledge Graph'}</h2>
+          </div>
+        </div>
+
+        <div className="wb-header-right">
+          <button
+            className="wb-action-btn btn-share"
+            onClick={() => setSharingItem({ id: panelId, subjectName: panelName, type: 'panel' })}
+          >
+            <IconShare size={15} /> Share Panel
+          </button>
+          <button className="wb-action-btn btn-add" onClick={handleOpenCreateModal}>
+            <IconPlus size={16} /> Add Topic Node
+          </button>
+        </div>
+      </header>
+
+      {errorMessage && (
+        <div className="wb-alert-error">
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
+      {/* Main Graph / Nodes Area */}
+      <main className="wb-canvas-area">
+        {isLoading ? (
+          <div className="wb-loading">
+            <div className="quiz-spinner" />
+            <p>Loading Knowledge Graph Nodes...</p>
+          </div>
+        ) : nodes.length === 0 ? (
+          <div className="wb-empty-state">
+            <div className="empty-icon-wrap">
+              <IconNodes size={48} color="#0D9488" />
+            </div>
+            <h3>No Concept Nodes in this Subject Yet</h3>
+            <p>
+              Break down this subject into interconnected concept nodes, sketches, and revision notes.
+            </p>
+            <button className="wb-btn-primary" onClick={handleOpenCreateModal}>
+              <IconPlus size={16} /> Create First Topic Node
+            </button>
+          </div>
+        ) : (
+          <div className="wb-nodes-grid">
+            {nodes.map(node => {
+              const conns = connectionsMap[node.id] || []
+              return (
+                <div key={node.id} className="wb-node-card">
+                  <div className="node-card-head">
+                    <div className="node-title-wrap">
+                      <span className="node-bullet" />
+                      <h4>{node.title}</h4>
+                    </div>
+                    <div className="node-quick-actions">
+                      <button
+                        className="btn-icon"
+                        title="Edit Node"
+                        onClick={() => handleOpenEditModal(node)}
+                      >
+                        <IconPencil size={14} />
+                      </button>
+                      <button
+                        className="btn-icon btn-delete"
+                        title="Delete Node"
+                        onClick={() => handleDeleteNode(node.id)}
+                      >
+                        <IconTrash size={14} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {node.description && (
+                    <p className="node-desc">{node.description}</p>
+                  )}
+
+                  {node.content && (
+                    <div className="node-notes-snippet">
+                      <p>{node.content}</p>
+                    </div>
+                  )}
+
+                  {/* Connected Links Strip */}
+                  <div className="node-conns-section">
+                    <span className="conns-label">Linked Concepts ({conns.length}):</span>
+                    {conns.length === 0 ? (
+                      <span className="no-conns">No connections yet</span>
+                    ) : (
+                      <div className="conns-pills-list">
+                        {conns.map(c => (
+                          <div key={c.id} className="conn-chip">
+                            <span className="conn-chip-label">{c.label}:</span>
+                            <span className="conn-chip-target">{c.targetNodeTitle || `Node #${c.targetNodeId}`}</span>
+                            <button
+                              className="conn-chip-remove"
+                              onClick={() => handleUnlink(node.id, c.id)}
+                              title="Unlink"
+                            >
+                              <IconX size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bottom Action Footer */}
+                  <div className="node-card-footer">
+                    <button
+                      className="node-footer-btn"
+                      onClick={() => setConnectingSourceNode(node)}
+                    >
+                      <IconLink size={13} /> Link
+                    </button>
+                    <button
+                      className="node-footer-btn"
+                      onClick={() => setSharingItem({ id: node.id, title: node.title, type: 'node' })}
+                    >
+                      <IconShare size={13} /> Share
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </main>
+
+      {/* Create / Edit Node Modal */}
+      {isCreateModalOpen && (
+        <div className="modal-backdrop">
+          <div className="wb-node-modal">
+            <div className="modal-header">
+              <h3>{editingNode ? 'Edit Concept Node' : 'Create New Concept Node'}</h3>
+              <button className="btn-close" onClick={() => setIsCreateModalOpen(false)}>
+                <IconX size={18} />
+              </button>
+            </div>
+            <form onSubmit={handleSaveNode} className="wb-node-form">
+              <div className="form-group">
+                <label>Concept / Topic Title *</label>
+                <input
+                  type="text"
+                  className="wb-input"
+                  placeholder="e.g. Binary Search Trees"
+                  value={nodeTitle}
+                  onChange={(e) => setNodeTitle(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Short Description / Subtitle</label>
+                <input
+                  type="text"
+                  className="wb-input"
+                  placeholder="e.g. Self-balancing tree structures and complexity"
+                  value={nodeDescription}
+                  onChange={(e) => setNodeDescription(e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Revision Notes & Formulas</label>
+                <textarea
+                  className="wb-textarea"
+                  placeholder="Write formulas, algorithms, or visual notes..."
+                  value={nodeContent}
+                  onChange={(e) => setNodeContent(e.target.value)}
+                  rows={6}
+                />
+              </div>
+
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => setIsCreateModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn-submit">
+                  <IconCheck size={16} /> {editingNode ? 'Save Changes' : 'Create Node'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Link Nodes Modal */}
+      <NodeConnectionModal
+        sourceNode={connectingSourceNode}
+        availableNodes={nodes}
+        isOpen={Boolean(connectingSourceNode)}
+        onClose={() => setConnectingSourceNode(null)}
+        onConnected={loadPanelNodes}
+      />
+
+      {/* Share Modal */}
+      <ShareNodeModal
+        item={sharingItem}
+        isOpen={Boolean(sharingItem)}
+        onClose={() => setSharingItem(null)}
+        onShared={loadPanelNodes}
+      />
     </div>
   )
 }
