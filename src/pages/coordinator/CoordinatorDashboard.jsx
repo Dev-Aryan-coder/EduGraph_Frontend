@@ -73,6 +73,17 @@ export default function CoordinatorDashboard({ onNavigate }) {
   const [teachError, setTeachError] = useState('')
   const [teachSuccess, setTeachSuccess] = useState('')
 
+  // Quick Classroom Assignment State & Toast Feedback
+  const [updatingId, setUpdatingId] = useState(null)
+  const [toastMessage, setToastMessage] = useState(null)
+
+  const showToast = (msg) => {
+    setToastMessage(msg)
+    setTimeout(() => {
+      setToastMessage(null)
+    }, 3200)
+  }
+
   // Load all real coordinator data from Spring Boot REST endpoints
   const loadCoordinatorData = async () => {
     setIsLoading(true)
@@ -260,6 +271,69 @@ export default function CoordinatorDashboard({ onNavigate }) {
       setEditStudentError(err.response?.data?.message || err.message || 'Failed to update student.')
     } finally {
       setIsEditStudentSubmitting(false)
+    }
+  }
+
+  // Quick Inline Classroom Change for Student
+  const handleStudentClassroomChange = async (student, targetClassroomId) => {
+    const key = `student-${student.id}`
+    setUpdatingId(key)
+    try {
+      await coordinatorService.updateStudent(student.id, {
+        classroomId: targetClassroomId ? Number(targetClassroomId) : null
+      })
+
+      const targetClass = classrooms.find((c) => String(c.id) === String(targetClassroomId))
+      showToast(
+        targetClass
+          ? `Moved ${student.fullName} to ${targetClass.name} ${targetClass.section ? `(${targetClass.section})` : ''}`
+          : `Moved ${student.fullName} to General Roster`
+      )
+      await loadCoordinatorData()
+    } catch (err) {
+      alert('Failed to update student classroom: ' + (err.response?.data?.message || err.message))
+    } finally {
+      setUpdatingId(null)
+    }
+  }
+
+  // Quick Inline Classroom Assignment for Teacher
+  const handleTeacherClassroomChange = async (teacher, targetClassroomId, previouslyAssignedClassrooms) => {
+    const key = `teacher-${teacher.id}`
+    setUpdatingId(key)
+    try {
+      if (!targetClassroomId) {
+        // Unassign teacher from any currently assigned classrooms
+        await Promise.all(
+          previouslyAssignedClassrooms.map((c) =>
+            coordinatorService.updateClassroom(c.id, { teacherId: null })
+          )
+        )
+        showToast(`Unassigned ${teacher.fullName} from classroom`)
+      } else {
+        // Unassign from old classrooms that aren't the selected target
+        const unassignOld = previouslyAssignedClassrooms
+          .filter((c) => String(c.id) !== String(targetClassroomId))
+          .map((c) => coordinatorService.updateClassroom(c.id, { teacherId: null }))
+        await Promise.all(unassignOld)
+
+        // Assign to new target classroom
+        await coordinatorService.updateClassroom(Number(targetClassroomId), {
+          teacherId: teacher.id
+        })
+
+        const targetClass = classrooms.find((c) => String(c.id) === String(targetClassroomId))
+        showToast(
+          targetClass
+            ? `Assigned ${teacher.fullName} to ${targetClass.name} ${targetClass.section ? `(${targetClass.section})` : ''}`
+            : `Assigned ${teacher.fullName} to classroom`
+        )
+      }
+      await loadCoordinatorData()
+    } catch (err) {
+      alert('Failed to update faculty classroom: ' + (err.response?.data?.message || err.message))
+    } finally {
+      setUpdatingId(null)
     }
   }
 
@@ -671,11 +745,23 @@ export default function CoordinatorDashboard({ onNavigate }) {
                               <td>{s.email}</td>
                               <td>{s.phoneNumber || 'N/A'}</td>
                               <td>
-                                {classText ? (
-                                  <span className="badge-class-pill">{classText}</span>
-                                ) : (
-                                  <span className="badge-unassigned-pill">General Roster</span>
-                                )}
+                                <div className="table-select-wrap">
+                                  <select
+                                    className={`table-dropdown-select ${s.classroomId || s.classroom?.id ? 'is-assigned' : ''}`}
+                                    value={s.classroomId || s.classroom?.id ? String(s.classroomId || s.classroom?.id) : ''}
+                                    onChange={(e) => handleStudentClassroomChange(s, e.target.value)}
+                                    disabled={updatingId === `student-${s.id}`}
+                                    title="Assign or move student to classroom"
+                                  >
+                                    <option value="">General Roster (Unassigned)</option>
+                                    {classrooms.map((c) => (
+                                      <option key={c.id} value={String(c.id)}>
+                                        {c.name} {c.section ? `(${c.section})` : ''}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  {updatingId === `student-${s.id}` && <span className="table-dropdown-spinner" />}
+                                </div>
                               </td>
                               <td>
                                 <span className="badge-green">● ACTIVE</span>
@@ -788,30 +874,64 @@ export default function CoordinatorDashboard({ onNavigate }) {
                           <th>Faculty Name</th>
                           <th>Institutional Email</th>
                           <th>Phone Number</th>
+                          <th>Assigned Classroom</th>
                           <th>Role</th>
                           <th>Status</th>
                           <th>Credentials</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredTeachers.map((t) => (
-                          <tr key={t.id}>
-                            <td className="font-semibold">{t.fullName}</td>
-                            <td>{t.email}</td>
-                            <td>{t.phoneNumber || 'N/A'}</td>
-                            <td><span className="tag-teal">TEACHER</span></td>
-                            <td><span className="badge-green">● ACTIVE</span></td>
-                            <td>
-                              <button
-                                type="button"
-                                className="resend-cred-btn"
-                                onClick={() => handleResendCredentials(t.id, t.email)}
-                              >
-                                Resend Email
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
+                        {filteredTeachers.map((t) => {
+                          const assignedClassrooms = classrooms.filter((c) => c.teacherId === t.id)
+                          const currentClassId = assignedClassrooms[0]?.id || ''
+
+                          return (
+                            <tr key={t.id}>
+                              <td className="font-semibold">{t.fullName}</td>
+                              <td>{t.email}</td>
+                              <td>{t.phoneNumber || 'N/A'}</td>
+                              <td>
+                                <div className="table-select-wrap">
+                                  <select
+                                    className={`table-dropdown-select ${currentClassId ? 'is-assigned' : ''}`}
+                                    value={currentClassId ? String(currentClassId) : ''}
+                                    onChange={(e) => handleTeacherClassroomChange(t, e.target.value, assignedClassrooms)}
+                                    disabled={updatingId === `teacher-${t.id}`}
+                                    title="Assign faculty instructor to classroom"
+                                  >
+                                    <option value="">-- No Classroom Assigned --</option>
+                                    {classrooms.map((c) => (
+                                      <option key={c.id} value={String(c.id)}>
+                                        {c.name} {c.section ? `(${c.section})` : ''}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  {updatingId === `teacher-${t.id}` && <span className="table-dropdown-spinner" />}
+                                  {assignedClassrooms.length > 1 && (
+                                    <span
+                                      className="multi-class-tag"
+                                      title={assignedClassrooms.map((c) => `${c.name} (${c.section || 'General'})`).join(', ')}
+                                    >
+                                      +{assignedClassrooms.length - 1} more
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                              <td><span className="tag-teal">TEACHER</span></td>
+                              <td><span className="badge-green">● ACTIVE</span></td>
+                              <td>
+                                <button
+                                  type="button"
+                                  className="resend-cred-btn"
+                                  onClick={() => handleResendCredentials(t.id, t.email)}
+                                  title="Dispatch new password to inbox via SMTP"
+                                >
+                                  Resend Email
+                                </button>
+                              </td>
+                            </tr>
+                          )
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -1148,6 +1268,14 @@ export default function CoordinatorDashboard({ onNavigate }) {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Floating Action Toast */}
+      {toastMessage && (
+        <div className="coord-toast">
+          <IconCheck size={18} color="#22C55E" />
+          <span>{toastMessage}</span>
         </div>
       )}
     </div>

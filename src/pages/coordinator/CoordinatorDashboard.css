@@ -798,6 +798,118 @@
   border: 1px solid #E2E8F0;
 }
 
+/* Table Inline Classroom Select Dropdown */
+.table-select-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.table-dropdown-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #FFFFFF;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 11px;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  padding: 5px 26px 5px 9px;
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+  min-width: 145px;
+  max-width: 220px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table-dropdown-select:hover {
+  border-color: #1B7F72;
+  background-color: #F8FAFC;
+}
+
+.table-dropdown-select:focus {
+  border-color: #1B7F72;
+  box-shadow: 0 0 0 2px rgba(27, 127, 114, 0.18);
+}
+
+.table-dropdown-select.is-assigned {
+  background-color: rgba(27, 127, 114, 0.06);
+  border-color: rgba(27, 127, 114, 0.4);
+  color: #1B7F72;
+  font-weight: 700;
+}
+
+.table-dropdown-select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.table-dropdown-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(27, 127, 114, 0.2);
+  border-top-color: #1B7F72;
+  border-radius: 50%;
+  animation: tableSelectSpin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes tableSelectSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.multi-class-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #E2E8F0;
+  color: #475569;
+  cursor: help;
+  white-space: nowrap;
+}
+
+/* Floating Action Toast */
+.coord-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 9999;
+  animation: toastSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* ==========================================================================
    FILTER BAR & SEARCH
    ========================================================================== */
