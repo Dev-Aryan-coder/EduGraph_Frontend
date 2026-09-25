@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import authService from '../../services/authService'
 import principalService from '../../services/principalService'
+import CoordinatorModal from './CoordinatorModal'
 import logoSvg from '../../assets/edugraph-logo.svg'
 import {
   IconLayoutDashboard,
@@ -36,12 +37,6 @@ export default function PrincipalDashboard({ onNavigate }) {
 
   // Modals State
   const [isCoordinatorModalOpen, setIsCoordinatorModalOpen] = useState(false)
-  const [newCoordName, setNewCoordName] = useState('')
-  const [newCoordEmail, setNewCoordEmail] = useState('')
-  const [newCoordPhone, setNewCoordPhone] = useState('')
-  const [coordModalLoading, setCoordModalLoading] = useState(false)
-  const [coordSuccessMsg, setCoordSuccessMsg] = useState('')
-  const [coordErrorMsg, setCoordErrorMsg] = useState('')
 
   const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false)
   const [noticeTitle, setNoticeTitle] = useState('')
@@ -93,49 +88,6 @@ export default function PrincipalDashboard({ onNavigate }) {
   const handleLogout = async () => {
     await authService.logout()
     handleNavHome()
-  }
-
-  // Appoint Coordinator via POST /api/principal/coordinators
-  const handleCreateCoordinator = async (e) => {
-    e.preventDefault()
-    setCoordErrorMsg('')
-    setCoordSuccessMsg('')
-
-    if (!newCoordName.trim() || !newCoordEmail.trim()) {
-      setCoordErrorMsg('Please fill in both full name and institutional email.')
-      return
-    }
-
-    try {
-      setCoordModalLoading(true)
-      await principalService.createCoordinator({
-        fullName: newCoordName,
-        email: newCoordEmail,
-        phoneNumber: newCoordPhone
-      })
-
-      setCoordSuccessMsg(`Coordinator appointed! Real login credentials dispatched to ${newCoordEmail} via SMTP.`)
-      setNewCoordName('')
-      setNewCoordEmail('')
-      setNewCoordPhone('')
-
-      // Reload fresh data from database
-      const [updatedCoords, updatedOverview] = await Promise.all([
-        principalService.getCoordinators(),
-        principalService.getOverview()
-      ])
-      if (updatedCoords) setCoordinatorsList(updatedCoords)
-      if (updatedOverview) setOverviewData(updatedOverview)
-
-      setTimeout(() => {
-        setCoordSuccessMsg('')
-        setIsCoordinatorModalOpen(false)
-      }, 1800)
-    } catch (err) {
-      setCoordErrorMsg(err.message || 'Failed to appoint coordinator.')
-    } finally {
-      setCoordModalLoading(false)
-    }
   }
 
   // Broadcast Notice via POST /api/notices
@@ -868,120 +820,20 @@ export default function PrincipalDashboard({ onNavigate }) {
       </div>
 
       {/* ===================================================================
-          MODAL 1: Appoint New Coordinator (Calls POST /api/principal/coordinators)
+          MODAL 1: Appoint New Coordinator (Modular Component)
           =================================================================== */}
-      {isCoordinatorModalOpen && (
-        <div className="shadcn-dialog-overlay" onClick={() => setIsCoordinatorModalOpen(false)}>
-          <div className="shadcn-dialog-content" onClick={(e) => e.stopPropagation()}>
-            <div className="shadcn-dialog-header">
-              <div className="dialog-title-row">
-                <div className="dialog-badge">
-                  <IconUser size={14} color="#1B7F72" />
-                  <span>APPOINT COORDINATOR</span>
-                </div>
-                <button
-                  type="button"
-                  className="dialog-close-btn"
-                  onClick={() => setIsCoordinatorModalOpen(false)}
-                >
-                  <IconX size={18} />
-                </button>
-              </div>
-              <h2 className="shadcn-dialog-title">Appoint Academic Coordinator</h2>
-              <p className="shadcn-dialog-description">
-                Enter coordinator details. EduGraph will create their database record and dispatch real login credentials to their email via SMTP.
-              </p>
-            </div>
-
-            {coordErrorMsg && (
-              <div className="shadcn-alert alert-error">
-                <span>{coordErrorMsg}</span>
-              </div>
-            )}
-            {coordSuccessMsg && (
-              <div className="shadcn-alert alert-success">
-                <IconCheck size={16} color="#16A34A" />
-                <span>{coordSuccessMsg}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleCreateCoordinator} className="shadcn-form">
-              <div className="shadcn-input-group">
-                <label className="shadcn-label">Coordinator Full Legal Name *</label>
-                <div className="input-with-icon">
-                  <span className="input-prefix-icon"><IconUser size={16} color="#64748B" /></span>
-                  <input
-                    type="text"
-                    className="shadcn-input with-prefix"
-                    placeholder="e.g. Prof. Alok Verma"
-                    value={newCoordName}
-                    onChange={(e) => setNewCoordName(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="shadcn-input-group">
-                <label className="shadcn-label">Institutional Email *</label>
-                <div className="input-with-icon">
-                  <span className="input-prefix-icon"><IconMail size={16} color="#64748B" /></span>
-                  <input
-                    type="email"
-                    className="shadcn-input with-prefix"
-                    placeholder="e.g. alok.verma@college.edu"
-                    value={newCoordEmail}
-                    onChange={(e) => setNewCoordEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <span className="shadcn-help-text">Real credentials will be sent to this email directly via Gmail SMTP.</span>
-              </div>
-
-              <div className="shadcn-input-group">
-                <label className="shadcn-label">Phone Number</label>
-                <div className="input-with-icon">
-                  <span className="input-prefix-icon"><IconPhone size={16} color="#64748B" /></span>
-                  <input
-                    type="tel"
-                    className="shadcn-input with-prefix"
-                    placeholder="e.g. +91 98123 45678"
-                    value={newCoordPhone}
-                    onChange={(e) => setNewCoordPhone(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="shadcn-dialog-footer">
-                <button
-                  type="button"
-                  className="shadcn-btn-secondary"
-                  onClick={() => setIsCoordinatorModalOpen(false)}
-                  disabled={coordModalLoading}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="shadcn-btn-primary"
-                  disabled={coordModalLoading}
-                >
-                  {coordModalLoading ? (
-                    <>
-                      <span className="shadcn-spinner" />
-                      <span>Dispatching Credentials...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Appoint & Dispatch Email</span>
-                      <IconCheck size={16} />
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <CoordinatorModal
+        isOpen={isCoordinatorModalOpen}
+        onClose={() => setIsCoordinatorModalOpen(false)}
+        onCoordinatorAdded={async () => {
+          const [updatedCoords, updatedOverview] = await Promise.all([
+            principalService.getCoordinators(),
+            principalService.getOverview()
+          ])
+          if (updatedCoords) setCoordinatorsList(updatedCoords)
+          if (updatedOverview) setOverviewData(updatedOverview)
+        }}
+      />
 
       {/* ===================================================================
           MODAL 2: Broadcast Notice (Calls POST /api/notices)
