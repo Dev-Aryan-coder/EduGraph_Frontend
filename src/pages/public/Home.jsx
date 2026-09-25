@@ -515,6 +515,191 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Horizontal Dashed Divider */}
+          <div className="hero-dashed-divider" aria-hidden="true" />
+
+          {/* 6. How EduGraph Works ? Section (Big Whiteboard with Non-Spaghetti Workflow) */}
+          <div className="hero-hiw-section" id="how-it-works">
+            
+            {/* Section Header */}
+            <div className="hiw-header-block">
+              <span className="section-eyebrow">End-to-End System Workflow</span>
+              <h2 className="hiw-title">How EduGraph Works ?</h2>
+              <div className="hiw-sketch-divider" aria-hidden="true" />
+              <p className="hiw-desc">
+                A structured, fraud-proof learning pipeline connecting visual node ideation, live integrity tracking, and automated conceptual validation.
+              </p>
+            </div>
+
+            {/* Big Edudraw Whiteboard Canvas */}
+            <div className="hiw-whiteboard-card">
+              
+              {/* Whiteboard Window Header & Controls */}
+              <div className="hiw-wb-header">
+                <div className="hiw-wb-dots">
+                  <span className="dot dot-red" />
+                  <span className="dot dot-amber" />
+                  <span className="dot dot-green" />
+                </div>
+                
+                <div className="hiw-wb-title-box">
+                  <span className="hiw-wb-title">EduGraph Interactive Whiteboard Canvas</span>
+                  <span className="hiw-wb-badge">WORKFLOW PIPELINE v2.4</span>
+                </div>
+
+                <div className="hiw-wb-tools">
+                  <span className="hiw-tool-btn active" title="Pointer Select">↖ Select</span>
+                  <span className="hiw-tool-btn" title="Concept Node">▢ Nodes</span>
+                  <span className="hiw-tool-btn" title="Flow Connectors">⇄ Arrows</span>
+                  <span className="hiw-tool-btn" title="Integrity Shield">🛡️ Shield</span>
+                  <span className="hiw-tool-btn hiw-zoom-pill">100%</span>
+                </div>
+              </div>
+
+              {/* Whiteboard Canvas Main Board (Dot-Grid Background) */}
+              <div className="hiw-wb-canvas">
+                
+                {/* Top Status Bar Inside Whiteboard */}
+                <div className="hiw-canvas-meta-bar">
+                  <div className="hiw-meta-left">
+                    <span className="hiw-live-pulse" />
+                    <span className="hiw-meta-text">Sequential Execution Pipeline • Non-Spaghetti Architecture</span>
+                  </div>
+                  <div className="hiw-meta-right">
+                    <span className="hiw-meta-chip">Directional Flow ➔</span>
+                  </div>
+                </div>
+
+                {/* 4-Stage Connected Workflow Grid */}
+                <div className="hiw-workflow-stream">
+
+                  {/* Stage 1: Faculty Blueprint */}
+                  <div className="hiw-stage-node stage-faculty">
+                    <div className="stage-step-tag">STEP 01</div>
+                    <div className="stage-card-icon">🏛️</div>
+                    <h3 className="stage-title">Faculty Assignment</h3>
+                    <p className="stage-sub">Professors define syllabus concept graphs and anti-cheat thresholds.</p>
+                    
+                    <div className="stage-micro-box">
+                      <span className="micro-dot dot-navy" />
+                      <span>Topic Blueprint Initialized</span>
+                    </div>
+                  </div>
+
+                  {/* Connector 1 -> 2 */}
+                  <div className="hiw-stream-connector">
+                    <div className="connector-line-wrapper">
+                      <svg viewBox="0 0 100 24" className="stream-arrow-svg" preserveAspectRatio="none">
+                        <line x1="0" y1="12" x2="88" y2="12" stroke="#1B7F72" strokeWidth="2.5" strokeDasharray="5 4" />
+                        <polygon points="86,6 98,12 86,18" fill="#1B7F72" />
+                      </svg>
+                    </div>
+                    <span className="connector-pill-label">1. Dispatched ➔</span>
+                  </div>
+
+                  {/* Stage 2: Student Edudraw Canvas */}
+                  <div className="hiw-stage-node stage-student">
+                    <div className="stage-step-tag stage-tag-teal">STEP 02</div>
+                    <div className="stage-card-icon">🧠</div>
+                    <h3 className="stage-title">Spatial Mind Graph</h3>
+                    <p className="stage-sub">Students visually construct interlinked equations, proofs, and theory nodes.</p>
+                    
+                    {/* Branching Sub-Nodes Demo */}
+                    <div className="stage-subnodes-cluster">
+                      <div className="cluster-node">Proof A</div>
+                      <span className="cluster-link">⇄</span>
+                      <div className="cluster-node">Equation B</div>
+                    </div>
+
+                    <div className="stage-sticky-note">
+                      <span className="sticky-pin">📌</span>
+                      <span>Requires relational comprehension!</span>
+                    </div>
+                  </div>
+
+                  {/* Connector 2 -> 3 */}
+                  <div className="hiw-stream-connector">
+                    <div className="connector-line-wrapper">
+                      <svg viewBox="0 0 100 24" className="stream-arrow-svg" preserveAspectRatio="none">
+                        <line x1="0" y1="12" x2="88" y2="12" stroke="#C6822E" strokeWidth="2.5" strokeDasharray="5 4" />
+                        <polygon points="86,6 98,12 86,18" fill="#C6822E" />
+                      </svg>
+                    </div>
+                    <span className="connector-pill-label label-amber">2. Monitored ➔</span>
+                  </div>
+
+                  {/* Stage 3: Live Anti-Cheat Proctoring */}
+                  <div className="hiw-stage-node stage-security">
+                    <div className="stage-step-tag stage-tag-amber">STEP 03</div>
+                    <div className="stage-card-icon">🛡️</div>
+                    <h3 className="stage-title">Proctor Shield</h3>
+                    <p className="stage-sub">Real-time page visibility and tab tracking halt unauthorized external assistance.</p>
+                    
+                    <div className="stage-security-feed">
+                      <span className="feed-status-good">✓ 0 Tab Switches</span>
+                      <span className="feed-status-good">✓ 100% Window Focus</span>
+                    </div>
+
+                    <div className="stage-sticky-note note-security">
+                      <span className="sticky-pin">⚡</span>
+                      <span>Zero tolerance for external copy-paste</span>
+                    </div>
+                  </div>
+
+                  {/* Connector 3 -> 4 */}
+                  <div className="hiw-stream-connector">
+                    <div className="connector-line-wrapper">
+                      <svg viewBox="0 0 100 24" className="stream-arrow-svg" preserveAspectRatio="none">
+                        <line x1="0" y1="12" x2="88" y2="12" stroke="#16A34A" strokeWidth="2.5" strokeDasharray="5 4" />
+                        <polygon points="86,6 98,12 86,18" fill="#16A34A" />
+                      </svg>
+                    </div>
+                    <span className="connector-pill-label label-green">3. Validate ➔</span>
+                  </div>
+
+                  {/* Stage 4: Instant 20-MCQ Verification & Mastery */}
+                  <div className="hiw-stage-node stage-verification">
+                    <div className="stage-step-tag stage-tag-green">STEP 04</div>
+                    <div className="stage-card-icon">🎯</div>
+                    <h3 className="stage-title">Mastery Validation</h3>
+                    <p className="stage-sub">Post-submission 20-MCQ quiz verifies author authentic understanding.</p>
+                    
+                    <div className="stage-score-card">
+                      <div className="score-val">20/20</div>
+                      <span className="score-badge">✓ Verified & Graded</span>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Return Loop / Telemetry Feedback Loop Banner */}
+                <div className="hiw-return-loop-banner">
+                  <div className="loop-indicator-track">
+                    <span className="loop-icon">🔄</span>
+                    <span className="loop-text">
+                      <strong>Institutional Telemetry Loop:</strong> Verified grades & comprehension heatmaps automatically sync to College Principal & Faculty Dashboards.
+                    </span>
+                  </div>
+                  <span className="loop-audit-pill">● Tamper-Proof Audit Trail</span>
+                </div>
+
+              </div>
+
+              {/* Whiteboard Footer Bar */}
+              <div className="hiw-wb-footer">
+                <div className="wb-footer-left">
+                  <span className="status-indicator-live">● Whiteboard Engine Operational</span>
+                  <span className="wb-footer-stats">4 Sequential Stages • 8 Node Anchors • Clean Pipeline</span>
+                </div>
+                <div className="wb-footer-right">
+                  <a href="#features" className="wb-footer-link">View Whiteboard Docs →</a>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
       </section>
     </div>
